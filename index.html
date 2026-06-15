@@ -171,7 +171,7 @@ var VI=["Pilons","Cuisse(s)"],AC=["Frites","Riz Madras (+2€)"];
 
 // STATE
 var pan=[],sec="simple",cfging=null;
-var cfg={vi:"Pilons",ac:"Frites",bo:"coca",nt:"",qty:1,sauces:["piq"]};
+var cfg={vi:"Pilons",ac:"Frites",nt:"",qty:1,sauces:["piq"],boissons:["coca"]};
 var sq={},fbO={},curV=0,sending=false;
 var tdone=null,tcrL=null,mode="surplace",crSel=null;
 var cph="",phErr=false,saErr=false;
@@ -281,8 +281,13 @@ function rCom(){
       var sauceBlocks="";
       for(var qi=0;qi<cfg.qty;qi++){
         var curSa=cfg.sauces[qi]||null;
+        var curBo=cfg.boissons[qi]||"coca";
         var errThis=saErr&&!curSa;
-        sauceBlocks+='<div style="margin-bottom:10px"><span class="lbl'+(errThis?" err":"")+'">Sauce menu '+(qi+1)+' <span style="color:#ff5555">*obligatoire</span></span><div class="orow">'
+        var bbq=BO.map(function(b){return'<div class="obtn'+(curBo===b.id?" on":"")+'" onclick="gBO('+qi+',\''+b.id+'\')" style="min-width:80px">'+b.name+'</div>';}).join("");
+        sauceBlocks+='<div style="margin-bottom:14px;padding:10px;background:#1a1100;border-radius:10px;border:1px solid #3a2a00">'
+          +'<div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">Menu '+(qi+1)+'</div>'
+          +'<span class="lbl">Boisson</span><div class="orow">'+bbq+'</div>'
+          +'<span class="lbl'+(errThis?" err":"")+'">Sauce <span style="color:#ff5555">*obligatoire</span></span><div class="orow">'
           +'<div class="obtn'+(curSa==="piq"?" on":(errThis?" err":""))+'" onclick="gSA('+qi+',\'piq\')">🌶️ Piquante</div>'
           +'<div class="obtn'+(curSa==="npiq"?" on":(errThis?" err":""))+'" onclick="gSA('+qi+',\'npiq\')">😊 Non piquante</div>'
           +'</div>'+(errThis?'<div class="errt">Veuillez choisir une sauce</div>':"")+'</div>';
@@ -292,7 +297,6 @@ function rCom(){
         +'<span class="lbl">Quantit\u00E9</span>'+qtyRow
         +'<span class="lbl">Viande</span><div class="orow">'+vb+'</div>'
         +ah
-        +'<span class="lbl">Boisson incluse</span><div class="orow">'+bb+'</div>'
         +sauceBlocks
         +'<span class="lbl">Note / Allergie</span>'
         +'<textarea rows="2" placeholder="Ex: bien cuit..." oninput="gN(this.value)">'+cfg.nt+'</textarea>'
@@ -427,17 +431,18 @@ window.gV=function(v){
   if(v===2)rA();
 };
 window.gS=function(s){sec=s;cfging=null;rCom();};
-window.gSTcfg=function(id,t){cfging={id:id,t:t};cfg={vi:"Pilons",ac:"Frites",bo:"coca",nt:"",qty:1,sauces:[null]};saErr=false;rCom();};
+window.gSTcfg=function(id,t){cfging={id:id,t:t};cfg={vi:"Pilons",ac:"Frites",nt:"",qty:1,sauces:[null],boissons:["coca"]};saErr=false;rCom();};
 window.gCC=function(){cfging=null;saErr=false;rCom();};
 window.gC=function(k,v){cfg[k]=v;if(k==="sa")saErr=false;rCom();};
 window.gN=function(v){cfg.nt=v;};
 window.gQ=function(d){
   cfg.qty=Math.max(1,Math.min(20,cfg.qty+d));
-  while(cfg.sauces.length<cfg.qty)cfg.sauces.push(null);
-  while(cfg.sauces.length>cfg.qty)cfg.sauces.pop();
+  while(cfg.sauces.length<cfg.qty){cfg.sauces.push(null);cfg.boissons.push("coca");}
+  while(cfg.sauces.length>cfg.qty){cfg.sauces.pop();cfg.boissons.pop();}
   rCom();
 };
 window.gSA=function(idx,val){cfg.sauces[idx]=val;saErr=false;rCom();};
+window.gBO=function(idx,val){cfg.boissons[idx]=val;rCom();};
 window.gSI=function(id){sq[id]=(sq[id]||0)+1;rCom();};
 window.gSD=function(id){if((sq[id]||0)>0)sq[id]--;rCom();};
 window.gRM=function(i){pan.splice(i,1);rCom();};
@@ -449,9 +454,9 @@ window.gAM=function(){
   var m=menus.find(function(x){return x.id===cfging.id;});
   var pr=parseFloat(m.price)+(!mx&&cfg.ac==="Riz Madras (+2€)"?2:0);
   for(var i=0;i<cfg.qty;i++){
-    pan.push({tp:"m",name:m.name,mt:mx?"Mixte":"Simple",vi:cfg.vi,ac:mx?"Frites + Riz Madras":cfg.ac,bo:cfg.bo,sa:cfg.sauces[i],nt:cfg.nt,price:pr});
+    pan.push({tp:"m",name:m.name,mt:mx?"Mixte":"Simple",vi:cfg.vi,ac:mx?"Frites + Riz Madras":cfg.ac,bo:cfg.boissons[i],sa:cfg.sauces[i],nt:cfg.nt,price:pr});
   }
-  cfging=null;cfg={vi:"Pilons",ac:"Frites",bo:"coca",nt:"",qty:1,sauces:[null]};saErr=false;rCom();
+  cfging=null;cfg={vi:"Pilons",ac:"Frites",nt:"",qty:1,sauces:[null],boissons:["coca"]};saErr=false;rCom();
 };
 window.gAS=function(){
   var items=[];
