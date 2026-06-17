@@ -140,7 +140,7 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .logoutbtn{background:transparent;color:rgba(255,255,255,0.4);border:1px solid #333;border-radius:999px;padding:5px 12px;font-size:11px;cursor:pointer}
 .resetbtn{background:transparent;color:#ff5555;border:1px solid #ff5555;border-radius:999px;padding:5px 12px;font-size:11px;cursor:pointer}
 .atabs{display:flex;gap:6px;padding:12px 16px;overflow-x:auto;background:#0a0a0a;border-bottom:1px solid #1a1a1a}
-.atab{flex-shrink:0;padding:6px 14px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:600;background:#1a1a1a;border:1px solid #2a2a2a;color:rgba(255,255,255,0.5)}
+.atab{flex-shrink:0;padding:6px 14px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:600;background:#1a1a1a;border:1px solid #2a2a2a;color:rgba(255,255,255,0.8)}
 .atab.on{background:#D4880A;color:#fff;border-color:#D4880A}
 .stockrow{display:flex;align-items:center;justify-content:space-between;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;margin-bottom:8px}
 .stockrow.low{border-color:#ff5555;background:rgba(255,80,80,0.06)}
@@ -461,6 +461,8 @@ function rAD(){
   var dt='<div class="dtabs">';
   dates.forEach(function(d){dt+='<div class="dtab'+(aDt===d?" on":"")+'" onclick="gAD(\''+d+'\')">'+dfr(d)+(d===todayStr?" (aujourd'hui)":"")+'</div>';});
   dt+='</div>';
+  var dayCount=(dm[aDt]||[]).length;
+  var delDayBtn=dayCount>0?'<div style="padding:0 16px 10px;background:#0a0a0a"><button class="resetbtn" style="width:100%;padding:8px 0" onclick="gCLRDay(\''+aDt+'\')">🗑️ Supprimer les '+dayCount+' commande(s) du '+dfr(aDt)+'</button></div>':"";
 
   var atabsHtml='<div class="atabs">'
     +'<div class="atab'+(aTab==="stats"?" on":"")+'" onclick="gATab(\'stats\')">📊 Stats</div>'
@@ -528,7 +530,7 @@ function rAD(){
       +'</div></div>';
   }
 
-  el.innerHTML='<div class="apage"><div class="ahdr"><div style="display:flex;align-items:center;gap:8px"><span>📊</span><span class="ahtitle">Stats & Historique</span></div><div style="display:flex;gap:6px"><button class="resetbtn" onclick="gCLR()">🗑️ Reset</button><button class="logoutbtn" onclick="gALO()">Déco</button></div></div>'+dt+atabsHtml+'<div class="abody">'+body+'</div></div>';
+  el.innerHTML='<div class="apage"><div class="ahdr"><div style="display:flex;align-items:center;gap:8px"><span>📊</span><span class="ahtitle">Stats & Historique</span></div><div style="display:flex;gap:6px"><button class="resetbtn" onclick="gCLR()">🗑️ Tout reset</button><button class="logoutbtn" onclick="gALO()">Déco</button></div></div>'+dt+delDayBtn+atabsHtml+'<div class="abody">'+body+'</div></div>';
 }
 
 // ─── ACTIONS
@@ -595,7 +597,22 @@ window.gAP=function(v){aPw=v;};
 window.gAL=function(){if(aPw===PWD){aLog=true;aErr=false;rAD();}else{aErr=true;rA();}};
 window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;rA();};
 window.gAD=function(d){aDt=d;rAD();};
-window.gCLR=function(){if(confirm("Supprimer TOUTES les commandes ?")){remove(ref(db,"orders"));aDt=null;}};
+window.gATab=function(t){aTab=t;rAD();};
+window.gStockSet=function(id,val){
+  stockInit[aDt]=stockInit[aDt]||{};
+  stockInit[aDt][id]=val;
+  update(ref(db,"stockData"),stockInit);
+};
+window.gDepSet=function(val){
+  stockInit[aDt+"_dep"]=val;
+  update(ref(db,"stockData"),stockInit);
+};
+window.gCLR=function(){if(confirm("Supprimer TOUTES les commandes, toutes dates confondues ?")){remove(ref(db,"orders"));aDt=null;}};
+window.gCLRDay=function(d){
+  if(!confirm("Supprimer toutes les commandes du "+dfr(d)+" uniquement ?"))return;
+  var toDelete=Object.entries(fbO).filter(function(e){return e[1].ts&&ts2d(e[1].ts)===d;});
+  toDelete.forEach(function(e){remove(ref(db,"orders/"+e[0]));});
+};
 
 rCom();rC();rA();
 </script>
