@@ -193,7 +193,7 @@ var VI=["Pilons","Cuisse(s)"],AC=["Frites","Riz Madras (+2€)"];
 
 // STATE
 var pan=[],sec="simple",cfging=null;
-var cfg={vi:"Pilons",ac:"Frites",nt:"",qty:1,sauces:["piq"],boissons:["coca"]};
+var cfg={nt:"",qty:1,sauces:["piq"],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};
 var sq={},fbO={},curV=0,sending=false;
 var tdone=null,tcrL=null,mode="surplace",crSel=null;
 var cph="",phErr=false,saErr=false;
@@ -341,19 +341,24 @@ function rCom(){
     var mx=sec==="mixte",menus=mx?MM:MS,ch="";
     if(cfging&&cfging.t===sec){
       var m=menus.find(function(x){return x.id===cfging.id;});
-      var prixUnit=parseFloat(m.price)+(!mx&&cfg.ac==="Riz Madras (+2€)"?2:0);
-      var prixTotal=prixUnit*cfg.qty;
-      var vb=VI.map(function(v){return'<div class="obtn'+(cfg.vi===v?" on":"")+'" onclick="gC(\'vi\',\''+v+'\')">'+v+'</div>';}).join("");
-      var ah=mx?'<div class="mxinfo">Frites ET Riz Madras inclus</div>':'<span class="lbl">Accompagnement</span><div class="orow">'+AC.map(function(a){return'<div class="obtn'+(cfg.ac===a?" on":"")+'" onclick="gC(\'ac\',\''+a+'\')">'+a+'</div>';}).join("")+'</div>';
-      var bb=BO.map(function(b){return'<div class="obtn'+(cfg.bo===b.id?" on":"")+'" onclick="gC(\'bo\',\''+b.id+'\')" style="min-width:80px">'+b.name+'</div>';}).join("");
+      var prixUnit=parseFloat(m.price);
+      var prixTotal=0;
       var sauceBlocks="";
       for(var qi=0;qi<cfg.qty;qi++){
         var curSa=cfg.sauces[qi]||null;
         var curBo=cfg.boissons[qi]||"coca";
+        var curVi=cfg.viandes[qi]||"Pilons";
+        var curAc=cfg.accomps[qi]||"Frites";
         var errThis=saErr&&!curSa;
+        var prixThis=prixUnit+(!mx&&curAc==="Riz Madras (+2€)"?2:0);
+        prixTotal+=prixThis;
+        var vbq=VI.map(function(v){return'<div class="obtn'+(curVi===v?" on":"")+'" onclick="gVI('+qi+',\''+v+'\')">'+v+'</div>';}).join("");
+        var acHtml=mx?'<div class="mxinfo" style="margin:8px 0">Frites ET Riz Madras inclus</div>':'<span class="lbl">Accompagnement</span><div class="orow">'+AC.map(function(a){return'<div class="obtn'+(curAc===a?" on":"")+'" onclick="gACq('+qi+',\''+a+'\')">'+a+'</div>';}).join("")+'</div>';
         var bbq=BO.map(function(b){return'<div class="obtn'+(curBo===b.id?" on":"")+'" onclick="gBO('+qi+',\''+b.id+'\')" style="min-width:80px">'+b.name+'</div>';}).join("");
         sauceBlocks+='<div style="margin-bottom:14px;padding:10px;background:#1a1100;border-radius:10px;border:1px solid #3a2a00">'
-          +'<div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">Menu '+(qi+1)+'</div>'
+          +'<div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">Menu '+(qi+1)+' — '+fp(prixThis)+'€</div>'
+          +'<span class="lbl">Viande</span><div class="orow">'+vbq+'</div>'
+          +acHtml
           +'<span class="lbl">Boisson</span><div class="orow">'+bbq+'</div>'
           +'<span class="lbl'+(errThis?" err":"")+'">Sauce <span style="color:#ff5555">*obligatoire</span></span><div class="orow">'
           +'<div class="obtn'+(curSa==="piq"?" on":(errThis?" err":""))+'" onclick="gSA('+qi+',\'piq\')">🌶️ Piquante</div>'
@@ -363,8 +368,6 @@ function rCom(){
       var qtyRow='<div class="qtyrow"><button class="qtybig" onclick="gQ(-1)">−</button><span class="qtynum">x'+cfg.qty+'</span><button class="qtybig" onclick="gQ(1)">+</button></div>';
       ch='<div class="cpanel"><div class="ctitle">'+m.name+' — '+prixUnit+'€ / unit\u00E9</div>'
         +'<span class="lbl">Quantit\u00E9</span>'+qtyRow
-        +'<span class="lbl">Viande</span><div class="orow">'+vb+'</div>'
-        +ah
         +sauceBlocks
         +'<span class="lbl">Note / Allergie</span>'
         +'<textarea rows="2" placeholder="Ex: bien cuit..." oninput="gN(this.value)">'+cfg.nt+'</textarea>'
@@ -552,18 +555,20 @@ window.gV=function(v){
   if(v===2)rA();
 };
 window.gS=function(s){sec=s;cfging=null;rCom();};
-window.gSTcfg=function(id,t){cfging={id:id,t:t};cfg={vi:"Pilons",ac:"Frites",nt:"",qty:1,sauces:[null],boissons:["coca"]};saErr=false;rCom();};
+window.gSTcfg=function(id,t){cfging={id:id,t:t};cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();};
 window.gCC=function(){cfging=null;saErr=false;rCom();};
 window.gC=function(k,v){cfg[k]=v;if(k==="sa")saErr=false;rCom();};
 window.gN=function(v){cfg.nt=v;};
 window.gQ=function(d){
   cfg.qty=Math.max(1,Math.min(20,cfg.qty+d));
-  while(cfg.sauces.length<cfg.qty){cfg.sauces.push(null);cfg.boissons.push("coca");}
-  while(cfg.sauces.length>cfg.qty){cfg.sauces.pop();cfg.boissons.pop();}
+  while(cfg.sauces.length<cfg.qty){cfg.sauces.push(null);cfg.boissons.push("coca");cfg.viandes.push("Pilons");cfg.accomps.push("Frites");}
+  while(cfg.sauces.length>cfg.qty){cfg.sauces.pop();cfg.boissons.pop();cfg.viandes.pop();cfg.accomps.pop();}
   rCom();
 };
 window.gSA=function(idx,val){cfg.sauces[idx]=val;saErr=false;rCom();};
 window.gBO=function(idx,val){cfg.boissons[idx]=val;rCom();};
+window.gVI=function(idx,val){cfg.viandes[idx]=val;rCom();};
+window.gACq=function(idx,val){cfg.accomps[idx]=val;rCom();};
 window.gSI=function(id){sq[id]=(sq[id]||0)+1;rCom();};
 window.gSD=function(id){if((sq[id]||0)>0)sq[id]--;rCom();};
 window.gRM=function(i){pan.splice(i,1);rCom();};
@@ -573,11 +578,12 @@ window.gAM=function(){
   if(missing){saErr=true;rCom();return;}
   var mx=cfging.t==="mixte",menus=mx?MM:MS;
   var m=menus.find(function(x){return x.id===cfging.id;});
-  var pr=parseFloat(m.price)+(!mx&&cfg.ac==="Riz Madras (+2€)"?2:0);
   for(var i=0;i<cfg.qty;i++){
-    pan.push({tp:"m",name:m.name,mt:mx?"Mixte":"Simple",vi:cfg.vi,ac:mx?"Frites + Riz Madras":cfg.ac,bo:cfg.boissons[i],sa:cfg.sauces[i],nt:cfg.nt,price:pr});
+    var ac=mx?"Frites + Riz Madras":cfg.accomps[i];
+    var pr=parseFloat(m.price)+(!mx&&ac==="Riz Madras (+2€)"?2:0);
+    pan.push({tp:"m",name:m.name,mt:mx?"Mixte":"Simple",vi:cfg.viandes[i],ac:ac,bo:cfg.boissons[i],sa:cfg.sauces[i],nt:cfg.nt,price:pr});
   }
-  cfging=null;cfg={vi:"Pilons",ac:"Frites",nt:"",qty:1,sauces:[null],boissons:["coca"]};saErr=false;rCom();
+  cfging=null;cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();
 };
 window.gAS=function(){
   var items=[];
