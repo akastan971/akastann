@@ -174,6 +174,9 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .netval.red{color:#ff5555}
 .netval.gold{color:#FFD700}
 .netlbl{font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px;text-transform:uppercase}
+.adminmaintabs{display:flex;background:#000;border-bottom:1px solid #1a1a1a}
+.adminmaintab{flex:1;text-align:center;padding:12px 4px;font-size:12px;font-weight:700;cursor:pointer;color:rgba(255,255,255,0.4);border-bottom:3px solid transparent}
+.adminmaintab.on{color:#FFD700;border-bottom:3px solid #FFD700;background:#1a1200}
 .hidden{display:none}
 </style>
 </head>
@@ -280,7 +283,7 @@ onValue(ref(db,"orders"),function(s){
 
 onValue(ref(db,"stockData"),function(s){
   stockInit=s.val()||{};
-  if(curV===2&&aLog&&aSection==="stats")rAD();
+  if(curV===2&&aLog&&(aSection==="stock"||aSection==="dep"||aSection==="stats"))rA();
 });
 
 function fp(n){var v=parseFloat(n);if(isNaN(v))return"0";return v%1===0?String(v):v.toFixed(2).replace(/\.?0+$/,"");}
@@ -427,26 +430,37 @@ function buildDone(){
   return'<div class="body" style="text-align:center">'+logoHtml+'<div style="font-size:13px;color:rgba(255,255,255,0.5);margin:8px 0 4px">Votre num\u00E9ro de ticket</div><div class="tbox"><div class="tnum">#'+tdone+'</div><div class="tsub">Nous vous appellerons quand votre commande est pr\u00EAte</div></div><div class="wabox"><span style="font-size:20px">💬</span><span>Notification envoy\u00E9e au vendeur</span></div><div style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:20px">Paiement \u00E0 la livraison</div><button class="btnP" onclick="gRST()">Nouvelle commande</button></div>';
 }
 
-// ─── RENDER SUIVI (public, lecture seule, sans son) ───────────────
+// ─── RENDER SUIVI (public, lecture seule, sans son, jour en cours uniquement) ───────────────
 function rC(){
   var el=document.getElementById("V1");
-  var all=Object.entries(fbO).map(function(e){return Object.assign({fbKey:e[0]},e[1]);});
-  all.sort(function(a,b){return b.ts-a.ts;});
-  var pend=all.filter(function(o){return o.status==="en_attente";});
-  var done=all.filter(function(o){return o.status==="pret";});
-  var html='<div class="suivipage"><div class="suivihdr"><div class="suivititle">📋 Suivi des commandes</div><div class="suivisub">Votre ticket s\u2019affichera ici une fois pr\u00EAt</div></div><div class="body">';
-  if(!all.length){html+='<div class="empty">Aucune commande en cours</div>';}
-  else{
-    pend.forEach(function(o){html+='<div class="suivicard"><span class="suiviticket">#'+o.ticket+'</span><span class="suivistatus prep">⏳ En pr\u00E9paration</span></div>';});
-    done.forEach(function(o){html+='<div class="suivicard"><span class="suiviticket">#'+o.ticket+'</span><span class="suivistatus ready">✓ Pr\u00EAte</span></div>';});
+  var todayStr=ts2d(Date.now());
+  var all=Object.entries(fbO).map(function(e){return Object.assign({fbKey:e[0]},e[1]);}).filter(function(o){return o.ts&&ts2d(o.ts)===todayStr;});
+  var pend=all.filter(function(o){return o.status==="en_attente";}).sort(function(a,b){return a.ts-b.ts;});
+  var readyAll=all.filter(function(o){return o.status==="pret";});
+  var now=Date.now();
+  var readyFresh=readyAll.filter(function(o){return !o.readyAt||(now-o.readyAt)<180000;}).sort(function(a,b){return (b.readyAt||b.ts)-(a.readyAt||a.ts);});
+  var readyFaded=readyAll.filter(function(o){return o.readyAt&&(now-o.readyAt)>=180000;}).sort(function(a,b){return (b.readyAt||b.ts)-(a.readyAt||a.ts);});
+
+  var html='<div class="suivipage"><div class="suivihdr"><div class="suivititle">📋 Suivi des commandes</div><div class="suivisub">Mise \u00E0 jour en temps r\u00E9el</div></div><div class="suivigrid">';
+  if(!all.length){
+    html+='<div class="empty">Aucune commande en cours pour le moment</div>';
+  }else{
+    pend.forEach(function(o){
+      html+='<div class="suivicard prep"><span class="suiviticket">#'+o.ticket+'</span><div class="suivistatusbig prep"><span class="suivipulse"></span>En pr\u00E9paration</div></div>';
+    });
+    readyFresh.forEach(function(o){
+      html+='<div class="suivicard ready"><span class="suiviticket">#'+o.ticket+'</span><div class="suivistatusbig ready">✓ Commande pr\u00EAte !</div></div>';
+    });
+    readyFaded.forEach(function(o){
+      html+='<div class="suivicard fading"><span class="suiviticket">#'+o.ticket+'</span><div class="suivistatusbig fading">✓ R\u00E9cup\u00E9r\u00E9e</div></div>';
+    });
   }
   html+='</div></div>';
   el.innerHTML=html;
 }
 
-// ─── RENDER CUISINE (prot\u00E9g\u00E9 par mdp admin, avec son + actions) ──
-function rCuisineFull(){
-  var el=document.getElementById("V2");
+// ─── CUISINE (prot\u00E9g\u00E9 par mdp admin, avec son + actions) ──
+function buildCuisineFull(){
   var all=Object.entries(fbO).map(function(e){return Object.assign({fbKey:e[0]},e[1]);});
   all.sort(function(a,b){return b.ts-a.ts;});
   var pend=all.filter(function(o){return o.status==="en_attente";});
@@ -471,30 +485,36 @@ function rCuisineFull(){
     return'<div class="'+cc+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="onum'+(isDone?" done":"")+'">#'+o.ticket+'</span><span class="otime">'+o.time+'</span></div>'+ih+'<div class="ototl">TOTAL: '+o.total+'€</div>'+payHtml+(isDone?'<div style="margin-top:8px"><span class="donebdg">✓ Prête</span></div>':'<button class="btnPret" onclick="gMR(\''+o.fbKey+'\')">✓ Commande prête</button>')+'</div>';
   }
 
-  var html='<div class="cpage"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:6px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔":"🔕")+'</button><button class="soundbtn" onclick="gASec(\'stats\')">📊</button><button class="logoutbtn" onclick="gALO()">Déco</button></div></div><div class="body">';
+  var html='<div class="cpage"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:6px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔":"🔕")+'</button></div></div><div class="body">';
   if(!all.length)html+='<div class="empty">Aucune commande pour le moment</div>';
   else{
     if(pend.length){html+='<div class="gtitle gsp">🍽️ Commandes en attente ('+pend.length+')</div>';pend.forEach(function(o){html+=bCard(o,false);});}
     if(done.length){html+='<div class="subtitle">Prêtes</div>';done.forEach(function(o){html+=bCard(o,true);});}
   }
   html+='</div></div>';
-  el.innerHTML=html;
+  return html;
 }
 
 // ─── RENDER ADMIN
-var aSection="cuisine"; // cuisine | stats
+var aSection="cuisine"; // cuisine | stats | stock | dep
 function rA(){
   var el=document.getElementById("V2");
   if(!aLog){
     el.innerHTML='<div class="apage"><div class="lbox"><div class="lico">🔐</div><div class="ltitle">Accès Admin</div><div class="lsub">A KA STANN & DEDETTE</div><input class="linp" type="password" placeholder="Mot de passe" oninput="gAP(this.value)" />'+(aErr?'<div class="lerr">Mot de passe incorrect</div>':"")+'<button class="lbtn" onclick="gAL()">Connexion</button></div></div>';
     return;
   }
-  if(aSection==="cuisine"){rCuisineFull();return;}
-  rAD();
+  var tabsBar='<div class="adminmaintabs">'
+    +'<div class="adminmaintab'+(aSection==="cuisine"?" on":"")+'" onclick="gASec(\'cuisine\')">🍳 Cuisine</div>'
+    +'<div class="adminmaintab'+(aSection==="stats"?" on":"")+'" onclick="gASec(\'stats\')">📊 Stats</div>'
+    +'<div class="adminmaintab'+(aSection==="stock"?" on":"")+'" onclick="gASec(\'stock\')">📦 Stock</div>'
+    +'<div class="adminmaintab'+(aSection==="dep"?" on":"")+'" onclick="gASec(\'dep\')">💰 D\u00E9p.</div>'
+    +'<div class="logoutbtn" style="display:flex;align-items:center;margin:6px 8px;flex-shrink:0" onclick="gALO()">Déco</div>'
+    +'</div>';
+  var body=aSection==="cuisine"?buildCuisineFull():buildAdminDash();
+  el.innerHTML=tabsBar+body;
 }
 
-function rAD(){
-  var el=document.getElementById("V2");
+function buildAdminDash(){
   var all=Object.values(fbO);
   var dm={};
   all.forEach(function(o){if(!o.ts)return;var d=ts2d(o.ts);if(!dm[d])dm[d]=[];dm[d].push(o);});
@@ -509,12 +529,6 @@ function rAD(){
   var dayCount=(dm[aDt]||[]).length;
   var delDayBtn=dayCount>0?'<div style="padding:0 16px 10px;background:#0a0a0a"><button class="resetbtn" style="width:100%;padding:8px 0" onclick="gCLRDay(\''+aDt+'\')">🗑️ Supprimer les '+dayCount+' commande(s) du '+dfr(aDt)+'</button></div>':"";
 
-  var atabsHtml='<div class="atabs">'
-    +'<div class="atab'+(aTab==="stats"?" on":"")+'" onclick="gATab(\'stats\')">📊 Stats</div>'
-    +'<div class="atab'+(aTab==="stock"?" on":"")+'" onclick="gATab(\'stock\')">📦 Stock</div>'
-    +'<div class="atab'+(aTab==="dep"?" on":"")+'" onclick="gATab(\'dep\')">💰 Dépenses</div>'
-    +'</div>';
-
   var day=dm[aDt]||[];
   var ca=0,nbm=0,mc={},scc={};
   day.forEach(function(o){
@@ -527,7 +541,7 @@ function rAD(){
 
   var body="";
 
-  if(aTab==="stats"){
+  if(aSection==="stats"){
     if(!day.length){body='<div class="nodata">Aucune commande ce jour</div>';}
     else{
       var mr=Object.entries(mc).sort(function(a,b){return b[1]-a[1];});
@@ -540,7 +554,7 @@ function rAD(){
     }
   }
 
-  if(aTab==="stock"){
+  if(aSection==="stock"){
     var init=stockInit[aDt]||{};
     var conso=computeConso(day);
     var lowCount=0;
@@ -565,7 +579,7 @@ function rAD(){
       +rows;
   }
 
-  if(aTab==="dep"){
+  if(aSection==="dep"){
     var dep=stockInit[aDt+"_dep"]||"";
     var depVal=parseFloat(dep)||0;
     var net=ca-depVal;
@@ -578,7 +592,8 @@ function rAD(){
       +'</div></div>';
   }
 
-  el.innerHTML='<div class="apage"><div class="ahdr"><div style="display:flex;align-items:center;gap:8px"><span>📊</span><span class="ahtitle">Stats & Historique</span></div><div style="display:flex;gap:6px"><button class="logoutbtn" onclick="gASec(\'cuisine\')">🍳 Cuisine</button><button class="resetbtn" onclick="gCLR()">🗑️ Tout reset</button><button class="logoutbtn" onclick="gALO()">Déco</button></div></div>'+dt+delDayBtn+atabsHtml+'<div class="abody">'+body+'</div></div>';
+  var secLabels={stats:"📊 Stats",stock:"📦 Stock",dep:"💰 D\u00E9penses"};
+  return'<div class="apage"><div class="ahdr"><div style="display:flex;align-items:center;gap:8px"><span>'+secLabels[aSection]+'</span></div><button class="resetbtn" onclick="gCLR()">🗑️ Tout reset</button></div>'+dt+delDayBtn+'<div class="abody">'+body+'</div></div>';
 }
 
 // ─── ACTIONS
@@ -593,7 +608,7 @@ window.gV=function(v){
   if(v===1)rC();
   if(v===2)rA();
 };
-window.gASec=function(s){aSection=s;rA();};
+setInterval(function(){if(curV===1)rC();},15000);
 window.gS=function(s){sec=s;cfging=null;rCom();};
 window.gSTcfg=function(id,t){cfging={id:id,t:t};cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();};
 window.gCC=function(){cfging=null;saErr=false;rCom();};
@@ -644,12 +659,13 @@ window.gFIN=async function(){
   pan=[];sq={};rCom();
 };
 window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;tcrL=null;sending=false;sec="simple";cfg={vi:"Pilons",ac:"Frites",bo:"coca",nt:"",qty:1,sauces:[null]};cph="";phErr=false;saErr=false;rCom();};
-window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret"});};
+window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret",readyAt:Date.now()});};
 window.gPaid=function(k,val){update(ref(db,"orders/"+k),{paid:val});};
 window.gAP=function(v){aPw=v;};
 window.gAL=function(){if(aPw===PWD){aLog=true;aErr=false;aSection="cuisine";rA();}else{aErr=true;rA();}};
 window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;aSection="cuisine";rA();};
-window.gAD=function(d){aDt=d;rAD();};
+window.gAD=function(d){aDt=d;rA();};
+window.gASec=function(s){aSection=s;rA();};
 window.gATab=function(t){aTab=t;rAD();};
 window.gStockSet=function(id,val){
   stockInit[aDt]=stockInit[aDt]||{};
