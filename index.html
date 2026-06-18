@@ -95,6 +95,12 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .oline:last-child{border:none}
 .ototl{font-size:15px;font-weight:800;color:#FFD700;margin-top:8px}
 .btnPret{background:#1a6e1a;color:#fff;border:none;border-radius:999px;padding:10px 0;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-top:10px}
+.payrow{display:flex;align-items:center;gap:8px;margin-top:10px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:10px;padding:8px 10px;cursor:pointer}
+.payrow.paid{background:rgba(37,211,102,0.1);border-color:#25d166}
+.paycheck{width:20px;height:20px;border-radius:5px;border:2px solid #555;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff}
+.paycheck.paid{background:#25d166;border-color:#25d166}
+.paylabel{font-size:12px;font-weight:700;color:rgba(255,255,255,0.5)}
+.paylabel.paid{color:#25d166}
 .donebdg{background:#1a3a1a;color:#4caf50;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
 .subtitle{font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin:16px 0 10px}
 .empty{text-align:center;padding:50px 0;color:rgba(255,255,255,0.25);font-size:13px;line-height:1.8}
@@ -443,7 +449,11 @@ function rC(){
       }
     });
     var cc="ocard gsp"+(isDone?" done":" alert");
-    return'<div class="'+cc+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="onum'+(isDone?" done":"")+'">#'+o.ticket+'</span><span class="otime">'+o.time+'</span></div>'+ih+'<div class="ototl">TOTAL: '+o.total+'€</div>'+(isDone?'<div style="margin-top:8px"><span class="donebdg">✓ Prête</span></div>':'<button class="btnPret" onclick="gMR(\''+o.fbKey+'\')">✓ Commande prête</button>')+'</div>';
+    var payHtml='<div class="payrow'+(o.paid?" paid":"")+'" onclick="gPaid(\''+o.fbKey+'\','+(!o.paid)+')">'
+      +'<div class="paycheck'+(o.paid?" paid":"")+'">'+(o.paid?"✓":"")+'</div>'
+      +'<div class="paylabel'+(o.paid?" paid":"")+'">'+(o.paid?"💰 Pay\u00E9":"Non pay\u00E9 — cliquer pour marquer pay\u00E9")+'</div>'
+      +'</div>';
+    return'<div class="'+cc+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="onum'+(isDone?" done":"")+'">#'+o.ticket+'</span><span class="otime">'+o.time+'</span></div>'+ih+'<div class="ototl">TOTAL: '+o.total+'€</div>'+payHtml+(isDone?'<div style="margin-top:8px"><span class="donebdg">✓ Prête</span></div>':'<button class="btnPret" onclick="gMR(\''+o.fbKey+'\')">✓ Commande prête</button>')+'</div>';
   }
 
   var html='<div class="cpage"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:8px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔 Son ON":"🔕 Son OFF")+'</button></div></div><div class="body">';
@@ -615,6 +625,7 @@ window.gFIN=async function(){
 };
 window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;tcrL=null;sending=false;sec="simple";cfg={vi:"Pilons",ac:"Frites",bo:"coca",nt:"",qty:1,sauces:[null]};cph="";phErr=false;saErr=false;rCom();};
 window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret"});};
+window.gPaid=function(k,val){update(ref(db,"orders/"+k),{paid:val});};
 window.gAP=function(v){aPw=v;};
 window.gAL=function(){if(aPw===PWD){aLog=true;aErr=false;rAD();}else{aErr=true;rA();}};
 window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;rA();};
