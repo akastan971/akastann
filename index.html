@@ -441,19 +441,28 @@ function rC(){
   var readyFresh=readyAll.filter(function(o){return !o.readyAt||(now-o.readyAt)<180000;}).sort(function(a,b){return (b.readyAt||b.ts)-(a.readyAt||a.ts);});
   var readyFaded=readyAll.filter(function(o){return o.readyAt&&(now-o.readyAt)>=180000;}).sort(function(a,b){return (b.readyAt||b.ts)-(a.readyAt||a.ts);});
 
-  var html='<div class="suivipage"><div class="suivihdr"><div class="suivititle">📋 Suivi des commandes</div><div class="suivisub">Mise \u00E0 jour en temps r\u00E9el</div></div><div class="suivigrid">';
+  var html='<div class="suivipage"><div class="suivihdr"><div class="suivititle">📋 SUIVI DES COMMANDES</div><div class="suivisub"><span class="ping"></span>A KA STANN & DEDETTE — mise \u00E0 jour en temps r\u00E9el</div></div><div class="suivigrid">';
   if(!all.length){
     html+='<div class="empty">Aucune commande en cours pour le moment</div>';
   }else{
-    pend.forEach(function(o){
-      html+='<div class="suivicard prep"><span class="suiviticket">#'+o.ticket+'</span><div class="suivistatusbig prep"><span class="suivipulse"></span>En pr\u00E9paration</div></div>';
-    });
-    readyFresh.forEach(function(o){
-      html+='<div class="suivicard ready"><span class="suiviticket">#'+o.ticket+'</span><div class="suivistatusbig ready">✓ Commande pr\u00EAte !</div></div>';
-    });
-    readyFaded.forEach(function(o){
-      html+='<div class="suivicard fading"><span class="suiviticket">#'+o.ticket+'</span><div class="suivistatusbig fading">✓ R\u00E9cup\u00E9r\u00E9e</div></div>';
-    });
+    if(pend.length){
+      html+='<div class="suivisection">⏳ En pr\u00E9paration</div>';
+      pend.forEach(function(o){
+        html+='<div class="suivicard prep"><div class="suiviticket">#'+o.ticket+'</div><div class="suivistatusbig prep"><span class="suivipulse"></span>En pr\u00E9paration</div></div>';
+      });
+    }
+    if(readyFresh.length){
+      html+='<div class="suivisection">✅ Pr\u00EAtes \u00E0 r\u00E9cup\u00E9rer</div>';
+      readyFresh.forEach(function(o){
+        html+='<div class="suivicard ready"><div class="suiviticket">#'+o.ticket+'</div><div class="suivistatusbig ready">✓ COMMANDE PR\u00CATE !</div></div>';
+      });
+    }
+    if(readyFaded.length){
+      html+='<div class="suivisection">D\u00E9j\u00E0 r\u00E9cup\u00E9r\u00E9es</div>';
+      readyFaded.forEach(function(o){
+        html+='<div class="suivicard fading"><div class="suiviticket">#'+o.ticket+'</div><div class="suivistatusbig fading">✓ R\u00E9cup\u00E9r\u00E9e</div></div>';
+      });
+    }
   }
   html+='</div></div>';
   el.innerHTML=html;
