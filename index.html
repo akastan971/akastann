@@ -181,7 +181,7 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 <div id="root">
   <div class="ttabs">
     <div class="ttab on" id="T0" onclick="gV(0)">🛒 Commander</div>
-    <div class="ttab" id="T1" onclick="gV(1)">🍳 Cuisine</div>
+    <div class="ttab" id="T1" onclick="gV(1)">📋 Suivi</div>
     <div class="ttab" id="T2" onclick="gV(2)">⚙️ Admin</div>
   </div>
   <div id="V0"></div>
@@ -261,8 +261,8 @@ function checkAlertLoop(){
 
 onValue(ref(db,"orders"),function(s){
   var newO=s.val()||{};
-  // detection nouvelles commandes
-  if(!firstLoad){
+  // detection nouvelles commandes - son uniquement si admin connecte et sur l ecran cuisine
+  if(!firstLoad&&aLog&&curV===2&&aSection==="cuisine"){
     Object.keys(newO).forEach(function(k){
       if(!lastSeenIds[k]&&newO[k].status==="en_attente"){
         playDing();
@@ -274,15 +274,13 @@ onValue(ref(db,"orders"),function(s){
   Object.keys(newO).forEach(function(k){lastSeenIds[k]=true;});
   fbO=newO;
   if(curV===1)rC();
-  if(curV===2&&aLog)rAD();
-  var n=Object.values(fbO).filter(function(o){return o.status==="en_attente";}).length;
-  document.getElementById("T1").textContent="🍳 Cuisine"+(n>0?" ("+n+")":"");
-  checkAlertLoop();
+  if(curV===2&&aLog)rA();
+  if(curV===2&&aLog&&aSection==="cuisine")checkAlertLoop();
 });
 
 onValue(ref(db,"stockData"),function(s){
   stockInit=s.val()||{};
-  if(curV===2&&aLog)rAD();
+  if(curV===2&&aLog&&aSection==="stats")rAD();
 });
 
 function fp(n){var v=parseFloat(n);if(isNaN(v))return"0";return v%1===0?String(v):v.toFixed(2).replace(/\.?0+$/,"");}
@@ -429,9 +427,26 @@ function buildDone(){
   return'<div class="body" style="text-align:center">'+logoHtml+'<div style="font-size:13px;color:rgba(255,255,255,0.5);margin:8px 0 4px">Votre num\u00E9ro de ticket</div><div class="tbox"><div class="tnum">#'+tdone+'</div><div class="tsub">Nous vous appellerons quand votre commande est pr\u00EAte</div></div><div class="wabox"><span style="font-size:20px">💬</span><span>Notification envoy\u00E9e au vendeur</span></div><div style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:20px">Paiement \u00E0 la livraison</div><button class="btnP" onclick="gRST()">Nouvelle commande</button></div>';
 }
 
-// ─── RENDER CUISINE
+// ─── RENDER SUIVI (public, lecture seule, sans son) ───────────────
 function rC(){
   var el=document.getElementById("V1");
+  var all=Object.entries(fbO).map(function(e){return Object.assign({fbKey:e[0]},e[1]);});
+  all.sort(function(a,b){return b.ts-a.ts;});
+  var pend=all.filter(function(o){return o.status==="en_attente";});
+  var done=all.filter(function(o){return o.status==="pret";});
+  var html='<div class="suivipage"><div class="suivihdr"><div class="suivititle">📋 Suivi des commandes</div><div class="suivisub">Votre ticket s\u2019affichera ici une fois pr\u00EAt</div></div><div class="body">';
+  if(!all.length){html+='<div class="empty">Aucune commande en cours</div>';}
+  else{
+    pend.forEach(function(o){html+='<div class="suivicard"><span class="suiviticket">#'+o.ticket+'</span><span class="suivistatus prep">⏳ En pr\u00E9paration</span></div>';});
+    done.forEach(function(o){html+='<div class="suivicard"><span class="suiviticket">#'+o.ticket+'</span><span class="suivistatus ready">✓ Pr\u00EAte</span></div>';});
+  }
+  html+='</div></div>';
+  el.innerHTML=html;
+}
+
+// ─── RENDER CUISINE (prot\u00E9g\u00E9 par mdp admin, avec son + actions) ──
+function rCuisineFull(){
+  var el=document.getElementById("V2");
   var all=Object.entries(fbO).map(function(e){return Object.assign({fbKey:e[0]},e[1]);});
   all.sort(function(a,b){return b.ts-a.ts;});
   var pend=all.filter(function(o){return o.status==="en_attente";});
@@ -456,7 +471,7 @@ function rC(){
     return'<div class="'+cc+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="onum'+(isDone?" done":"")+'">#'+o.ticket+'</span><span class="otime">'+o.time+'</span></div>'+ih+'<div class="ototl">TOTAL: '+o.total+'€</div>'+payHtml+(isDone?'<div style="margin-top:8px"><span class="donebdg">✓ Prête</span></div>':'<button class="btnPret" onclick="gMR(\''+o.fbKey+'\')">✓ Commande prête</button>')+'</div>';
   }
 
-  var html='<div class="cpage"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:8px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔 Son ON":"🔕 Son OFF")+'</button></div></div><div class="body">';
+  var html='<div class="cpage"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:6px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔":"🔕")+'</button><button class="soundbtn" onclick="gASec(\'stats\')">📊</button><button class="logoutbtn" onclick="gALO()">Déco</button></div></div><div class="body">';
   if(!all.length)html+='<div class="empty">Aucune commande pour le moment</div>';
   else{
     if(pend.length){html+='<div class="gtitle gsp">🍽️ Commandes en attente ('+pend.length+')</div>';pend.forEach(function(o){html+=bCard(o,false);});}
@@ -467,11 +482,15 @@ function rC(){
 }
 
 // ─── RENDER ADMIN
+var aSection="cuisine"; // cuisine | stats
 function rA(){
   var el=document.getElementById("V2");
   if(!aLog){
     el.innerHTML='<div class="apage"><div class="lbox"><div class="lico">🔐</div><div class="ltitle">Accès Admin</div><div class="lsub">A KA STANN & DEDETTE</div><input class="linp" type="password" placeholder="Mot de passe" oninput="gAP(this.value)" />'+(aErr?'<div class="lerr">Mot de passe incorrect</div>':"")+'<button class="lbtn" onclick="gAL()">Connexion</button></div></div>';
-  }else{rAD();}
+    return;
+  }
+  if(aSection==="cuisine"){rCuisineFull();return;}
+  rAD();
 }
 
 function rAD(){
@@ -559,7 +578,7 @@ function rAD(){
       +'</div></div>';
   }
 
-  el.innerHTML='<div class="apage"><div class="ahdr"><div style="display:flex;align-items:center;gap:8px"><span>📊</span><span class="ahtitle">Stats & Historique</span></div><div style="display:flex;gap:6px"><button class="resetbtn" onclick="gCLR()">🗑️ Tout reset</button><button class="logoutbtn" onclick="gALO()">Déco</button></div></div>'+dt+delDayBtn+atabsHtml+'<div class="abody">'+body+'</div></div>';
+  el.innerHTML='<div class="apage"><div class="ahdr"><div style="display:flex;align-items:center;gap:8px"><span>📊</span><span class="ahtitle">Stats & Historique</span></div><div style="display:flex;gap:6px"><button class="logoutbtn" onclick="gASec(\'cuisine\')">🍳 Cuisine</button><button class="resetbtn" onclick="gCLR()">🗑️ Tout reset</button><button class="logoutbtn" onclick="gALO()">Déco</button></div></div>'+dt+delDayBtn+atabsHtml+'<div class="abody">'+body+'</div></div>';
 }
 
 // ─── ACTIONS
@@ -569,11 +588,12 @@ window.gV=function(v){
     document.getElementById("V"+i).className=v===i?"":"hidden";
     document.getElementById("T"+i).className="ttab"+(v===i?" on":"");
   });
-  initAudio();
+  if(v===2)initAudio();
   if(v===0)rCom();
   if(v===1)rC();
   if(v===2)rA();
 };
+window.gASec=function(s){aSection=s;rA();};
 window.gS=function(s){sec=s;cfging=null;rCom();};
 window.gSTcfg=function(id,t){cfging={id:id,t:t};cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();};
 window.gCC=function(){cfging=null;saErr=false;rCom();};
@@ -627,8 +647,8 @@ window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;tcrL=null;sending=fal
 window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret"});};
 window.gPaid=function(k,val){update(ref(db,"orders/"+k),{paid:val});};
 window.gAP=function(v){aPw=v;};
-window.gAL=function(){if(aPw===PWD){aLog=true;aErr=false;rAD();}else{aErr=true;rA();}};
-window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;rA();};
+window.gAL=function(){if(aPw===PWD){aLog=true;aErr=false;aSection="cuisine";rA();}else{aErr=true;rA();}};
+window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;aSection="cuisine";rA();};
 window.gAD=function(d){aDt=d;rAD();};
 window.gATab=function(t){aTab=t;rAD();};
 window.gStockSet=function(id,val){
