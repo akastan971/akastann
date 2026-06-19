@@ -226,6 +226,7 @@ var stockDef=[
   {id:"loc",name:"Boisson locale",unit:"unit\u00E9s"}
 ];
 var stockInit={};
+var globalStock={}; // stock global persistent
 var soundOn=true;
 var lastSeenIds={};
 var alertInterval=null;
@@ -285,25 +286,25 @@ onValue(ref(db,"stockData"),function(s){
   stockInit=s.val()||{};
   if(curV===2&&aLog&&(aSection==="stock"||aSection==="dep"||aSection==="stats"))rA();
 });
+onValue(ref(db,"globalStock"),function(s){
+  globalStock=s.val()||{};
+  if(curV===2&&aLog&&aSection==="stock")rA();
+});
 
 function fp(n){var v=parseFloat(n);if(isNaN(v))return"0";return v%1===0?String(v):v.toFixed(2).replace(/\.?0+$/,"");}
 
-// Estime la consommation d'ingredients pour un jour donne
-function computeConso(dayOrders){
+// Estime la consommation sur TOUTES les commandes depuis le dernier reset stock
+function computeConsoAll(){
   var c={pilons:0,cuisses:0,accras:0,frites:0,riz:0,coca:0,cocaz:0,crist:0,loc:0};
-  dayOrders.forEach(function(o){
+  var resetAt=globalStock._resetAt||0;
+  Object.values(fbO).forEach(function(o){
+    if(!o.ts||o.ts<resetAt)return;
     (o.items||[]).forEach(function(it){
       if(it.tp==="m"){
         var qte=(it.name.indexOf("Vieux")>-1?3:it.name.indexOf("Sainte")>-1?6:9);
-        if(it.vi==="Pilons")c.pilons+=qte;
-        else c.cuisses+=(it.name.indexOf("Vieux")>-1?1:it.name.indexOf("Sainte")>-1?2:3);
-        if(it.mt==="Mixte"){
-          c.frites+=0.12;
-          c.riz+=0.12;
-        }else{
-          if(it.ac.indexOf("Frites")>-1)c.frites+=0.25;
-          if(it.ac.indexOf("Riz")>-1)c.riz+=0.25;
-        }
+        if(it.vi==="Pilons")c.pilons+=qte; else c.cuisses+=(it.name.indexOf("Vieux")>-1?1:it.name.indexOf("Sainte")>-1?2:3);
+        if(it.mt==="Mixte"){c.frites+=0.12;c.riz+=0.12;}
+        else{if(it.ac.indexOf("Frites")>-1)c.frites+=0.25;if(it.ac.indexOf("Riz")>-1)c.riz+=0.25;}
         if(it.bo&&c[it.bo]!==undefined)c[it.bo]+=1;
       }else if(it.tp==="s"){
         it.items.forEach(function(s){
@@ -578,26 +579,26 @@ function buildAdminDash(){
   }
 
   if(aSection==="stock"){
-    var init=stockInit[aDt]||{};
-    var conso=computeConso(day);
+    var conso=computeConsoAll();
     var lowCount=0;
+    var resetDate=globalStock._resetAt?new Date(globalStock._resetAt).toLocaleDateString("fr-FR"):"jamais";
     var rows=stockDef.map(function(s){
-      var startVal=init[s.id];
+      var startVal=globalStock[s.id];
       var hasStart=startVal!==undefined&&startVal!=="";
       var used=conso[s.id]||0;
       var remain=hasStart?(parseFloat(startVal)-used):null;
-      var isLow=hasStart&&remain<=parseFloat(startVal)*0.15;
+      var isLow=hasStart&&remain!==null&&remain<=parseFloat(startVal)*0.15;
       if(isLow)lowCount++;
       var remainBoxClass=!hasStart?"empty":(isLow?"low":"");
-      var remainValTxt=hasStart?fp(remain):"—";
-      var soldTxt=hasStart?fp(used)+" "+s.unit+" vendus":"Stock de d\u00E9part non renseign\u00E9";
+      var remainValTxt=hasStart?(remain<0?"0":fp(remain)):"—";
+      var soldTxt=hasStart?fp(used)+" "+s.unit+" vendus depuis le "+resetDate:"Non renseign\u00E9";
       return'<div class="stockrow'+(isLow?" low":"")+'">'
         +'<div style="flex:1"><div class="stockname">'+s.name+'</div><div class="stockleft'+(isLow?" lowt":"")+'">'+soldTxt+'</div>'
-        +'<div style="display:flex;align-items:center;gap:6px;margin-top:6px"><input type="number" inputmode="decimal" step="0.1" class="stockinp" placeholder="D\u00E9but" value="'+(hasStart?startVal:"")+'" onchange="gStockSet(\''+s.id+'\',this.value)" /><span style="font-size:11px;color:rgba(255,255,255,0.4)">'+s.unit+' au d\u00E9part</span></div></div>'
+        +'<div style="display:flex;align-items:center;gap:6px;margin-top:6px"><input type="number" inputmode="decimal" step="0.1" class="stockinp" placeholder="Qt\u00E9" value="'+(hasStart?startVal:"")+'" onchange="gStockSet(\''+s.id+'\',this.value)" /><span style="font-size:11px;color:rgba(255,255,255,0.4)">'+s.unit+' en stock</span></div></div>'
         +'<div class="stockremain '+remainBoxClass+'"><div class="stockremainval '+remainBoxClass+'">'+remainValTxt+'</div><div class="stockremainunit">'+s.unit+' restant</div></div>'
         +'</div>';
     }).join("");
-    body='<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:14px;line-height:1.6">Rentre ta quantit\u00E9 de d\u00E9part pour chaque ingr\u00e9dient, le stock restant se calcule automatiquement \u00e0 partir des commandes valid\u00e9es.</div>'
+    body='<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:14px;line-height:1.6">Stock global — modifie les quantit\u00E9s apr\u00E8s chaque course. Le d\u00E9compte se fait sur toutes les commandes.</div>'
       +(lowCount>0?'<div style="background:rgba(255,80,80,0.1);border:1px solid #ff5555;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#ff5555;font-weight:600">\u26A0\uFE0F '+lowCount+' ingr\u00E9dient(s) en stock bas !</div>':"")
       +rows;
   }
@@ -685,15 +686,14 @@ window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;tcrL=null;sending=fal
 window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret",readyAt:Date.now()});};
 window.gPaid=function(k,val){update(ref(db,"orders/"+k),{paid:val});};
 window.gAP=function(v){aPw=v;};
-window.gAL=function(){if(aPw===PWD){aLog=true;aErr=false;aSection="cuisine";rA();}else{aErr=true;rA();}};
-window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;aSection="cuisine";rA();};
+window.gAL=function(){if(aPw===PWD){aLog=true;aErr=false;aSection="cuisine";sessionStorage.setItem("adminLogged","1");rA();}else{aErr=true;rA();}};
+window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;aSection="cuisine";sessionStorage.removeItem("adminLogged");rA();};
 window.gAD=function(d){aDt=d;rA();};
 window.gASec=function(s){aSection=s;rA();};
 window.gATab=function(t){aTab=t;rAD();};
 window.gStockSet=function(id,val){
-  stockInit[aDt]=stockInit[aDt]||{};
-  stockInit[aDt][id]=val;
-  update(ref(db,"stockData"),stockInit);
+  globalStock[id]=val;
+  update(ref(db,"globalStock"),globalStock);
 };
 window.gDepSet=function(val){
   stockInit[aDt+"_dep"]=val;
