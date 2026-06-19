@@ -692,9 +692,13 @@ window.gAD=function(d){aDt=d;rA();};
 window.gASec=function(s){aSection=s;rA();};
 window.gATab=function(t){aTab=t;rAD();};
 window.gStockSet=function(id,val){
+  var now=Date.now();
   globalStock[id]=val;
-  globalStock[id+"_at"]=Date.now(); // date de la dernière saisie par ingrédient
-  update(ref(db,"globalStock"),globalStock);
+  globalStock[id+"_at"]=now;
+  var patch={};
+  patch[id]=val;
+  patch[id+"_at"]=now;
+  update(ref(db,"globalStock"),patch).then(function(){rA();});
 };
 window.gDepSet=function(val){
   stockInit[aDt+"_dep"]=val;
