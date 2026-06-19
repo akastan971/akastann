@@ -693,10 +693,10 @@ window.gASec=function(s){aSection=s;rA();};
 window.gATab=function(t){aTab=t;rAD();};
 window.gStockSet=function(id,val){
   var now=Date.now();
-  globalStock[id]=val;
-  globalStock[id+"_at"]=now;
+  globalStock[id+"_base"]=parseFloat(val)||0;  // stock au moment de la saisie
+  globalStock[id+"_at"]=now;                    // timestamp de la saisie
   var patch={};
-  patch[id]=val;
+  patch[id+"_base"]=parseFloat(val)||0;
   patch[id+"_at"]=now;
   update(ref(db,"globalStock"),patch).then(function(){rA();});
 };
