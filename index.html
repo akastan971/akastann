@@ -692,12 +692,9 @@ window.gAD=function(d){aDt=d;rA();};
 window.gASec=function(s){aSection=s;rA();};
 window.gATab=function(t){aTab=t;rAD();};
 window.gStockSet=function(id,val){
-  var now=Date.now();
-  globalStock[id+"_base"]=parseFloat(val)||0;  // stock au moment de la saisie
-  globalStock[id+"_at"]=now;                    // timestamp de la saisie
-  var patch={};
-  patch[id+"_base"]=parseFloat(val)||0;
-  patch[id+"_at"]=now;
+  var v=val===""?"":parseFloat(val);
+  globalStock[id]=v;
+  var patch={};patch[id]=v;
   update(ref(db,"globalStock"),patch).then(function(){rA();});
 };
 window.gDepSet=function(val){
