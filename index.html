@@ -693,6 +693,7 @@ window.gASec=function(s){aSection=s;rA();};
 window.gATab=function(t){aTab=t;rAD();};
 window.gStockSet=function(id,val){
   globalStock[id]=val;
+  globalStock[id+"_at"]=Date.now(); // date de la dernière saisie par ingrédient
   update(ref(db,"globalStock"),globalStock);
 };
 window.gDepSet=function(val){
