@@ -9,30 +9,21 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:480px;margin:0 auto}
 .madras{height:6px;background:repeating-linear-gradient(90deg,#E8B800 0,#E8B800 14px,#1a6e1a 14px,#1a6e1a 28px,#C0392B 28px,#C0392B 42px,#E8B800 42px,#E8B800 56px)}
-
-/* HERO */
 .hero{background:linear-gradient(180deg,#1a1200 0%,#0e0a00 100%);padding:40px 20px 32px;text-align:center}
 .hero-logo{width:160px;height:160px;object-fit:contain;display:block;margin:0 auto 20px;filter:drop-shadow(0 0 20px rgba(255,180,0,0.4))}
 .hero-title{font-size:24px;font-weight:800;color:#FFD700;letter-spacing:1px;margin-bottom:6px}
 .hero-slogan{font-size:14px;color:rgba(255,230,120,0.8);font-style:italic;margin-bottom:24px}
-.hero-hours{display:inline-flex;align-items:center;gap:10px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:12px;padding:12px 20px;margin-bottom:28px}
+.hero-info-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.18);border-radius:14px;padding:14px 18px;margin-bottom:14px}
 .hero-hours-day{font-size:13px;font-weight:700;color:#FFD700}
-.hero-hours-time{font-size:15px;font-weight:800;color:#FFD700}
-.hero-hours-sep{width:1px;height:28px;background:rgba(255,215,0,0.2)}
-.btn-commander{display:block;background:#FFD700;color:#4A2800;border:none;border-radius:999px;padding:16px 32px;font-size:16px;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;margin:0 auto;max-width:280px;box-shadow:0 4px 20px rgba(255,215,0,0.3);transition:transform 0.15s}
-.btn-commander:active{transform:scale(0.97)}
-
-/* SECTION */
+.hero-hours-time{font-size:17px;font-weight:800;color:#FFD700}
+.btn-commander{display:inline-block;background:#FFD700;color:#4A2800;border:none;border-radius:999px;padding:13px 22px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;white-space:nowrap;box-shadow:0 4px 20px rgba(255,215,0,0.3);flex-shrink:0}
+.hero-address{display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;color:rgba(255,220,100,0.7);margin-bottom:8px}
 .section{padding:28px 20px}
 .section-alt{background:#1a1200}
 .section-title{font-size:18px;font-weight:700;color:#FFD700;margin-bottom:6px}
 .section-bar{width:32px;height:3px;background:#D4880A;border-radius:2px;margin-bottom:16px}
 .section-text{font-size:14px;color:rgba(255,255,255,0.65);line-height:1.75}
-
-/* HISTOIRE */
 .histoire-card{background:#0e0a00;border:1px solid #2a1a00;border-left:3px solid #D4880A;border-radius:12px;padding:16px;margin-top:8px}
-
-/* MENU TABS */
 .menu-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 .mtab{flex:1;min-width:80px;text-align:center;padding:8px 12px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:600;background:#1a1200;border:1px solid #3a2a00;color:rgba(255,255,255,0.5)}
 .mtab.on{background:#D4880A;color:#fff;border-color:#D4880A}
@@ -48,30 +39,64 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
 .bois-name{font-size:13px;color:#fff;margin-bottom:4px}
 .bois-price{font-size:14px;font-weight:700;color:#FFD700}
 .tag-halal{display:inline-block;background:#1a4e1a;color:#a8f0a8;font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;margin-top:10px}
-
-/* LOCALISATION */
 .location-card{background:#0e0a00;border:1px solid #2a1a00;border-radius:12px;padding:16px;display:flex;align-items:flex-start;gap:12px}
 .location-icon{font-size:28px;flex-shrink:0}
 .location-name{font-size:15px;font-weight:700;color:#FFD700;margin-bottom:4px}
 .location-addr{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5}
 .location-tel{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:#D4880A;font-weight:600;text-decoration:none}
-
-/* COMMANDER CTA */
 .cta-section{padding:32px 20px;text-align:center;background:linear-gradient(180deg,#0e0a00,#1a1200)}
 .cta-logo{width:120px;object-fit:contain;display:block;margin:0 auto 16px}
 .cta-title{font-size:16px;font-weight:700;color:#FFD700;margin-bottom:6px}
 .cta-sub{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:20px}
-
-/* RÉSEAUX */
 .reseaux{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;justify-content:center}
 .reseau-btn{display:flex;align-items:center;gap:8px;background:#1a1200;border:1px solid #2a1a00;border-radius:999px;padding:10px 18px;font-size:13px;color:#fff;text-decoration:none}
 .reseau-btn.ig{border-color:#E1306C}
 .reseau-btn.fb{border-color:#1877F2}
-
-/* FOOTER */
 .footer{background:#000;padding:20px;text-align:center;border-top:1px solid #1a1a1a}
 .footer-title{font-size:13px;font-weight:700;color:#FFD700;margin-bottom:4px}
 .footer-sub{font-size:11px;color:rgba(255,215,0,0.3);font-style:italic}
+/* GALERIE MOSAIQUE */
+.mosaic{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.mosaic-item{position:relative;overflow:hidden;border-radius:10px;cursor:pointer;background:#1a1200}
+.mosaic-item:nth-child(3n+1){grid-column:span 2}
+.mosaic-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s}
+.mosaic-item:hover img{transform:scale(1.04)}
+.mosaic-item.tall{aspect-ratio:1}
+.mosaic-item.wide{aspect-ratio:16/7}
+.mosaic-empty{text-align:center;padding:40px 0;color:rgba(255,255,255,0.25);font-size:13px}
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;align-items:center;justify-content:center}
+.lightbox.on{display:flex}
+.lightbox img{max-width:95vw;max-height:90vh;border-radius:10px;object-fit:contain}
+.lightbox-close{position:absolute;top:16px;right:16px;font-size:28px;color:#fff;cursor:pointer;background:rgba(0,0,0,0.5);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center}
+/* ADMIN */
+.admin-bar{position:fixed;bottom:16px;right:16px;z-index:100}
+.admin-toggle{background:#D4880A;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.4)}
+.admin-panel{position:fixed;inset:0;background:#0a0a0a;z-index:200;overflow-y:auto;display:none}
+.admin-panel.on{display:block}
+.admin-hdr{background:#111;padding:14px 16px;border-bottom:3px solid #D4880A;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0}
+.admin-title{font-size:15px;font-weight:700;color:#FFD700}
+.admin-close{background:transparent;color:rgba(255,255,255,0.5);border:1px solid #333;border-radius:999px;padding:5px 12px;font-size:11px;cursor:pointer}
+.admin-body{padding:20px 16px}
+.admin-login{text-align:center;padding:40px 20px}
+.admin-login-title{font-size:18px;font-weight:700;color:#FFD700;margin-bottom:20px}
+.admin-inp{width:100%;background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:12px 16px;color:#fff;font-size:15px;outline:none;text-align:center;letter-spacing:2px;margin-bottom:12px}
+.admin-inp::placeholder{letter-spacing:0;color:rgba(255,255,255,0.2)}
+.admin-btn{background:#FFD700;color:#4A2800;border:none;border-radius:999px;padding:12px 0;font-size:15px;font-weight:800;cursor:pointer;width:100%}
+.admin-err{font-size:12px;color:#ff5555;margin-top:8px}
+.add-photo-form{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:16px;margin-bottom:20px}
+.add-photo-title{font-size:14px;font-weight:700;color:#FFD700;margin-bottom:12px}
+.add-inp{width:100%;background:#0a0a0a;border:1px solid #333;border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;margin-bottom:8px}
+.add-inp::placeholder{color:rgba(255,255,255,0.25)}
+.add-btn{background:#D4880A;color:#fff;border:none;border-radius:999px;padding:10px 0;font-size:14px;font-weight:700;cursor:pointer;width:100%}
+.photo-list{display:flex;flex-direction:column;gap:10px}
+.photo-row{display:flex;align-items:center;gap:12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:10px}
+.photo-thumb{width:56px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#2a2a2a}
+.photo-info{flex:1;min-width:0}
+.photo-label{font-size:13px;color:#fff;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.photo-url{font-size:10px;color:rgba(255,255,255,0.3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.photo-del{background:transparent;color:#ff5555;border:1px solid #ff5555;border-radius:999px;padding:4px 10px;font-size:11px;cursor:pointer;flex-shrink:0}
+.ibb-tip{background:rgba(100,149,237,0.08);border:1px solid rgba(100,149,237,0.2);border-radius:10px;padding:12px;font-size:12px;color:rgba(100,149,237,0.8);line-height:1.6;margin-bottom:16px}
 </style>
 </head>
 <body>
@@ -83,18 +108,14 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
   <img class="hero-logo" src="https://i.imgur.com/nxIFvJx.jpg" alt="A KA STANN & DEDETTE" />
   <div class="hero-title">A KA STANN & DEDETTE</div>
   <div class="hero-slogan">Savourez l'instant, goûtez l'authenticité</div>
-  <div class="hero-hours">
+  <div class="hero-info-row">
     <div>
-      <div class="hero-hours-day">Tous les vendredis</div>
+      <div class="hero-hours-day">Tous les vendredis soir à Rouvres</div>
       <div class="hero-hours-time">18h00 – 21h00</div>
     </div>
-    <div class="hero-hours-sep"></div>
-    <div>
-      <div class="hero-hours-day">Commandes</div>
-      <div class="hero-hours-time">Sur place</div>
-    </div>
+    <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Commander</a>
   </div>
-  <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Commander en ligne</a>
+  <div class="hero-address">📍 <span>9 Rue des Écoles, 77230 Rouvres</span></div>
 </div>
 
 <div class="madras"></div>
@@ -114,31 +135,24 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
 <div class="section section-alt">
   <div class="section-title">Le menu</div>
   <div class="section-bar"></div>
-
   <div class="menu-tabs">
     <div class="mtab on" onclick="switchTab(this,'simple')">Menu simple</div>
     <div class="mtab" onclick="switchTab(this,'mixte')">Menu mixte</div>
     <div class="mtab" onclick="switchTab(this,'boissons')">Boissons</div>
   </div>
-
-  <!-- SIMPLE -->
   <div class="menu-sec on" id="tab-simple">
-    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Vieux Fort</div><div class="menu-item-desc">3 pilons OU 1 cuisse · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">9€</div></div>
-    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Sainte-Anne</div><div class="menu-item-desc">6 pilons OU 2 cuisses · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">11€</div></div>
-    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Port Louis</div><div class="menu-item-desc">9 pilons OU 3 cuisses · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">13€</div></div>
-    <div style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.4)">🌿 Tous nos produits sont frais <span class="tag-halal">Halal</span></div>
+    <div class="menu-item"><div><div class="menu-item-name">Vieux Fort</div><div class="menu-item-desc">3 pilons OU 1 cuisse · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">9€</div></div>
+    <div class="menu-item"><div><div class="menu-item-name">Sainte-Anne</div><div class="menu-item-desc">6 pilons OU 2 cuisses · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">11€</div></div>
+    <div class="menu-item"><div><div class="menu-item-name">Port Louis</div><div class="menu-item-desc">9 pilons OU 3 cuisses · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">13€</div></div>
+    <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4)">🌿 Tous nos produits sont frais <span class="tag-halal">Halal</span></div>
   </div>
-
-  <!-- MIXTE -->
   <div class="menu-sec" id="tab-mixte">
-    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Mixte Vieux Fort</div><div class="menu-item-desc">3 pilons OU 1 cuisse · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">10€</div></div>
-    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Mixte Sainte-Anne</div><div class="menu-item-desc">6 pilons OU 2 cuisses · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">12€</div></div>
-    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Mixte Port Louis</div><div class="menu-item-desc">9 pilons OU 3 cuisses · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">14€</div></div>
+    <div class="menu-item"><div><div class="menu-item-name">Mixte Vieux Fort</div><div class="menu-item-desc">3 pilons OU 1 cuisse · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">10€</div></div>
+    <div class="menu-item"><div><div class="menu-item-name">Mixte Sainte-Anne</div><div class="menu-item-desc">6 pilons OU 2 cuisses · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">12€</div></div>
+    <div class="menu-item"><div><div class="menu-item-name">Mixte Port Louis</div><div class="menu-item-desc">9 pilons OU 3 cuisses · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">14€</div></div>
     <div style="background:#1a3a1a;border:1px solid #2a5a2a;border-radius:10px;padding:10px 14px;margin-top:6px;font-size:12px;color:#a8f0a8">✓ Le menu mixte inclut Frites ET Riz Madras</div>
-    <div style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.4)">🌿 Tous nos produits sont frais <span class="tag-halal">Halal</span></div>
+    <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4)">🌿 Tous nos produits sont frais <span class="tag-halal">Halal</span></div>
   </div>
-
-  <!-- BOISSONS -->
   <div class="menu-sec" id="tab-boissons">
     <div class="bois-grid">
       <div class="bois-card"><div class="bois-name">Coca-Cola</div><div class="bois-price">1,50€</div></div>
@@ -146,17 +160,26 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
       <div class="bois-card"><div class="bois-name">Cristaline</div><div class="bois-price">1,50€</div></div>
       <div class="bois-card"><div class="bois-name">Boisson locale</div><div class="bois-price">2,00€</div></div>
     </div>
-    <div style="margin-top:10px">
-      <div class="bois-card" style="max-width:200px"><div class="bois-name">Accras de morue (x5)</div><div class="bois-price">2,00€</div></div>
-      <div class="bois-card" style="max-width:200px;margin-top:8px"><div class="bois-name">Barquette de frites</div><div class="bois-price">3,00€</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      <div class="bois-card"><div class="bois-name">Accras de morue (x5)</div><div class="bois-price">2,00€</div></div>
+      <div class="bois-card"><div class="bois-name">Barquette de frites</div><div class="bois-price">3,00€</div></div>
     </div>
   </div>
 </div>
 
 <div class="madras"></div>
 
-<!-- LOCALISATION -->
+<!-- GALERIE -->
 <div class="section">
+  <div class="section-title">Notre galerie</div>
+  <div class="section-bar"></div>
+  <div id="galerie-container"><div class="mosaic-empty">Les photos arrivent bientôt... 📸</div></div>
+</div>
+
+<div class="madras"></div>
+
+<!-- LOCALISATION -->
+<div class="section section-alt">
   <div class="section-title">Où nous trouver</div>
   <div class="section-bar"></div>
   <div class="location-card">
@@ -168,12 +191,11 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
       <a href="tel:0620554462" class="location-tel">📞 06 20 55 44 62</a>
     </div>
   </div>
-  <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.4);line-height:1.6">Commandes par téléphone ou directement sur place. Paiement à la livraison.</div>
 </div>
 
 <div class="madras"></div>
 
-<!-- CTA COMMANDER -->
+<!-- CTA -->
 <div class="cta-section">
   <img class="cta-logo" src="https://i.ibb.co/wmcvCTY/Logo-STAN-Perso.png" alt="Nou Ka Atten Zot" />
   <div class="cta-title">Prêt à commander ?</div>
@@ -186,12 +208,8 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
   <div style="margin-top:24px;padding-top:20px;border-top:1px solid #2a1a00">
     <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:12px;font-weight:600">⭐ Vous avez aimé ? Laissez-nous un avis !</div>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <a href="https://share.google/NLmepl1Jeyj8ZuLgh" target="_blank" style="display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #4285F4;border-radius:999px;padding:10px 18px;font-size:13px;color:#fff;text-decoration:none;font-weight:600">
-        <span style="font-size:16px">🔵</span> Avis Google
-      </a>
-      <a href="https://www.tripadvisor.fr/Restaurant_Review-g7718539-d33111627-Reviews-A_Ka_Stann_Dedette-Dammartin_en_Goele_Seine_et_Marne_Ile_de_France.html" target="_blank" style="display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #34E0A1;border-radius:999px;padding:10px 18px;font-size:13px;color:#fff;text-decoration:none;font-weight:600">
-        <span style="font-size:16px">🟢</span> TripAdvisor
-      </a>
+      <a href="https://share.google/NLmepl1Jeyj8ZuLgh" target="_blank" style="display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #4285F4;border-radius:999px;padding:10px 18px;font-size:13px;color:#fff;text-decoration:none;font-weight:600">🔵 Avis Google</a>
+      <a href="https://www.tripadvisor.fr/Restaurant_Review-g7718539-d33111627-Reviews-A_Ka_Stann_Dedette-Dammartin_en_Goele_Seine_et_Marne_Ile_de_France.html" target="_blank" style="display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #34E0A1;border-radius:999px;padding:10px 18px;font-size:13px;color:#fff;text-decoration:none;font-weight:600">🟢 TripAdvisor</a>
     </div>
   </div>
 </div>
@@ -201,7 +219,94 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
 <div class="footer">
   <div class="footer-title">A KA STANN & DEDETTE</div>
   <div class="footer-sub">Savourez l'instant, goûtez l'authenticité</div>
+  <div style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.15);cursor:pointer" onclick="openAdmin()">⚙️</div>
 </div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" />
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-hdr">
+    <span class="admin-title">⚙️ Admin — Galerie</span>
+    <button class="admin-close" onclick="closeAdmin()">Fermer</button>
+  </div>
+  <div class="admin-body" id="adminBody"></div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getDatabase,ref,push,onValue,remove}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+const db=getDatabase(initializeApp({apiKey:"AIzaSyDK5SH0VnLt62L0ac_ZuBIbjAYzFZtnkpA",authDomain:"aka-stann.firebaseapp.com",databaseURL:"https://aka-stann-default-rtdb.europe-west1.firebasedatabase.app",projectId:"aka-stann",storageBucket:"aka-stann.firebasestorage.app",messagingSenderId:"953795981354",appId:"1:953795981354:web:713dd17519d3be1a425353"}));
+
+var PWD="Akastan971.",photos={},aLogged=sessionStorage.getItem("landingAdmin")==="1";
+
+onValue(ref(db,"landingPhotos"),function(s){
+  photos=s.val()||{};
+  renderGalerie();
+  if(document.getElementById("adminPanel").classList.contains("on")&&aLogged)renderAdminLogged();
+});
+
+function renderGalerie(){
+  var el=document.getElementById("galerie-container");
+  var keys=Object.keys(photos);
+  if(!keys.length){el.innerHTML='<div class="mosaic-empty">Les photos arrivent bientôt... 📸</div>';return;}
+  var html='<div class="mosaic">';
+  keys.forEach(function(k,i){
+    var p=photos[k];
+    var cls="mosaic-item "+(i%3===0?"wide":"tall");
+    html+='<div class="'+cls+'" onclick="openLightbox(\''+p.url+'\')"><img src="'+p.url+'" alt="'+(p.label||"")+'"/></div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+function renderAdminLogged(){
+  var keys=Object.keys(photos);
+  var listHtml=keys.length?keys.map(function(k){
+    var p=photos[k];
+    return'<div class="photo-row"><img class="photo-thumb" src="'+p.url+'" /><div class="photo-info"><div class="photo-label">'+(p.label||"Sans titre")+'</div><div class="photo-url">'+p.url+'</div></div><button class="photo-del" onclick="delPhoto(\''+k+'\')">✕</button></div>';
+  }).join(""):'<div style="color:rgba(255,255,255,0.3);font-size:13px;margin-bottom:16px">Aucune photo pour le moment.</div>';
+
+  document.getElementById("adminBody").innerHTML=
+    '<div class="ibb-tip">💡 Pour ajouter une photo :<br>1. Va sur <b>imgbb.com</b> → Upload<br>2. Copie le lien <b>"Direct link"</b><br>3. Colle-le ci-dessous</div>'
+    +'<div class="add-photo-form"><div class="add-photo-title">➕ Ajouter une photo</div>'
+    +'<input id="inp-label" class="add-inp" placeholder="Titre de la photo (ex: Poulet grillé)" />'
+    +'<input id="inp-url" class="add-inp" placeholder="Lien direct (https://i.ibb.co/...)" />'
+    +'<button class="add-btn" onclick="addPhoto()">Ajouter à la galerie</button></div>'
+    +'<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Photos en ligne ('+keys.length+')</div>'
+    +'<div class="photo-list">'+listHtml+'</div>';
+}
+
+window.openAdmin=function(){
+  document.getElementById("adminPanel").classList.add("on");
+  var body=document.getElementById("adminBody");
+  if(aLogged){renderAdminLogged();}
+  else{
+    body.innerHTML='<div class="admin-login"><div style="font-size:40px;margin-bottom:12px">🔐</div><div class="admin-login-title">Accès Admin</div><input id="pwdInp" class="admin-inp" type="password" placeholder="Mot de passe" /><div id="adminErr"></div><button class="admin-btn" id="btnLogin" style="margin-top:12px">Connexion</button></div>';
+    document.getElementById("btnLogin").onclick=function(){
+      if(document.getElementById("pwdInp").value===PWD){aLogged=true;sessionStorage.setItem("landingAdmin","1");renderAdminLogged();}
+      else{document.getElementById("adminErr").innerHTML='<div class="admin-err">Mot de passe incorrect</div>';}
+    };
+    document.getElementById("pwdInp").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("btnLogin").click();});
+  }
+};
+window.closeAdmin=function(){document.getElementById("adminPanel").classList.remove("on");};
+window.addPhoto=function(){
+  var label=document.getElementById("inp-label").value.trim();
+  var url=document.getElementById("inp-url").value.trim();
+  if(!url){alert("Merci de renseigner un lien d'image.");return;}
+  push(ref(db,"landingPhotos"),{label:label||"Photo",url:url});
+  document.getElementById("inp-label").value="";
+  document.getElementById("inp-url").value="";
+};
+window.delPhoto=function(k){if(confirm("Supprimer cette photo ?"))remove(ref(db,"landingPhotos/"+k));};
+window.openLightbox=function(url){document.getElementById("lightbox-img").src=url;document.getElementById("lightbox").classList.add("on");};
+window.closeLightbox=function(){document.getElementById("lightbox").classList.remove("on");};
+</script>
 
 <script>
 function switchTab(el,id){
