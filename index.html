@@ -524,7 +524,7 @@ var aSection="cuisine"; // cuisine | stats | stock | dep
 function rA(){
   var el=document.getElementById("V2");
   if(!aLog){
-    el.innerHTML='<div class="apage"><div class="lbox"><div class="lico">🔐</div><div class="ltitle">Accès Admin</div><div class="lsub">A KA STANN & DEDETTE</div><input class="linp" type="password" placeholder="Mot de passe" oninput="gAP(this.value)" />'+(aErr?'<div class="lerr">Mot de passe incorrect</div>':"")+'<button class="lbtn" onclick="gAL()">Connexion</button></div></div>';
+    el.innerHTML='<div class="apage"><div class="lbox"><div class="lico">🔐</div><div class="ltitle">Accès Admin</div><div class="lsub">A KA STANN & DEDETTE</div><input id="pwdInput" class="linp" type="password" placeholder="Mot de passe" />'+(aErr?'<div class="lerr">Mot de passe incorrect</div>':"")+'<button class="lbtn" onclick="gAL()">Connexion</button></div></div>';
     return;
   }
   var tabsBar='<div class="adminmaintabs">'
@@ -691,7 +691,12 @@ window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret",readyAt:Date.no
 window.gPaid=function(k,val){update(ref(db,"orders/"+k),{paid:val});};
 window.gPassage=function(k,val){update(ref(db,"orders/"+k),{passage:val});};
 window.gAP=function(v){aPw=v;};
-window.gAL=function(){if(aPw===PWD){aLog=true;aErr=false;aSection="cuisine";sessionStorage.setItem("adminLogged","1");rA();}else{aErr=true;rA();}};
+window.gAL=function(){
+  var input=document.getElementById("pwdInput");
+  var val=input?input.value:aPw;
+  if(val===PWD){aLog=true;aErr=false;aSection="cuisine";sessionStorage.setItem("adminLogged","1");rA();}
+  else{aErr=true;rA();}
+};
 window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;aSection="cuisine";sessionStorage.removeItem("adminLogged");rA();};
 window.gAD=function(d){aDt=d;rA();};
 window.gASec=function(s){aSection=s;rA();};
