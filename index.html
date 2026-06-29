@@ -692,4 +692,28 @@ window.gPaid=function(k,val){update(ref(db,"orders/"+k),{paid:val});};
 window.gPassage=function(k,val){update(ref(db,"orders/"+k),{passage:val});};
 window.gAP=function(v){aPw=v;};
 window.gAL=function(){if(aPw===PWD){aLog=true;aErr=false;aSection="cuisine";sessionStorage.setItem("adminLogged","1");rA();}else{aErr=true;rA();}};
-window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;aSection="cui
+window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;aSection="cuisine";sessionStorage.removeItem("adminLogged");rA();};
+window.gAD=function(d){aDt=d;rA();};
+window.gASec=function(s){aSection=s;rA();};
+window.gATab=function(t){aTab=t;rAD();};
+window.gStockSet=function(id,val){
+  var v=val===""?"":parseFloat(val);
+  globalStock[id]=v;
+  var patch={};patch[id]=v;
+  update(ref(db,"globalStock"),patch).then(function(){rA();});
+};
+window.gDepSet=function(val){
+  stockInit[aDt+"_dep"]=val;
+  update(ref(db,"stockData"),stockInit);
+};
+window.gCLR=function(){if(confirm("Supprimer TOUTES les commandes, toutes dates confondues ?")){remove(ref(db,"orders"));aDt=null;}};
+window.gCLRDay=function(d){
+  if(!confirm("Supprimer toutes les commandes du "+dfr(d)+" uniquement ?"))return;
+  var toDelete=Object.entries(fbO).filter(function(e){return e[1].ts&&ts2d(e[1].ts)===d;});
+  toDelete.forEach(function(e){remove(ref(db,"orders/"+e[0]));});
+};
+
+rCom();rC();rA();
+</script>
+</body>
+</html>
