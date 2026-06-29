@@ -501,7 +501,7 @@ function buildCuisineFull(){
         ih+='<div class="oline">Supplements: '+sl+' — <b>'+fp(it.price)+'€</b></div>';
       }
     });
-    var cc="ocard gsp"+(isDone?" done":" alert");
+    var passageBadge=o.passage&&o.passage!=="Non précisé"?'<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(100,149,237,0.15);border:1px solid rgba(100,149,237,0.4);border-radius:6px;padding:3px 10px;font-size:12px;color:#6495ED;font-weight:700;margin-bottom:6px">🕐 Passage : '+o.passage+'</div>':"";
     var payHtml='<div class="payrow'+(o.paid?" paid":"")+'" onclick="gPaid(\''+o.fbKey+'\','+(!o.paid)+')">'
       +'<div class="paycheck'+(o.paid?" paid":"")+'">'+(o.paid?"✓":"")+'</div>'
       +'<div class="paylabel'+(o.paid?" paid":"")+'">'+(o.paid?"💰 Pay\u00E9":"Non pay\u00E9 — cliquer pour marquer pay\u00E9")+'</div>'
@@ -509,7 +509,7 @@ function buildCuisineFull(){
     return'<div class="'+cc+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="onum'+(isDone?" done":"")+'">#'+o.ticket+'</span><span class="otime">'+o.time+'</span></div>'+ih+'<div class="ototl">TOTAL: '+o.total+'€</div>'+payHtml+(isDone?'<div style="margin-top:8px"><span class="donebdg">✓ Prête</span></div>':'<button class="btnPret" onclick="gMR(\''+o.fbKey+'\')">✓ Commande prête</button>')+'</div>';
   }
 
-  var html='<div class="cpage"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:6px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔":"🔕")+'</button></div></div><div class="body">';
+  var html='<div class="cpage"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:6px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔":"🔕")+'</button><button class="resetbtn" style="font-size:10px;padding:4px 8px" onclick="gCLR()">🗑️ Tout</button></div></div><div class="body">';
   if(!all.length)html+='<div class="empty">Aucune commande pour le moment</div>';
   else{
     if(pend.length){html+='<div class="gtitle gsp">🍽️ Commandes en attente ('+pend.length+')</div>';pend.forEach(function(o){html+=bCard(o,false);});}
@@ -617,7 +617,11 @@ function buildAdminDash(){
   }
 
   var secLabels={stats:"📊 Stats",stock:"📦 Stock",dep:"💰 D\u00E9penses"};
-  return'<div class="apage"><div class="ahdr"><div style="display:flex;align-items:center;gap:8px"><span>'+secLabels[aSection]+'</span></div><button class="resetbtn" onclick="gCLR()">🗑️ Tout reset</button></div>'+dt+delDayBtn+'<div class="abody">'+body+'</div></div>';
+  var resetBtn="";
+  if(aSection==="stats") resetBtn='<button class="resetbtn" onclick="gCLRDay(\''+aDt+'\')" title="Supprimer les commandes de ce jour">🗑️ Reset commandes du '+dfr(aDt)+'</button>';
+  if(aSection==="stock") resetBtn='<button class="resetbtn" onclick="gCLRStock()" title="Remettre tous les stocks à zéro">🗑️ Reset stock</button>';
+  if(aSection==="dep")   resetBtn='<button class="resetbtn" onclick="gCLRDep(\''+aDt+'\')" title="Supprimer les dépenses de ce jour">🗑️ Reset dépenses du '+dfr(aDt)+'</button>';
+  return'<div class="apage"><div class="ahdr"><div style="display:flex;align-items:center;gap:8px"><span>'+secLabels[aSection]+'</span></div>'+resetBtn+'</div>'+dt+'<div class="abody">'+body+'</div></div>';
 }
 
 // ─── ACTIONS
@@ -685,30 +689,7 @@ window.gFIN=async function(){
 window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;tcrL=null;sending=false;sec="simple";cfg={vi:"Pilons",ac:"Frites",bo:"coca",nt:"",qty:1,sauces:[null]};cph="";phErr=false;saErr=false;rCom();};
 window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret",readyAt:Date.now()});};
 window.gPaid=function(k,val){update(ref(db,"orders/"+k),{paid:val});};
+window.gPassage=function(k,val){update(ref(db,"orders/"+k),{passage:val});};
 window.gAP=function(v){aPw=v;};
 window.gAL=function(){if(aPw===PWD){aLog=true;aErr=false;aSection="cuisine";sessionStorage.setItem("adminLogged","1");rA();}else{aErr=true;rA();}};
-window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;aSection="cuisine";sessionStorage.removeItem("adminLogged");rA();};
-window.gAD=function(d){aDt=d;rA();};
-window.gASec=function(s){aSection=s;rA();};
-window.gATab=function(t){aTab=t;rAD();};
-window.gStockSet=function(id,val){
-  var v=val===""?"":parseFloat(val);
-  globalStock[id]=v;
-  var patch={};patch[id]=v;
-  update(ref(db,"globalStock"),patch).then(function(){rA();});
-};
-window.gDepSet=function(val){
-  stockInit[aDt+"_dep"]=val;
-  update(ref(db,"stockData"),stockInit);
-};
-window.gCLR=function(){if(confirm("Supprimer TOUTES les commandes, toutes dates confondues ?")){remove(ref(db,"orders"));aDt=null;}};
-window.gCLRDay=function(d){
-  if(!confirm("Supprimer toutes les commandes du "+dfr(d)+" uniquement ?"))return;
-  var toDelete=Object.entries(fbO).filter(function(e){return e[1].ts&&ts2d(e[1].ts)===d;});
-  toDelete.forEach(function(e){remove(ref(db,"orders/"+e[0]));});
-};
-
-rCom();rC();rA();
-</script>
-</body>
-</html>
+window.gALO=function(){aLog=false;aPw="";aErr=false;aDt=null;aSection="cui
