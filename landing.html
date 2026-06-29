@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="A KA STANN & DEDETTE — Grillades Antillaises, food truck tous les vendredis à Rouvres (77230)"/>
+<title>A KA STANN & DEDETTE — Grillades Antillaises</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:480px;margin:0 auto}
+.madras{height:6px;background:repeating-linear-gradient(90deg,#E8B800 0,#E8B800 14px,#1a6e1a 14px,#1a6e1a 28px,#C0392B 28px,#C0392B 42px,#E8B800 42px,#E8B800 56px)}
+
+/* HERO */
+.hero{background:linear-gradient(180deg,#1a1200 0%,#0e0a00 100%);padding:40px 20px 32px;text-align:center}
+.hero-logo{width:160px;height:160px;object-fit:contain;display:block;margin:0 auto 20px;filter:drop-shadow(0 0 20px rgba(255,180,0,0.4))}
+.hero-title{font-size:24px;font-weight:800;color:#FFD700;letter-spacing:1px;margin-bottom:6px}
+.hero-slogan{font-size:14px;color:rgba(255,230,120,0.8);font-style:italic;margin-bottom:24px}
+.hero-hours{display:inline-flex;align-items:center;gap:10px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:12px;padding:12px 20px;margin-bottom:28px}
+.hero-hours-day{font-size:13px;font-weight:700;color:#FFD700}
+.hero-hours-time{font-size:15px;font-weight:800;color:#FFD700}
+.hero-hours-sep{width:1px;height:28px;background:rgba(255,215,0,0.2)}
+.btn-commander{display:block;background:#FFD700;color:#4A2800;border:none;border-radius:999px;padding:16px 32px;font-size:16px;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;margin:0 auto;max-width:280px;box-shadow:0 4px 20px rgba(255,215,0,0.3);transition:transform 0.15s}
+.btn-commander:active{transform:scale(0.97)}
+
+/* SECTION */
+.section{padding:28px 20px}
+.section-alt{background:#1a1200}
+.section-title{font-size:18px;font-weight:700;color:#FFD700;margin-bottom:6px}
+.section-bar{width:32px;height:3px;background:#D4880A;border-radius:2px;margin-bottom:16px}
+.section-text{font-size:14px;color:rgba(255,255,255,0.65);line-height:1.75}
+
+/* HISTOIRE */
+.histoire-card{background:#0e0a00;border:1px solid #2a1a00;border-left:3px solid #D4880A;border-radius:12px;padding:16px;margin-top:8px}
+
+/* MENU TABS */
+.menu-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.mtab{flex:1;min-width:80px;text-align:center;padding:8px 12px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:600;background:#1a1200;border:1px solid #3a2a00;color:rgba(255,255,255,0.5)}
+.mtab.on{background:#D4880A;color:#fff;border-color:#D4880A}
+.menu-sec{display:none}
+.menu-sec.on{display:block}
+.menu-item{background:#0e0a00;border:1px solid #2a1a00;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.menu-item-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.menu-item-desc{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.5}
+.menu-item-opt{font-size:11px;color:rgba(255,215,0,0.5);margin-top:4px}
+.menu-item-price{font-size:20px;font-weight:800;color:#FFD700;white-space:nowrap;flex-shrink:0}
+.bois-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bois-card{background:#0e0a00;border:1px solid #2a1a00;border-radius:10px;padding:12px;text-align:center}
+.bois-name{font-size:13px;color:#fff;margin-bottom:4px}
+.bois-price{font-size:14px;font-weight:700;color:#FFD700}
+.tag-halal{display:inline-block;background:#1a4e1a;color:#a8f0a8;font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;margin-top:10px}
+
+/* LOCALISATION */
+.location-card{background:#0e0a00;border:1px solid #2a1a00;border-radius:12px;padding:16px;display:flex;align-items:flex-start;gap:12px}
+.location-icon{font-size:28px;flex-shrink:0}
+.location-name{font-size:15px;font-weight:700;color:#FFD700;margin-bottom:4px}
+.location-addr{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5}
+.location-tel{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:#D4880A;font-weight:600;text-decoration:none}
+
+/* COMMANDER CTA */
+.cta-section{padding:32px 20px;text-align:center;background:linear-gradient(180deg,#0e0a00,#1a1200)}
+.cta-logo{width:120px;object-fit:contain;display:block;margin:0 auto 16px}
+.cta-title{font-size:16px;font-weight:700;color:#FFD700;margin-bottom:6px}
+.cta-sub{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:20px}
+
+/* RÉSEAUX */
+.reseaux{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;justify-content:center}
+.reseau-btn{display:flex;align-items:center;gap:8px;background:#1a1200;border:1px solid #2a1a00;border-radius:999px;padding:10px 18px;font-size:13px;color:#fff;text-decoration:none}
+.reseau-btn.ig{border-color:#E1306C}
+.reseau-btn.fb{border-color:#1877F2}
+
+/* FOOTER */
+.footer{background:#000;padding:20px;text-align:center;border-top:1px solid #1a1a1a}
+.footer-title{font-size:13px;font-weight:700;color:#FFD700;margin-bottom:4px}
+.footer-sub{font-size:11px;color:rgba(255,215,0,0.3);font-style:italic}
+</style>
+</head>
+<body>
+
+<div class="madras"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <img class="hero-logo" src="https://i.imgur.com/nxIFvJx.jpg" alt="A KA STANN & DEDETTE" />
+  <div class="hero-title">A KA STANN & DEDETTE</div>
+  <div class="hero-slogan">Savourez l'instant, goûtez l'authenticité</div>
+  <div class="hero-hours">
+    <div>
+      <div class="hero-hours-day">Tous les vendredis</div>
+      <div class="hero-hours-time">18h00 – 21h00</div>
+    </div>
+    <div class="hero-hours-sep"></div>
+    <div>
+      <div class="hero-hours-day">Commandes</div>
+      <div class="hero-hours-time">Sur place</div>
+    </div>
+  </div>
+  <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Commander en ligne</a>
+</div>
+
+<div class="madras"></div>
+
+<!-- HISTOIRE -->
+<div class="section">
+  <div class="section-title">À propos de nous</div>
+  <div class="section-bar"></div>
+  <div class="histoire-card">
+    <p class="section-text">Chez nous, c'est bien plus qu'un food truck. C'est une histoire de passion, de partage et de saveurs venues des Antilles. Né d'une envie simple de faire découvrir une cuisine généreuse, authentique et conviviale.<br><br>On ne vient pas seulement manger — on vient retrouver l'ambiance des îles, la chaleur humaine et le goût du fait maison. Parce que la cuisine antillaise, c'est une affaire de famille, de tradition et de partage.</p>
+  </div>
+</div>
+
+<div class="madras"></div>
+
+<!-- MENU -->
+<div class="section section-alt">
+  <div class="section-title">Le menu</div>
+  <div class="section-bar"></div>
+
+  <div class="menu-tabs">
+    <div class="mtab on" onclick="switchTab(this,'simple')">Menu simple</div>
+    <div class="mtab" onclick="switchTab(this,'mixte')">Menu mixte</div>
+    <div class="mtab" onclick="switchTab(this,'boissons')">Boissons</div>
+  </div>
+
+  <!-- SIMPLE -->
+  <div class="menu-sec on" id="tab-simple">
+    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Vieux Fort</div><div class="menu-item-desc">3 pilons OU 1 cuisse · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">9€</div></div>
+    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Sainte-Anne</div><div class="menu-item-desc">6 pilons OU 2 cuisses · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">11€</div></div>
+    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Port Louis</div><div class="menu-item-desc">9 pilons OU 3 cuisses · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">13€</div></div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.4)">🌿 Tous nos produits sont frais <span class="tag-halal">Halal</span></div>
+  </div>
+
+  <!-- MIXTE -->
+  <div class="menu-sec" id="tab-mixte">
+    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Mixte Vieux Fort</div><div class="menu-item-desc">3 pilons OU 1 cuisse · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">10€</div></div>
+    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Mixte Sainte-Anne</div><div class="menu-item-desc">6 pilons OU 2 cuisses · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">12€</div></div>
+    <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Mixte Port Louis</div><div class="menu-item-desc">9 pilons OU 3 cuisses · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">14€</div></div>
+    <div style="background:#1a3a1a;border:1px solid #2a5a2a;border-radius:10px;padding:10px 14px;margin-top:6px;font-size:12px;color:#a8f0a8">✓ Le menu mixte inclut Frites ET Riz Madras</div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.4)">🌿 Tous nos produits sont frais <span class="tag-halal">Halal</span></div>
+  </div>
+
+  <!-- BOISSONS -->
+  <div class="menu-sec" id="tab-boissons">
+    <div class="bois-grid">
+      <div class="bois-card"><div class="bois-name">Coca-Cola</div><div class="bois-price">1,50€</div></div>
+      <div class="bois-card"><div class="bois-name">Coca-Cola Zéro</div><div class="bois-price">1,50€</div></div>
+      <div class="bois-card"><div class="bois-name">Cristaline</div><div class="bois-price">1,50€</div></div>
+      <div class="bois-card"><div class="bois-name">Boisson locale</div><div class="bois-price">2,00€</div></div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="bois-card" style="max-width:200px"><div class="bois-name">Accras de morue (x5)</div><div class="bois-price">2,00€</div></div>
+      <div class="bois-card" style="max-width:200px;margin-top:8px"><div class="bois-name">Barquette de frites</div><div class="bois-price">3,00€</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="madras"></div>
+
+<!-- LOCALISATION -->
+<div class="section">
+  <div class="section-title">Où nous trouver</div>
+  <div class="section-bar"></div>
+  <div class="location-card">
+    <div class="location-icon">📍</div>
+    <div>
+      <div class="location-name">Salle des Fêtes de Rouvres</div>
+      <div class="location-addr">9 Rue des Écoles<br>77230 Rouvres</div>
+      <div style="margin-top:8px;font-size:12px;color:#D4880A;font-weight:600">Tous les vendredis · 18h00 – 21h00</div>
+      <a href="tel:0620554462" class="location-tel">📞 06 20 55 44 62</a>
+    </div>
+  </div>
+  <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.4);line-height:1.6">Commandes par téléphone ou directement sur place. Paiement à la livraison.</div>
+</div>
+
+<div class="madras"></div>
+
+<!-- CTA COMMANDER -->
+<div class="cta-section">
+  <img class="cta-logo" src="https://i.ibb.co/wmcvCTY/Logo-STAN-Perso.png" alt="Nou Ka Atten Zot" />
+  <div class="cta-title">Prêt à commander ?</div>
+  <div class="cta-sub">Commandez depuis votre téléphone, on prépare pour vous</div>
+  <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Passer une commande</a>
+  <div class="reseaux">
+    <a href="https://www.instagram.com/a.ka.stann.et.dedette" target="_blank" class="reseau-btn ig">📸 Instagram</a>
+    <a href="https://www.facebook.com/p/A-Ka-Stann-Dedette-61574862584178/" target="_blank" class="reseau-btn fb">👍 Facebook</a>
+  </div>
+</div>
+
+<div class="madras"></div>
+
+<div class="footer">
+  <div class="footer-title">A KA STANN & DEDETTE</div>
+  <div class="footer-sub">Savourez l'instant, goûtez l'authenticité</div>
+</div>
+
+<script>
+function switchTab(el,id){
+  document.querySelectorAll('.mtab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.menu-sec').forEach(function(s){s.classList.remove('on');});
+  el.classList.add('on');
+  document.getElementById('tab-'+id).classList.add('on');
+}
+</script>
+</body>
+</html>
