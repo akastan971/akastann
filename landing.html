@@ -25,6 +25,18 @@
 <meta name="twitter:title" content="A KA STANN & DEDETTE — Food Truck Antillais"/>
 <meta name="twitter:description" content="Grillades antillaises à Rouvres (77230) tous les vendredis soir. Commandez en ligne !"/>
 
+<!-- Favicon -->
+<link rel="icon" type="image/jpeg" href="https://i.imgur.com/nxIFvJx.jpg"/>
+<link rel="apple-touch-icon" href="https://i.imgur.com/nxIFvJx.jpg"/>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#FFD700"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="A KA STANN"/>
+
 <!-- Données structurées Google (Rich Snippets) -->
 <script type="application/ld+json">
 {
@@ -115,6 +127,30 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 .footer{background:#000;padding:20px;text-align:center;border-top:1px solid #1a1a1a}
 .footer-title{font-size:13px;font-weight:700;color:#FFD700;margin-bottom:4px}
 .footer-sub{font-size:11px;color:rgba(255,215,0,0.3);font-style:italic}
+.faq-list{display:flex;flex-direction:column;gap:8px}
+/* POP-UP FERMETURE */
+.popup-fermeture{display:none;position:fixed;inset:0;z-index:900;align-items:center;justify-content:center;padding:20px}
+.popup-fermeture.on{display:flex}
+.popup-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.85)}
+.popup-box{position:relative;background:#1a0a00;border:2px solid #C0392B;border-radius:20px;padding:32px 24px;max-width:360px;width:100%;text-align:center;z-index:1;box-shadow:0 0 40px rgba(192,57,43,0.3)}
+.popup-icon{font-size:48px;margin-bottom:12px}
+.popup-title{font-size:20px;font-weight:800;color:#FFD700;margin-bottom:10px}
+.popup-msg{font-size:14px;color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:20px}
+.popup-close{background:#FFD700;color:#4A2800;border:none;border-radius:999px;padding:12px 32px;font-size:15px;font-weight:800;cursor:pointer;width:100%}
+/* BANNIERE PWA */
+.pwa-banner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:400;background:#1a1200;border-top:2px solid rgba(255,215,0,0.2);padding:12px 16px;align-items:center;gap:12px}
+.pwa-banner.on{display:flex}
+.pwa-logo{width:40px;height:40px;border-radius:10px;object-fit:contain;flex-shrink:0}
+.pwa-text{flex:1;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.4}
+.pwa-text strong{display:block;color:#FFD700;font-size:13px;margin-bottom:2px}
+.pwa-install{background:#FFD700;color:#4A2800;border:none;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:800;cursor:pointer;flex-shrink:0}
+.pwa-dismiss{background:none;border:none;color:rgba(255,255,255,0.3);font-size:20px;cursor:pointer;flex-shrink:0;padding:0 4px}
+.faq-item{background:#0e0a00;border:1px solid #2a1a00;border-radius:12px;overflow:hidden}
+.faq-q{width:100%;background:none;border:none;padding:16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:14px;font-weight:700;color:#FFD700;text-align:left;gap:12px}
+.faq-arrow{font-size:18px;color:#D4880A;flex-shrink:0;transition:transform 0.25s}
+.faq-q.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{display:none;padding:0 16px 16px;font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7}
+.faq-a.open{display:block}
 .banner-ouvert{display:none;background:linear-gradient(90deg,#C0392B,#D4880A);color:#fff;text-align:center;padding:10px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px}
 .banner-ouvert.on{display:block}
 .wa-btn{position:fixed;bottom:24px;left:16px;z-index:300;background:#25D366;border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 16px rgba(37,211,102,0.4)}
@@ -244,6 +280,25 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 </head>
 <body>
 
+<!-- POP-UP FERMETURE EXCEPTIONNELLE -->
+<div class="popup-fermeture" id="popupFermeture">
+  <div class="popup-overlay" onclick="closePopupFermeture()"></div>
+  <div class="popup-box">
+    <div class="popup-icon">😔</div>
+    <div class="popup-title">Fermeture exceptionnelle</div>
+    <div class="popup-msg" id="popupFermetureMsg">Nous ne serons pas présents ce vendredi. On vous retrouve très vite pour de nouvelles grillades ! 🌴</div>
+    <button class="popup-close" onclick="closePopupFermeture()">J'ai compris</button>
+  </div>
+</div>
+
+<!-- BANNIERE PWA -->
+<div class="pwa-banner" id="pwaBanner">
+  <img class="pwa-logo" src="https://i.imgur.com/nxIFvJx.jpg" alt="logo"/>
+  <div class="pwa-text"><strong>A KA STANN & DEDETTE</strong>Installez notre app sur votre téléphone !</div>
+  <button class="pwa-install" id="pwaInstallBtn">Installer</button>
+  <button class="pwa-dismiss" onclick="dismissPwa()">✕</button>
+</div>
+
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="navbar-left">
@@ -260,6 +315,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
   <a class="nav-drawer-link" href="#carte" onclick="closeMenu()">Notre carte</a>
   <a class="nav-drawer-link" href="#galerie" onclick="closeMenu()">Galerie</a>
   <a class="nav-drawer-link" href="#localisation" onclick="closeMenu()">Nous trouver</a>
+  <a class="nav-drawer-link" href="#faq" onclick="closeMenu()">FAQ</a>
   <a class="nav-drawer-link nav-drawer-cmd" href="https://akastan971.github.io/akastann/" target="_blank" onclick="closeMenu()">🛒 Commander</a>
 </div>
 <div class="nav-overlay" id="navOverlay" onclick="closeMenu()"></div>
@@ -407,6 +463,58 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 
 <div class="madras"></div>
 
+<!-- FAQ -->
+<div class="section" id="faq">
+  <div class="section-title">Questions fréquentes</div>
+  <div class="section-bar"></div>
+  <div class="faq-list">
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>À quelle heure arriver ?</span>
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Nous sommes ouverts tous les vendredis soir de 18h à 21h. Les stocks étant limités et préparés avec soin, nous vous conseillons de venir le plus tôt possible pour être sûr de trouver ce que vous souhaitez. Les premiers arrivés sont les premiers servis !</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>C'est Halal ?</span>
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Oui, tous nos produits sont certifiés Halal. Vous pouvez venir en toute confiance.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>Où se garer ?</span>
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Un grand parking est disponible directement devant la Salle des Fêtes de Rouvres. Vous n'aurez aucun souci pour vous garer !</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>Peut-on commander à l'avance ?</span>
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">
+        Oui ! Vous pouvez passer votre commande en ligne directement depuis notre site et éviter l'attente sur place.
+        <a href="https://akastan971.github.io/akastann/" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#FFD700;color:#4A2800;border-radius:999px;padding:10px 20px;font-size:13px;font-weight:800;text-decoration:none">🛒 Commander maintenant</a>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>Vous êtes ouverts tous les vendredis ?</span>
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Oui, nous sommes présents tous les vendredis soir sans exception, sauf fermetures exceptionnelles. Pour rester informé, suivez-nous sur nos réseaux sociaux — on vous prévient toujours à l'avance !</div>
+    </div>
+
+  </div>
+</div>
+
 <!-- CTA -->
 <div class="cta-section">
   <img class="cta-logo" src="https://i.ibb.co/wmcvCTY/Logo-STAN-Perso.png" alt="Nou Ka Atten Zot" />
@@ -455,7 +563,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getDatabase,ref,push,onValue,remove}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import{getDatabase,ref,push,onValue,remove,set}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDK5SH0VnLt62L0ac_ZuBIbjAYzFZtnkpA",authDomain:"aka-stann.firebaseapp.com",databaseURL:"https://aka-stann-default-rtdb.europe-west1.firebasedatabase.app",projectId:"aka-stann",storageBucket:"aka-stann.firebasestorage.app",messagingSenderId:"953795981354",appId:"1:953795981354:web:713dd17519d3be1a425353"}));
 
 var PWD="Akastan971.",photos={},aLogged=sessionStorage.getItem("landingAdmin")==="1";
@@ -464,6 +572,15 @@ onValue(ref(db,"landingPhotos"),function(s){
   photos=s.val()||{};
   renderGalerie();
   if(document.getElementById("adminPanel").classList.contains("on")&&aLogged)renderAdminLogged();
+});
+
+onValue(ref(db,"fermetureExceptionnelle"),function(s){
+  var data=s.val();
+  if(data&&data.active){
+    var msg=data.message||"Nous ne serons pas présents ce vendredi. On vous retrouve très vite pour de nouvelles grillades ! 🌴";
+    document.getElementById("popupFermetureMsg").textContent=msg;
+    document.getElementById("popupFermeture").classList.add("on");
+  }
 });
 
 function renderGalerie(){
@@ -488,7 +605,15 @@ function renderAdminLogged(){
   }).join(""):'<div style="color:rgba(255,255,255,0.3);font-size:13px;margin-bottom:16px">Aucune photo pour le moment.</div>';
 
   document.getElementById("adminBody").innerHTML=
-    '<div class="ibb-tip">💡 Pour ajouter une photo :<br>1. Va sur <b>imgbb.com</b> → Upload<br>2. Copie le lien <b>"Direct link"</b><br>3. Colle-le ci-dessous</div>'
+    '<div style="background:#1a0a00;border:2px solid #C0392B;border-radius:12px;padding:16px;margin-bottom:20px">'
+    +'<div style="font-size:14px;font-weight:700;color:#ff6b6b;margin-bottom:12px">⚠️ Fermeture exceptionnelle</div>'
+    +'<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:10px">Active ceci si tu es absent un vendredi — une pop-up s\'affichera sur le site.</div>'
+    +'<textarea id="inp-fermeture-msg" class="add-inp" rows="2" placeholder="Message (optionnel)">Nous ne serons pas présents ce vendredi. On vous retrouve très vite ! 🌴</textarea>'
+    +'<div style="display:flex;gap:8px;margin-top:8px">'
+    +'<button class="add-btn" style="background:#C0392B" onclick="activerFermeture()">🔴 Activer la fermeture</button>'
+    +'<button class="add-btn" style="background:#1a6e1a" onclick="desactiverFermeture()">🟢 Désactiver</button>'
+    +'</div></div>'
+    +'<div class="ibb-tip">💡 Pour ajouter une photo :<br>1. Va sur <b>imgbb.com</b> → Upload<br>2. Copie le lien <b>"Direct link"</b><br>3. Colle-le ci-dessous</div>'
     +'<div class="add-photo-form"><div class="add-photo-title">➕ Ajouter une photo</div>'
     +'<input id="inp-label" class="add-inp" placeholder="Titre de la photo (ex: Poulet grillé)" />'
     +'<input id="inp-url" class="add-inp" placeholder="Lien direct (https://i.ibb.co/...)" />'
@@ -511,6 +636,20 @@ window.openAdmin=function(){
   }
 };
 window.closeAdmin=function(){document.getElementById("adminPanel").classList.remove("on");};
+window.activerFermeture=function(){
+  var msg=document.getElementById("inp-fermeture-msg").value.trim();
+  set(ref(db,"fermetureExceptionnelle"),{active:true,message:msg||"Nous ne serons pas présents ce vendredi. On vous retrouve très vite ! 🌴"});
+  alert("Fermeture activée ! La pop-up s\'affiche maintenant sur le site.");
+};
+window.desactiverFermeture=function(){
+  set(ref(db,"fermetureExceptionnelle"),{active:false});
+  alert("Fermeture désactivée. Le site est de nouveau normal.");
+};
+window.closePopupFermeture=function(){document.getElementById("popupFermeture").classList.remove("on");};
+window.dismissPwa=function(){
+  document.getElementById("pwaBanner").classList.remove("on");
+  sessionStorage.setItem("pwaDismissed","1");
+};
 window.addPhoto=function(){
   var label=document.getElementById("inp-label").value.trim();
   var url=document.getElementById("inp-url").value.trim();
@@ -525,6 +664,31 @@ window.closeLightbox=function(){document.getElementById("lightbox").classList.re
 </script>
 
 <script>
+function toggleFaq(btn){
+  var answer=btn.nextElementSibling;
+  var isOpen=answer.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(function(a){a.classList.remove('open')});
+  document.querySelectorAll('.faq-q').forEach(function(q){q.classList.remove('open')});
+  if(!isOpen){answer.classList.add('open');btn.classList.add('open');}
+}
+
+// PWA Install
+var deferredPrompt;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredPrompt=e;
+  if(!sessionStorage.getItem("pwaDismissed")){
+    setTimeout(function(){document.getElementById("pwaBanner").classList.add("on");},3000);
+  }
+});
+document.getElementById("pwaInstallBtn").addEventListener("click",function(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(){
+    deferredPrompt=null;
+    document.getElementById("pwaBanner").classList.remove("on");
+  });
+});
 function toggleMenu(){
   document.getElementById('navDrawer').classList.toggle('open');
   document.getElementById('navOverlay').classList.toggle('open');
