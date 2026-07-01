@@ -325,6 +325,13 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 
 <div class="madras"></div>
 
+<!-- BOUTON INSTALLER APP -->
+<div id="pwaInstallBar" style="display:none;background:#1a1200;border-bottom:1px solid rgba(255,215,0,0.1);padding:8px 16px;text-align:center">
+  <button onclick="installPwa()" style="background:none;border:1px solid rgba(255,215,0,0.3);border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;color:rgba(255,215,0,0.7);cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+    📲 Installer l'app sur mon téléphone
+  </button>
+</div>
+
 <!-- HERO -->
 <div class="hero">
   <div class="hero-content-wrap">
@@ -672,23 +679,40 @@ function toggleFaq(btn){
   if(!isOpen){answer.classList.add('open');btn.classList.add('open');}
 }
 
+// Service Worker PWA
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('/akastann/sw.js').then(function(reg){
+      console.log('SW enregistré');
+    }).catch(function(err){
+      console.log('SW erreur:',err);
+    });
+  });
+}
+
 // PWA Install
 var deferredPrompt;
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
   deferredPrompt=e;
+  document.getElementById('pwaInstallBar').style.display='block';
   if(!sessionStorage.getItem("pwaDismissed")){
     setTimeout(function(){document.getElementById("pwaBanner").classList.add("on");},3000);
   }
 });
-document.getElementById("pwaInstallBtn").addEventListener("click",function(){
-  if(!deferredPrompt)return;
+window.installPwa=function(){
+  if(!deferredPrompt){
+    // iPhone : afficher un tuto
+    alert("Sur iPhone :\n1. Appuyez sur l'icône Partager (carré avec flèche)\n2. Puis \"Sur l'écran d'accueil\"\n3. Puis \"Ajouter\" !");
+    return;
+  }
   deferredPrompt.prompt();
   deferredPrompt.userChoice.then(function(){
     deferredPrompt=null;
+    document.getElementById('pwaInstallBar').style.display='none';
     document.getElementById("pwaBanner").classList.remove("on");
   });
-});
+};
 function toggleMenu(){
   document.getElementById('navDrawer').classList.toggle('open');
   document.getElementById('navOverlay').classList.toggle('open');
