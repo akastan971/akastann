@@ -1,0 +1,22 @@
+{
+  "name": "A KA STANN & DEDETTE",
+  "short_name": "A KA STANN",
+  "description": "Food truck de grillades antillaises à Rouvres — tous les vendredis soir de 18h à 21h",
+  "start_url": "/akastann/landing.html",
+  "display": "standalone",
+  "background_color": "#0e0a00",
+  "theme_color": "#FFD700",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://i.imgur.com/nxIFvJx.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://i.imgur.com/nxIFvJx.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
