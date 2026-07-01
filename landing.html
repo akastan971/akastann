@@ -623,18 +623,24 @@ onValue(ref(db,"fermetureExceptionnelle"),function(s){
 
 // Avis depuis Firebase
 onValue(ref(db,"avis"),function(s){
-  var data=s.val()||{google:8,tripadvisor:6,commandesOffset:32};
+  var data=s.val()||{google:8,tripadvisor:6,commandesOffset:33,vendredis:2};
   var g=document.getElementById('counter-google');
   var t=document.getElementById('counter-tripadvisor');
+  var v=document.getElementById('counter-vendredis');
+  var c=document.getElementById('counter-commandes');
   if(g) g.textContent=(data.google||8)+' avis';
   if(t) t.textContent=(data.tripadvisor||6)+' avis';
-  // Mettre à jour le compteur commandes avec offset
-  var offset=data.commandesOffset||32;
-  onValue(ref(db,"orders"),function(s2){
-    var total=Object.keys(s2.val()||{}).length+offset;
-    var el=document.getElementById('counter-commandes');
-    if(el) el.textContent=total+'+';
-  });
+  if(v) v.textContent=(data.vendredis||2);
+  var offset=data.commandesOffset||33;
+  var nbFirebase=0;
+  try{
+    onValue(ref(db,"orders"),function(s2){
+      nbFirebase=Object.keys(s2.val()||{}).length;
+      if(c) c.textContent=(offset+nbFirebase)+'+';
+    });
+  }catch(e){
+    if(c) c.textContent=offset+'+';
+  }
 });
 
 function renderGalerie(){
@@ -668,12 +674,15 @@ function renderAdminLogged(){
     +'<button class="add-btn" style="background:#1a6e1a" onclick="desactiverFermeture()">🟢 Désactiver</button>'
     +'</div></div>'
     +'<div style="background:#1a1a00;border:1px solid #3a3a00;border-radius:12px;padding:16px;margin-bottom:20px">'
-    +'<div style="font-size:14px;font-weight:700;color:#FFD700;margin-bottom:12px">⭐ Mettre à jour les avis</div>'
+    +'<div style="font-size:14px;font-weight:700;color:#FFD700;margin-bottom:12px">⭐ Mettre à jour les chiffres</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
     +'<input id="inp-google-avis" class="add-inp" placeholder="Avis Google (ex: 8)" style="text-align:center"/>'
     +'<input id="inp-tripadvisor-avis" class="add-inp" placeholder="Avis TripAdvisor (ex: 6)" style="text-align:center"/>'
     +'</div>'
-    +'<input id="inp-commandes-offset" class="add-inp" placeholder="Commandes avant Firebase (ex: 32)" style="text-align:center;margin-bottom:8px"/>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
+    +'<input id="inp-commandes-offset" class="add-inp" placeholder="Total commandes (ex: 33)" style="text-align:center"/>'
+    +'<input id="inp-vendredis" class="add-inp" placeholder="Vendredis ouverts (ex: 2)" style="text-align:center"/>'
+    +'</div>'
     +'<button class="add-btn" onclick="majAvis()">Mettre à jour</button>'
     +'</div>'
     +'<input id="inp-label" class="add-inp" placeholder="Titre (ex: Poulet grillé)" />'
@@ -704,9 +713,11 @@ window.majAvis=function(){
   var google=document.getElementById('inp-google-avis').value.trim();
   var tripadvisor=document.getElementById('inp-tripadvisor-avis').value.trim();
   var offset=document.getElementById('inp-commandes-offset').value.trim();
+  var vendredis=document.getElementById('inp-vendredis').value.trim();
   if(google) set(ref(db,'avis/google'),parseInt(google));
   if(tripadvisor) set(ref(db,'avis/tripadvisor'),parseInt(tripadvisor));
   if(offset) set(ref(db,'avis/commandesOffset'),parseInt(offset));
+  if(vendredis) set(ref(db,'avis/vendredis'),parseInt(vendredis));
   alert('Mis à jour !');
 };
 window.closeAdmin=function(){document.getElementById("adminPanel").classList.remove("on");};
@@ -776,7 +787,7 @@ function animateCounter(id, target, duration){
 
 function lancerCompteurs(){
   // Vendredis depuis le 12 juin 2025
-  var ouverture=new Date('2025-06-12');
+  var ouverture=new Date('2026-06-12');
   var now=new Date();
   var diff=Math.floor((now-ouverture)/(7*24*60*60*1000));
   var vendredis=Math.max(0,diff+1);
