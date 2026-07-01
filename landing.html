@@ -99,17 +99,25 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 .reseau-btn{display:flex;align-items:center;gap:8px;background:#1a1200;border:1px solid #2a1a00;border-radius:999px;padding:10px 18px;font-size:13px;color:#fff;text-decoration:none}
 .reseau-btn.ig{border-color:#E1306C}
 .reseau-btn.fb{border-color:#1877F2}
-.navbar{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(14,10,0,0.95);backdrop-filter:blur(8px);border-bottom:2px solid rgba(255,215,0,0.15);display:flex;align-items:center;justify-content:space-between;padding:0 8px;height:52px;gap:4px}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(14,10,0,0.95);backdrop-filter:blur(8px);border-bottom:2px solid rgba(255,215,0,0.15);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px}
 .navbar::-webkit-scrollbar{display:none}
-.navbar-left{display:flex;align-items:center;gap:6px;flex-shrink:0}.nav-logo{width:30px;height:30px;object-fit:contain;border-radius:50%;border:1px solid rgba(255,215,0,0.3);flex-shrink:0}.nav-brand{font-size:10px;font-weight:800;color:#FFD700;white-space:nowrap;display:none}.navbar-links{display:flex;align-items:center;gap:1px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.navbar-links::-webkit-scrollbar{display:none}
-.nav-link{flex-shrink:0;font-size:11px;font-weight:700;color:rgba(255,215,0,0.85);text-decoration:none;padding:6px 9px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
-.nav-link:hover{color:#FFD700;border-color:rgba(255,215,0,0.35);background:rgba(255,215,0,0.12)}
+.navbar-left{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.nav-logo{width:32px;height:32px;object-fit:contain;border-radius:50%;border:1px solid rgba(255,215,0,0.3);flex-shrink:0}
+.nav-brand{font-size:12px;font-weight:800;color:#FFD700;white-space:nowrap}
+.nav-burger{background:none;border:1px solid rgba(255,215,0,0.3);border-radius:8px;color:#FFD700;font-size:20px;padding:4px 10px;cursor:pointer;line-height:1}
+.nav-drawer{position:fixed;top:52px;left:0;right:0;z-index:499;background:rgba(14,10,0,0.98);backdrop-filter:blur(12px);border-bottom:2px solid rgba(255,215,0,0.15);display:flex;flex-direction:column;transform:translateY(-110%);transition:transform 0.25s ease;padding:8px 0}
+.nav-drawer.open{transform:translateY(0)}
+.nav-drawer-link{display:block;padding:14px 24px;font-size:15px;font-weight:600;color:rgba(255,215,0,0.85);text-decoration:none;border-bottom:1px solid rgba(255,215,0,0.06)}
+.nav-drawer-link:hover{background:rgba(255,215,0,0.06);color:#FFD700}
+.nav-drawer-cmd{background:#FFD700;color:#4A2800 !important;font-weight:800;margin:12px 16px;border-radius:999px;text-align:center;border-bottom:none}
+.nav-overlay{display:none;position:fixed;inset:0;z-index:498;background:rgba(0,0,0,0.5)}
+.nav-overlay.open{display:block}
 .footer{background:#000;padding:20px;text-align:center;border-top:1px solid #1a1a1a}
 .footer-title{font-size:13px;font-weight:700;color:#FFD700;margin-bottom:4px}
 .footer-sub{font-size:11px;color:rgba(255,215,0,0.3);font-style:italic}
 .banner-ouvert{display:none;background:linear-gradient(90deg,#C0392B,#D4880A);color:#fff;text-align:center;padding:10px 16px;font-size:13px;font-weight:700;letter-spacing:0.5px}
 .banner-ouvert.on{display:block}
-.wa-btn{position:fixed;bottom:24px;right:16px;z-index:300;background:#25D366;border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 16px rgba(37,211,102,0.4)}
+.wa-btn{position:fixed;bottom:24px;left:16px;z-index:300;background:#25D366;border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 16px rgba(37,211,102,0.4)}
 @keyframes logoEntree{0%{opacity:0;transform:scale(0.6) rotate(-8deg)}60%{transform:scale(1.08) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0deg)}}
 .mosaic{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 .mosaic-item{position:relative;overflow:hidden;border-radius:10px;cursor:pointer;background:#1a1200}
@@ -242,15 +250,19 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
     <img class="nav-logo" src="https://i.imgur.com/nxIFvJx.jpg" alt="logo"/>
     <span class="nav-brand">A KA STANN & DEDETTE</span>
   </div>
-  <div class="navbar-links">
-    <a class="nav-link" href="#" style="padding:7px 10px;font-size:16px" title="Accueil">🏠</a>
-    <a class="nav-link" href="#apropos">À propos</a>
-    <a class="nav-link" href="#carte">Notre carte</a>
-    <a class="nav-link" href="#galerie">Galerie</a>
-    <a class="nav-link" href="#localisation">Trouver</a>
-    <a class="nav-link" href="https://akastan971.github.io/akastann/" target="_blank" style="background:#FFD700;color:#4A2800;border-color:#FFD700;font-weight:800;font-size:11px;padding:6px 10px">🛒 Commander</a>
-  </div>
+  <button class="nav-burger" onclick="toggleMenu()" aria-label="Menu">☰ Menu</button>
 </nav>
+
+<!-- MENU DEROULANT -->
+<div class="nav-drawer" id="navDrawer">
+  <a class="nav-drawer-link" href="#" onclick="closeMenu()">🏠 Accueil</a>
+  <a class="nav-drawer-link" href="#apropos" onclick="closeMenu()">À propos</a>
+  <a class="nav-drawer-link" href="#carte" onclick="closeMenu()">Notre carte</a>
+  <a class="nav-drawer-link" href="#galerie" onclick="closeMenu()">Galerie</a>
+  <a class="nav-drawer-link" href="#localisation" onclick="closeMenu()">Nous trouver</a>
+  <a class="nav-drawer-link nav-drawer-cmd" href="https://akastan971.github.io/akastann/" target="_blank" onclick="closeMenu()">🛒 Commander</a>
+</div>
+<div class="nav-overlay" id="navOverlay" onclick="closeMenu()"></div>
 
 <!-- BANNIERE OUVERT CE SOIR -->
 <div class="banner-ouvert" id="bannerOuvert">🔥 Nous sommes ouverts ce soir ! Venez nous retrouver de 18h à 21h — 9 Rue des Écoles, Rouvres 🌴</div>
@@ -513,6 +525,14 @@ window.closeLightbox=function(){document.getElementById("lightbox").classList.re
 </script>
 
 <script>
+function toggleMenu(){
+  document.getElementById('navDrawer').classList.toggle('open');
+  document.getElementById('navOverlay').classList.toggle('open');
+}
+function closeMenu(){
+  document.getElementById('navDrawer').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('open');
+}
 function switchTab(el,id){
   document.querySelectorAll('.mtab').forEach(function(t){t.classList.remove('on');});
   document.querySelectorAll('.menu-sec').forEach(function(s){s.classList.remove('on');});
