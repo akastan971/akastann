@@ -3,8 +3,54 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="A KA STANN & DEDETTE — Grillades Antillaises, food truck tous les vendredis à Rouvres (77230)"/>
-<title>A KA STANN & DEDETTE — Grillades Antillaises</title>
+
+<!-- SEO principal -->
+<title>A KA STANN & DEDETTE — Food Truck Grillades Antillaises à Rouvres (77230)</title>
+<meta name="description" content="Food truck de cuisine antillaise à Rouvres (77230). Poulet grillé, grillades et spécialités des Antilles, tous les vendredis soir de 18h à 21h. Commandez en ligne !"/>
+<meta name="keywords" content="food truck antillais, grillades antillaises, poulet grillé, cuisine antillaise, Rouvres, Seine-et-Marne, 77230, Meaux, Dammartin-en-Goële, Juilly, Montgé-en-Goële, Villeparisis, Claye-Souilly, Lagny-le-Sec, Saint-Soupplets, Saint-Pathus, Plessis-Belleville, Île-de-France, food truck 77, commander en ligne"/>
+<meta name="author" content="A KA STANN & DEDETTE"/>
+<meta name="robots" content="index, follow"/>
+<link rel="canonical" href="https://akastan971.github.io/akastann/landing.html"/>
+
+<!-- Open Graph (partage sur réseaux sociaux) -->
+<meta property="og:type" content="restaurant"/>
+<meta property="og:title" content="A KA STANN & DEDETTE — Food Truck Grillades Antillaises"/>
+<meta property="og:description" content="Poulet grillé et spécialités antillaises à Rouvres (77230), tous les vendredis soir de 18h à 21h. Commandez en ligne !"/>
+<meta property="og:url" content="https://akastan971.github.io/akastann/landing.html"/>
+<meta property="og:locale" content="fr_FR"/>
+<meta property="og:site_name" content="A KA STANN & DEDETTE"/>
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="A KA STANN & DEDETTE — Food Truck Antillais"/>
+<meta name="twitter:description" content="Grillades antillaises à Rouvres (77230) tous les vendredis soir. Commandez en ligne !"/>
+
+<!-- Données structurées Google (Rich Snippets) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FoodEstablishment",
+  "name": "A KA STANN & DEDETTE",
+  "description": "Food truck de cuisine antillaise à Rouvres, Seine-et-Marne. Grillades et spécialités antillaises tous les vendredis soir.",
+  "url": "https://akastan971.github.io/akastann/landing.html",
+  "servesCuisine": "Antillaise",
+  "priceRange": "€€",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "9 Rue des Écoles",
+    "addressLocality": "Rouvres",
+    "postalCode": "77230",
+    "addressCountry": "FR"
+  },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": "Friday",
+    "opens": "18:00",
+    "closes": "21:00"
+  },
+  "areaServed": ["Rouvres", "Meaux", "Dammartin-en-Goële", "Juilly", "Montgé-en-Goële", "Villeparisis", "Claye-Souilly", "Lagny-le-Sec", "Saint-Soupplets", "Saint-Pathus", "Plessis-Belleville", "Seine-et-Marne"]
+}
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:480px;margin:0 auto}
@@ -13,11 +59,11 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
 .hero-logo{width:160px;height:160px;object-fit:contain;display:block;margin:0 auto 20px;filter:drop-shadow(0 0 20px rgba(255,180,0,0.4))}
 .hero-title{font-size:24px;font-weight:800;color:#FFD700;letter-spacing:1px;margin-bottom:6px}
 .hero-slogan{font-size:14px;color:rgba(255,230,120,0.8);font-style:italic;margin-bottom:24px}
-.hero-info-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.18);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.hero-hours{display:inline-flex;align-items:center;gap:10px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:12px;padding:12px 20px;margin-bottom:28px}
 .hero-hours-day{font-size:13px;font-weight:700;color:#FFD700}
-.hero-hours-time{font-size:17px;font-weight:800;color:#FFD700}
-.btn-commander{display:inline-block;background:#FFD700;color:#4A2800;border:none;border-radius:999px;padding:13px 22px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;white-space:nowrap;box-shadow:0 4px 20px rgba(255,215,0,0.3);flex-shrink:0}
-.hero-address{display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;color:rgba(255,220,100,0.7);margin-bottom:8px}
+.hero-hours-time{font-size:15px;font-weight:800;color:#FFD700}
+.hero-hours-sep{width:1px;height:28px;background:rgba(255,215,0,0.2)}
+.btn-commander{display:block;background:#FFD700;color:#4A2800;border:none;border-radius:999px;padding:16px 32px;font-size:16px;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;margin:0 auto;max-width:280px;box-shadow:0 4px 20px rgba(255,215,0,0.3)}
 .section{padding:28px 20px}
 .section-alt{background:#1a1200}
 .section-title{font-size:18px;font-weight:700;color:#FFD700;margin-bottom:6px}
@@ -108,14 +154,12 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
   <img class="hero-logo" src="https://i.imgur.com/nxIFvJx.jpg" alt="A KA STANN & DEDETTE" />
   <div class="hero-title">A KA STANN & DEDETTE</div>
   <div class="hero-slogan">Savourez l'instant, goûtez l'authenticité</div>
-  <div class="hero-info-row">
-    <div>
-      <div class="hero-hours-day">Tous les vendredis soir à Rouvres</div>
-      <div class="hero-hours-time">18h00 – 21h00</div>
-    </div>
-    <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Commander</a>
+  <div class="hero-hours">
+    <div><div class="hero-hours-day">Tous les vendredis</div><div class="hero-hours-time">18h00 – 21h00</div></div>
+    <div class="hero-hours-sep"></div>
+    <div><div class="hero-hours-day">Commandes</div><div class="hero-hours-time">Sur place</div></div>
   </div>
-  <div class="hero-address">📍 <span>9 Rue des Écoles, 77230 Rouvres</span></div>
+  <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Commander en ligne</a>
 </div>
 
 <div class="madras"></div>
