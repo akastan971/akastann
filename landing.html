@@ -620,11 +620,14 @@ function renderAdminLogged(){
     +'<button class="add-btn" style="background:#C0392B" onclick="activerFermeture()">🔴 Activer la fermeture</button>'
     +'<button class="add-btn" style="background:#1a6e1a" onclick="desactiverFermeture()">🟢 Désactiver</button>'
     +'</div></div>'
-    +'<div class="ibb-tip">💡 Pour ajouter une photo :<br>1. Va sur <b>imgbb.com</b> → Upload<br>2. Copie le lien <b>"Direct link"</b><br>3. Colle-le ci-dessous</div>'
-    +'<div class="add-photo-form"><div class="add-photo-title">➕ Ajouter une photo</div>'
-    +'<input id="inp-label" class="add-inp" placeholder="Titre de la photo (ex: Poulet grillé)" />'
-    +'<input id="inp-url" class="add-inp" placeholder="Lien direct (https://i.ibb.co/...)" />'
-    +'<button class="add-btn" onclick="addPhoto()">Ajouter à la galerie</button></div>'
+    +'<div class="add-photo-form"><div class="add-photo-title">📸 Ajouter une photo</div>'
+    +'<input id="inp-label" class="add-inp" placeholder="Titre (ex: Poulet grillé)" />'
+    +'<label style="display:block;margin-bottom:8px">'
+    +'<div id="upload-btn" style="background:#D4880A;color:#fff;border-radius:999px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;text-align:center">📷 Choisir une photo</div>'
+    +'<input type="file" id="inp-file" accept="image/*" style="display:none" onchange="uploadPhoto(this)"/>'
+    +'</label>'
+    +'<div id="upload-progress" style="display:none;font-size:12px;color:rgba(255,215,0,0.7);text-align:center;padding:8px">⏳ Upload en cours...</div>'
+    +'</div>'
     +'<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Photos en ligne ('+keys.length+')</div>'
     +'<div class="photo-list">'+listHtml+'</div>';
 }
@@ -657,13 +660,37 @@ window.dismissPwa=function(){
   document.getElementById("pwaBanner").classList.remove("on");
   sessionStorage.setItem("pwaDismissed","1");
 };
-window.addPhoto=function(){
-  var label=document.getElementById("inp-label").value.trim();
-  var url=document.getElementById("inp-url").value.trim();
-  if(!url){alert("Merci de renseigner un lien d'image.");return;}
-  push(ref(db,"landingPhotos"),{label:label||"Photo",url:url});
-  document.getElementById("inp-label").value="";
-  document.getElementById("inp-url").value="";
+window.uploadPhoto=function(input){
+  var file=input.files[0];
+  if(!file)return;
+  var label=document.getElementById("inp-label").value.trim()||file.name.replace(/\.[^.]+$/,"");
+  document.getElementById("upload-progress").style.display="block";
+  document.getElementById("upload-btn").style.opacity="0.5";
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var base64=e.target.result.split(",")[1];
+    var formData=new FormData();
+    formData.append("image",base64);
+    formData.append("name",label);
+    fetch("https://api.imgbb.com/1/upload?key=a9ad4226a3ff5ff504ef735245b45945",{method:"POST",body:formData})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(data.success){
+        push(ref(db,"landingPhotos"),{label:label,url:data.data.url});
+        document.getElementById("upload-progress").textContent="✅ Photo ajoutée !";
+        document.getElementById("inp-label").value="";
+        setTimeout(function(){renderAdminLogged();},1500);
+      } else {
+        document.getElementById("upload-progress").textContent="❌ Erreur upload, réessaie.";
+        document.getElementById("upload-btn").style.opacity="1";
+      }
+    })
+    .catch(function(){
+      document.getElementById("upload-progress").textContent="❌ Erreur réseau, réessaie.";
+      document.getElementById("upload-btn").style.opacity="1";
+    });
+  };
+  reader.readAsDataURL(file);
 };
 window.delPhoto=function(k){if(confirm("Supprimer cette photo ?"))remove(ref(db,"landingPhotos/"+k));};
 window.openLightbox=function(url){document.getElementById("lightbox-img").src=url;document.getElementById("lightbox").classList.add("on");};
