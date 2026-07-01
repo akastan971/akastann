@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <!-- SEO principal -->
-<title>A KA STANN & DEDETTE — Food Truck Grillades Antillaises à Rouvres (77230)</title>
+<title>A KA STANN & DEDETTE - Food Truck de Grillades Antillaises à Rouvres (77230)</title>
 <meta name="description" content="Food truck de cuisine antillaise à Rouvres (77230). Poulet grillé, grillades et spécialités des Antilles, tous les vendredis soir de 18h à 21h. Commandez en ligne !"/>
-<meta name="keywords" content="food truck antillais, grillades antillaises, poulet grillé, cuisine antillaise, Rouvres, Seine-et-Marne, 77230, Meaux, Dammartin-en-Goële, Juilly, Montgé-en-Goële, Villeparisis, Claye-Souilly, Lagny-le-Sec, Saint-Soupplets, Saint-Pathus, Plessis-Belleville, Île-de-France, food truck 77, commander en ligne"/>
+<meta name="keywords" content="food truck antillais, poulet boucané, accras, guadeloupe, grillades antillaises, poulet grillé, cuisine antillaise, Rouvres, Seine-et-Marne, 77230, Meaux, Dammartin-en-Goële, Juilly, Montgé-en-Goële, Villeparisis, Claye-Souilly, Lagny-le-Sec, Saint-Soupplets, Saint-Pathus, Plessis-Belleville, Île-de-France, food truck 77, commander en ligne"/>
 <meta name="author" content="A KA STANN & DEDETTE"/>
 <meta name="robots" content="index, follow"/>
 <link rel="canonical" href="https://akastan971.github.io/akastann/landing.html"/>
@@ -53,9 +53,10 @@
 </script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:480px;margin:0 auto}
+body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
 .madras{height:6px;background:repeating-linear-gradient(90deg,#E8B800 0,#E8B800 14px,#1a6e1a 14px,#1a6e1a 28px,#C0392B 28px,#C0392B 42px,#E8B800 42px,#E8B800 56px)}
 .hero{background:linear-gradient(180deg,#1a1200 0%,#0e0a00 100%);padding:40px 20px 32px;text-align:center}
+.hero-content-wrap{display:contents}
 .hero-logo{width:160px;height:160px;object-fit:contain;display:block;margin:0 auto 20px;filter:drop-shadow(0 0 20px rgba(255,180,0,0.4))}
 .hero-title{font-size:24px;font-weight:800;color:#FFD700;letter-spacing:1px;margin-bottom:6px}
 .hero-slogan{font-size:14px;color:rgba(255,230,120,0.8);font-style:italic;margin-bottom:24px}
@@ -101,7 +102,6 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
 .footer{background:#000;padding:20px;text-align:center;border-top:1px solid #1a1a1a}
 .footer-title{font-size:13px;font-weight:700;color:#FFD700;margin-bottom:4px}
 .footer-sub{font-size:11px;color:rgba(255,215,0,0.3);font-style:italic}
-/* GALERIE MOSAIQUE */
 .mosaic{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 .mosaic-item{position:relative;overflow:hidden;border-radius:10px;cursor:pointer;background:#1a1200}
 .mosaic-item:nth-child(3n+1){grid-column:span 2}
@@ -110,12 +110,10 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
 .mosaic-item.tall{aspect-ratio:1}
 .mosaic-item.wide{aspect-ratio:16/7}
 .mosaic-empty{text-align:center;padding:40px 0;color:rgba(255,255,255,0.25);font-size:13px}
-/* LIGHTBOX */
 .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;align-items:center;justify-content:center}
 .lightbox.on{display:flex}
 .lightbox img{max-width:95vw;max-height:90vh;border-radius:10px;object-fit:contain}
 .lightbox-close{position:absolute;top:16px;right:16px;font-size:28px;color:#fff;cursor:pointer;background:rgba(0,0,0,0.5);border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center}
-/* ADMIN */
 .admin-bar{position:fixed;bottom:16px;right:16px;z-index:100}
 .admin-toggle{background:#D4880A;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.4)}
 .admin-panel{position:fixed;inset:0;background:#0a0a0a;z-index:200;overflow-y:auto;display:none}
@@ -143,6 +141,88 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
 .photo-url{font-size:10px;color:rgba(255,255,255,0.3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .photo-del{background:transparent;color:#ff5555;border:1px solid #ff5555;border-radius:999px;padding:4px 10px;font-size:11px;cursor:pointer;flex-shrink:0}
 .ibb-tip{background:rgba(100,149,237,0.08);border:1px solid rgba(100,149,237,0.2);border-radius:10px;padding:12px;font-size:12px;color:rgba(100,149,237,0.8);line-height:1.6;margin-bottom:16px}
+
+/* ===== TABLET 768px+ ===== */
+@media(min-width:768px){
+  .hero{padding:60px 40px 48px}
+  .hero-logo{width:200px;height:200px}
+  .hero-title{font-size:32px}
+  .hero-slogan{font-size:16px}
+  .btn-commander{max-width:320px;font-size:18px;padding:18px 40px}
+  .section{padding:40px 40px}
+  .section-title{font-size:22px}
+  .histoire-card{padding:24px}
+  .section-text{font-size:15px}
+  .mtab{font-size:14px;padding:10px 18px}
+  .menu-item{padding:18px 20px}
+  .menu-item-name{font-size:17px}
+  .menu-item-price{font-size:24px}
+  .bois-grid{grid-template-columns:repeat(4,1fr)}
+  .mosaic{grid-template-columns:repeat(3,1fr)}
+  .location-card{padding:24px;gap:20px}
+  .cta-section{padding:48px 40px}
+  .cta-logo{width:150px}
+  .cta-title{font-size:20px}
+}
+
+/* ===== DESKTOP 1100px+ ===== */
+@media(min-width:1100px){
+  /* HERO split 2 colonnes plein écran */
+  .hero{
+    padding:0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:100vh;
+    text-align:left;
+    background:linear-gradient(135deg,#1a1200 0%,#0e0a00 100%);
+  }
+  .hero-logo{
+    order:2;
+    width:100%;
+    height:100%;
+    min-height:100vh;
+    object-fit:cover;
+    display:block;
+    margin:0;
+    filter:none;
+    border-left:4px solid rgba(255,215,0,0.15);
+  }
+  .hero-content-wrap{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:80px 8%;
+    order:1;
+  }
+  .hero-title{font-size:48px;margin-bottom:12px}
+  .hero-slogan{font-size:18px;margin-bottom:32px}
+  .hero-hours{margin-bottom:36px}
+  .btn-commander{margin:0;max-width:320px;font-size:18px}
+
+  /* sections plein largeur */
+  .section{padding:70px 8%}
+  .section-alt{padding:70px 8%}
+  .section-title{font-size:28px}
+  .histoire-card{max-width:900px;padding:32px}
+  .section-text{font-size:16px}
+
+  /* menu 2 colonnes */
+  .menu-sec.on{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .menu-item-name{font-size:17px}
+  .menu-item-price{font-size:26px}
+  .bois-grid{grid-template-columns:repeat(4,1fr);max-width:800px}
+
+  /* galerie 4 col */
+  .mosaic{grid-template-columns:repeat(4,1fr)}
+
+  /* localisation + cta */
+  .location-card{max-width:700px;padding:32px}
+  .cta-section{padding:80px 8%}
+  .cta-logo{width:160px}
+  .cta-title{font-size:24px}
+  .footer{padding:32px 8%}
+  .madras{height:8px}
+}
 </style>
 </head>
 <body>
@@ -152,14 +232,16 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;max-width:48
 <!-- HERO -->
 <div class="hero">
   <img class="hero-logo" src="https://i.imgur.com/nxIFvJx.jpg" alt="A KA STANN & DEDETTE" />
-  <div class="hero-title">A KA STANN & DEDETTE</div>
-  <div class="hero-slogan">Savourez l'instant, goûtez l'authenticité</div>
-  <div class="hero-hours">
-    <div><div class="hero-hours-day">Tous les vendredis</div><div class="hero-hours-time">18h00 – 21h00</div></div>
-    <div class="hero-hours-sep"></div>
-    <div><div class="hero-hours-day">Commandes</div><div class="hero-hours-time">Sur place</div></div>
+  <div class="hero-content-wrap">
+    <div class="hero-title">A KA STANN & DEDETTE</div>
+    <div class="hero-slogan">Savourez l'instant, goûtez l'authenticité</div>
+    <div class="hero-hours">
+      <div><div class="hero-hours-day">Tous les vendredis</div><div class="hero-hours-time">18h00 – 21h00</div></div>
+      <div class="hero-hours-sep"></div>
+      <div><div class="hero-hours-day">Commandes</div><div class="hero-hours-time">Sur place</div></div>
+    </div>
+    <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Commander en ligne</a>
   </div>
-  <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Commander en ligne</a>
 </div>
 
 <div class="madras"></div>
