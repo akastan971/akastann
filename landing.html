@@ -432,7 +432,38 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 
 <div class="madras"></div>
 
-<!-- GALERIE -->
+<!-- COMPTEURS -->
+<div class="section section-alt" id="chiffres">
+  <div class="section-title">En chiffres</div>
+  <div class="section-bar"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+
+    <div style="background:#0e0a00;border:1px solid #2a1a00;border-radius:14px;padding:18px;text-align:center">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Vendredis ouverts</div>
+      <div style="font-size:36px;font-weight:800;color:#FFD700" id="counter-vendredis">0</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px">depuis juin 2025</div>
+    </div>
+
+    <div style="background:#0e0a00;border:1px solid #2a1a00;border-radius:14px;padding:18px;text-align:center">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Commandes</div>
+      <div style="font-size:36px;font-weight:800;color:#FFD700" id="counter-commandes">0</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px">passées en ligne</div>
+    </div>
+
+    <div style="background:#0e0a00;border:1px solid #2a1a00;border-radius:14px;padding:18px;text-align:center">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Google</div>
+      <div style="font-size:36px;font-weight:800;color:#FFD700">⭐ 5/5</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px" id="counter-google">8 avis</div>
+    </div>
+
+    <div style="background:#0e0a00;border:1px solid #2a1a00;border-radius:14px;padding:18px;text-align:center">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">TripAdvisor</div>
+      <div style="font-size:36px;font-weight:800;color:#FFD700">⭐ 4.8</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px" id="counter-tripadvisor">6 avis</div>
+    </div>
+
+  </div>
+</div>
 <div class="section" id="galerie">
   <div class="section-title">Notre galerie</div>
   <div class="section-bar"></div>
@@ -590,6 +621,22 @@ onValue(ref(db,"fermetureExceptionnelle"),function(s){
   }
 });
 
+// Avis depuis Firebase
+onValue(ref(db,"avis"),function(s){
+  var data=s.val()||{google:8,tripadvisor:6,commandesOffset:32};
+  var g=document.getElementById('counter-google');
+  var t=document.getElementById('counter-tripadvisor');
+  if(g) g.textContent=(data.google||8)+' avis';
+  if(t) t.textContent=(data.tripadvisor||6)+' avis';
+  // Mettre à jour le compteur commandes avec offset
+  var offset=data.commandesOffset||32;
+  onValue(ref(db,"orders"),function(s2){
+    var total=Object.keys(s2.val()||{}).length+offset;
+    var el=document.getElementById('counter-commandes');
+    if(el) el.textContent=total+'+';
+  });
+});
+
 function renderGalerie(){
   var el=document.getElementById("galerie-container");
   var keys=Object.keys(photos);
@@ -620,7 +667,15 @@ function renderAdminLogged(){
     +'<button class="add-btn" style="background:#C0392B" onclick="activerFermeture()">🔴 Activer la fermeture</button>'
     +'<button class="add-btn" style="background:#1a6e1a" onclick="desactiverFermeture()">🟢 Désactiver</button>'
     +'</div></div>'
-    +'<div class="add-photo-form"><div class="add-photo-title">📸 Ajouter une photo</div>'
+    +'<div style="background:#1a1a00;border:1px solid #3a3a00;border-radius:12px;padding:16px;margin-bottom:20px">'
+    +'<div style="font-size:14px;font-weight:700;color:#FFD700;margin-bottom:12px">⭐ Mettre à jour les avis</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
+    +'<input id="inp-google-avis" class="add-inp" placeholder="Avis Google (ex: 8)" style="text-align:center"/>'
+    +'<input id="inp-tripadvisor-avis" class="add-inp" placeholder="Avis TripAdvisor (ex: 6)" style="text-align:center"/>'
+    +'</div>'
+    +'<input id="inp-commandes-offset" class="add-inp" placeholder="Commandes avant Firebase (ex: 32)" style="text-align:center;margin-bottom:8px"/>'
+    +'<button class="add-btn" onclick="majAvis()">Mettre à jour</button>'
+    +'</div>'
     +'<input id="inp-label" class="add-inp" placeholder="Titre (ex: Poulet grillé)" />'
     +'<label style="display:block;margin-bottom:8px">'
     +'<div id="upload-btn" style="background:#D4880A;color:#fff;border-radius:999px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;text-align:center">📷 Choisir une photo</div>'
@@ -644,6 +699,15 @@ window.openAdmin=function(){
     };
     document.getElementById("pwdInp").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("btnLogin").click();});
   }
+};
+window.majAvis=function(){
+  var google=document.getElementById('inp-google-avis').value.trim();
+  var tripadvisor=document.getElementById('inp-tripadvisor-avis').value.trim();
+  var offset=document.getElementById('inp-commandes-offset').value.trim();
+  if(google) set(ref(db,'avis/google'),parseInt(google));
+  if(tripadvisor) set(ref(db,'avis/tripadvisor'),parseInt(tripadvisor));
+  if(offset) set(ref(db,'avis/commandesOffset'),parseInt(offset));
+  alert('Mis à jour !');
 };
 window.closeAdmin=function(){document.getElementById("adminPanel").classList.remove("on");};
 window.activerFermeture=function(){
@@ -698,6 +762,44 @@ window.closeLightbox=function(){document.getElementById("lightbox").classList.re
 </script>
 
 <script>
+// COMPTEURS ANIMÉS
+function animateCounter(id, target, duration){
+  var el=document.getElementById(id);
+  if(!el)return;
+  var start=0, step=target/60;
+  var timer=setInterval(function(){
+    start+=step;
+    if(start>=target){start=target;clearInterval(timer);}
+    el.textContent=Math.round(start)+(id==='counter-commandes'?'+':'');
+  },duration/60);
+}
+
+function lancerCompteurs(){
+  // Vendredis depuis le 12 juin 2025
+  var ouverture=new Date('2025-06-12');
+  var now=new Date();
+  var diff=Math.floor((now-ouverture)/(7*24*60*60*1000));
+  var vendredis=Math.max(0,diff+1);
+  animateCounter('counter-vendredis', vendredis, 1200);
+
+  // Commandes depuis Firebase
+  var el=document.getElementById('counter-commandes');
+  if(el) el.textContent='...';
+}
+
+// Lancer quand la section est visible
+var compteurLance=false;
+window.addEventListener('scroll',function(){
+  if(compteurLance)return;
+  var el=document.getElementById('counter-vendredis');
+  if(!el)return;
+  var rect=el.getBoundingClientRect();
+  if(rect.top<window.innerHeight){
+    compteurLance=true;
+    lancerCompteurs();
+  }
+});
+
 function toggleFaq(btn){
   var answer=btn.nextElementSibling;
   var isOpen=answer.classList.contains('open');
