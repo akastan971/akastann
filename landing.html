@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <!-- SEO principal -->
-<title>A KA STANN & DEDETTE - Food Truck Grillades Antillaises à Rouvres (77230)</title>
+<title>A KA STANN & DEDETTE - Food Truck de Grillades Antillaises à Rouvres (77230)</title>
 <meta name="description" content="Food truck de cuisine antillaise à Rouvres (77230). Poulet grillé, grillades et spécialités des Antilles, tous les vendredis soir de 18h à 21h. Commandez en ligne !"/>
-<meta name="keywords" content="food truck antillais, poulet boucané, accras, boudin créole, grillades antillaises, poulet grillé, cuisine antillaise, Rouvres, Seine-et-Marne, 77230, Meaux, Dammartin-en-Goële, Juilly, Montgé-en-Goële, Villeparisis, Claye-Souilly, Lagny-le-Sec, Saint-Soupplets, Saint-Pathus, Plessis-Belleville, Île-de-France, food truck 77, commander en ligne"/>
+<meta name="keywords" content="food truck antillais, poulet boucané, poulet grillé, grillades, BBQ, accras, grillades antillaises, poulet grillé, cuisine antillaise, Rouvres, Seine-et-Marne, 77230, Meaux, Dammartin-en-Goële, Juilly, Montgé-en-Goële, Villeparisis, Claye-Souilly, Lagny-le-Sec, Saint-Soupplets, Saint-Pathus, Plessis-Belleville, Île-de-France, food truck 77, commander en ligne"/>
 <meta name="author" content="A KA STANN & DEDETTE"/>
 <meta name="robots" content="index, follow"/>
 <link rel="canonical" href="https://akastan971.github.io/akastann/landing.html"/>
@@ -242,7 +242,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
       </div>
       <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Commander</a>
     </div>
-    <div class="hero-address">📍 9 Rue des Écoles, 77230 Rouvres</div>
+    <div class="hero-address" style="display:inline-block;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:999px;padding:8px 20px;font-size:13px;color:rgba(255,215,0,0.75);font-weight:600;letter-spacing:0.5px">📍 9 Rue des Écoles, 77230 Rouvres</div>
   </div>
 </div>
 
@@ -274,36 +274,57 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
 <div class="section section-alt">
   <div class="section-title">Le menu</div>
   <div class="section-bar"></div>
-  <div class="menu-tabs">
-    <div class="mtab on" onclick="switchTab(this,'simple')">Menu simple</div>
-    <div class="mtab" onclick="switchTab(this,'mixte')">Menu mixte</div>
-    <div class="mtab" onclick="switchTab(this,'boissons')">Boissons</div>
+
+  <!-- Onglets principaux Menus / Allergènes -->
+  <div class="menu-tabs" style="margin-bottom:16px">
+    <div class="mtab on" id="main-tab-menus" onclick="switchMainTab('menus')">🍽️ Menus</div>
+    <div class="mtab" id="main-tab-allergenes" onclick="switchMainTab('allergenes')">⚠️ Allergènes</div>
   </div>
-  <div class="menu-sec on" id="tab-simple">
-    <div class="menu-item"><div><div class="menu-item-name">Vieux Fort</div><div class="menu-item-desc">3 pilons OU 1 cuisse · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">9€</div></div>
-    <div class="menu-item"><div><div class="menu-item-name">Sainte-Anne</div><div class="menu-item-desc">6 pilons OU 2 cuisses · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">11€</div></div>
-    <div class="menu-item"><div><div class="menu-item-name">Port Louis</div><div class="menu-item-desc">9 pilons OU 3 cuisses · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">13€</div></div>
-    <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4)">🌿 Tous nos produits sont frais <span class="tag-halal">Halal</span></div>
-  </div>
-  <div class="menu-sec" id="tab-mixte">
-    <div class="menu-item"><div><div class="menu-item-name">Mixte Vieux Fort</div><div class="menu-item-desc">3 pilons OU 1 cuisse · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">10€</div></div>
-    <div class="menu-item"><div><div class="menu-item-name">Mixte Sainte-Anne</div><div class="menu-item-desc">6 pilons OU 2 cuisses · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">12€</div></div>
-    <div class="menu-item"><div><div class="menu-item-name">Mixte Port Louis</div><div class="menu-item-desc">9 pilons OU 3 cuisses · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">14€</div></div>
-    <div style="background:#1a3a1a;border:1px solid #2a5a2a;border-radius:10px;padding:10px 14px;margin-top:6px;font-size:12px;color:#a8f0a8">✓ Le menu mixte inclut Frites ET Riz Madras</div>
-    <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4)">🌿 Tous nos produits sont frais <span class="tag-halal">Halal</span></div>
-  </div>
-  <div class="menu-sec" id="tab-boissons">
-    <div class="bois-grid">
-      <div class="bois-card"><div class="bois-name">Coca-Cola</div><div class="bois-price">1,50€</div></div>
-      <div class="bois-card"><div class="bois-name">Coca-Cola Zéro</div><div class="bois-price">1,50€</div></div>
-      <div class="bois-card"><div class="bois-name">Cristaline</div><div class="bois-price">1,50€</div></div>
-      <div class="bois-card"><div class="bois-name">Boisson locale</div><div class="bois-price">2,00€</div></div>
+
+  <!-- BLOC MENUS -->
+  <div id="bloc-menus">
+    <div class="menu-tabs" style="margin-bottom:16px">
+      <div class="mtab on" onclick="switchTab(this,'simple')">Simple</div>
+      <div class="mtab" onclick="switchTab(this,'mixte')">Mixte</div>
+      <div class="mtab" onclick="switchTab(this,'boissons')">Boissons</div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-      <div class="bois-card"><div class="bois-name">Accras de morue (x5)</div><div class="bois-price">2,00€</div></div>
-      <div class="bois-card"><div class="bois-name">Barquette de frites</div><div class="bois-price">3,00€</div></div>
+    <div class="menu-sec on" id="tab-simple">
+      <div class="menu-item"><div><div class="menu-item-name">Vieux Fort</div><div class="menu-item-desc">3 pilons OU 1 cuisse · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">9€</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Sainte-Anne</div><div class="menu-item-desc">6 pilons OU 2 cuisses · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">11€</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Port Louis</div><div class="menu-item-desc">9 pilons OU 3 cuisses · Frites OU Riz Madras · Boisson</div><div class="menu-item-opt">Option Riz Madras : +2€</div></div><div class="menu-item-price">13€</div></div>
+      <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4)">🌿 Tous nos produits sont frais <span class="tag-halal">Halal</span></div>
+    </div>
+    <div class="menu-sec" id="tab-mixte">
+      <div class="menu-item"><div><div class="menu-item-name">Mixte Vieux Fort</div><div class="menu-item-desc">3 pilons OU 1 cuisse · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">10€</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Mixte Sainte-Anne</div><div class="menu-item-desc">6 pilons OU 2 cuisses · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">12€</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Mixte Port Louis</div><div class="menu-item-desc">9 pilons OU 3 cuisses · Frites ET Riz Madras · Boisson</div></div><div class="menu-item-price">14€</div></div>
+      <div style="background:#1a3a1a;border:1px solid #2a5a2a;border-radius:10px;padding:10px 14px;margin-top:6px;font-size:12px;color:#a8f0a8">✓ Le menu mixte inclut Frites ET Riz Madras</div>
+      <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4)">🌿 Tous nos produits sont frais <span class="tag-halal">Halal</span></div>
+    </div>
+    <div class="menu-sec" id="tab-boissons">
+      <div class="bois-grid">
+        <div class="bois-card"><div class="bois-name">Coca-Cola</div><div class="bois-price">1,50€</div></div>
+        <div class="bois-card"><div class="bois-name">Coca-Cola Zéro</div><div class="bois-price">1,50€</div></div>
+        <div class="bois-card"><div class="bois-name">Cristaline</div><div class="bois-price">1,50€</div></div>
+        <div class="bois-card"><div class="bois-name">Boisson locale</div><div class="bois-price">2,00€</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <div class="bois-card"><div class="bois-name">Accras de morue (x5)</div><div class="bois-price">2,00€</div></div>
+        <div class="bois-card"><div class="bois-name">Barquette de frites</div><div class="bois-price">3,00€</div></div>
+      </div>
     </div>
   </div>
+
+  <!-- BLOC ALLERGÈNES -->
+  <div id="bloc-allergenes" style="display:none">
+    <div style="background:#1a1000;border:1px solid #3a2a00;border-radius:12px;padding:16px;margin-bottom:14px;font-size:12px;color:rgba(255,200,80,0.7);line-height:1.6">
+      ⚠️ Ces informations sont données à titre indicatif. En cas de doute ou d'allergie sévère, n'hésitez pas à nous contacter directement.
+    </div>
+    <div style="border-radius:12px;overflow:hidden;border:1px solid #2a1a00">
+      <img src="https://i.ibb.co/DPQ1m3HG/Allerg-nes-A-KA-STANN.png" alt="Tableau des allergènes A KA STANN" style="width:100%;display:block"/>
+    </div>
+  </div>
+
 </div>
 
 <div class="madras"></div>
@@ -454,6 +475,13 @@ function switchTab(el,id){
   document.querySelectorAll('.menu-sec').forEach(function(s){s.classList.remove('on');});
   el.classList.add('on');
   document.getElementById('tab-'+id).classList.add('on');
+}
+function switchMainTab(tab){
+  var isMenus=tab==='menus';
+  document.getElementById('bloc-menus').style.display=isMenus?'block':'none';
+  document.getElementById('bloc-allergenes').style.display=isMenus?'none':'block';
+  document.getElementById('main-tab-menus').classList.toggle('on',isMenus);
+  document.getElementById('main-tab-allergenes').classList.toggle('on',!isMenus);
 }
 </script>
 </body>
