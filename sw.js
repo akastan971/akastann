@@ -1,21 +1,20 @@
-const CACHE_NAME = 'akastann-v1';
-const urlsToCache = [
-  '/akastann/landing.html',
-  '/akastann/manifest.json'
-];
+const CACHE_NAME = 'akastann-v2';
 
 self.addEventListener('install', function(e) {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', function(e) {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(urlsToCache);
+    caches.keys().then(function(keys) {
+      return Promise.all(keys.map(function(key) {
+        return caches.delete(key);
+      }));
     })
   );
 });
 
+// Toujours chercher sur le réseau, jamais depuis le cache
 self.addEventListener('fetch', function(e) {
-  e.respondWith(
-    caches.match(e.request).then(function(response) {
-      return response || fetch(e.request);
-    })
-  );
+  e.respondWith(fetch(e.request));
 });
