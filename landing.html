@@ -695,23 +695,22 @@ var deferredPrompt;
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
   deferredPrompt=e;
-  document.getElementById('pwaInstallBar').style.display='block';
-  if(!sessionStorage.getItem("pwaDismissed")){
-    setTimeout(function(){document.getElementById("pwaBanner").classList.add("on");},3000);
-  }
 });
 window.installPwa=function(){
-  if(!deferredPrompt){
-    // iPhone : afficher un tuto
-    alert("Sur iPhone :\n1. Appuyez sur l'icône Partager (carré avec flèche)\n2. Puis \"Sur l'écran d'accueil\"\n3. Puis \"Ajouter\" !");
-    return;
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(){
+      deferredPrompt=null;
+      document.getElementById('pwaInstallBar').style.display='none';
+    });
+  } else {
+    var isIos=/iphone|ipad|ipod/i.test(navigator.userAgent);
+    if(isIos){
+      alert("Sur iPhone :\n1. Appuyez sur l'icône Partager (carré avec flèche ↑)\n2. Puis \"Sur l'écran d'accueil\"\n3. Puis \"Ajouter\" !");
+    } else {
+      alert("Sur Android :\n1. Ouvrez le menu ⋮ de Chrome\n2. Puis \"Ajouter à l'écran d'accueil\"");
+    }
   }
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(function(){
-    deferredPrompt=null;
-    document.getElementById('pwaInstallBar').style.display='none';
-    document.getElementById("pwaBanner").classList.remove("on");
-  });
 };
 function toggleMenu(){
   document.getElementById('navDrawer').classList.toggle('open');
