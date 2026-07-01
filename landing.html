@@ -53,7 +53,7 @@
 </script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
+body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;padding-top:48px}
 .madras{height:10px;background:repeating-linear-gradient(90deg,#E8B800 0,#E8B800 14px,#1a6e1a 14px,#1a6e1a 28px,#C0392B 28px,#C0392B 42px,#1565C0 42px,#1565C0 56px,#E8B800 56px,#E8B800 70px,#1a6e1a 70px,#1a6e1a 84px,#C0392B 84px,#C0392B 98px,#1565C0 98px,#1565C0 112px)}
 .hero{background:linear-gradient(180deg,#1a1200 0%,#0e0a00 100%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M30 56 C18 42 12 32 20 20 C23 30 30 27 27 14 C33 24 42 30 39 20 C48 32 42 42 30 56Z' fill='%23D4880A' opacity='0.05'/%3E%3C/svg%3E");background-size:cover,60px 60px;padding:40px 20px 32px;text-align:center}
 .hero-content-wrap{display:contents}
@@ -99,6 +99,11 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
 .reseau-btn{display:flex;align-items:center;gap:8px;background:#1a1200;border:1px solid #2a1a00;border-radius:999px;padding:10px 18px;font-size:13px;color:#fff;text-decoration:none}
 .reseau-btn.ig{border-color:#E1306C}
 .reseau-btn.fb{border-color:#1877F2}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(14,10,0,0.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,215,0,0.1);display:flex;align-items:center;gap:4px;padding:0 12px;height:48px;overflow-x:auto;scrollbar-width:none;max-width:480px;margin:0 auto}
+.navbar::-webkit-scrollbar{display:none}
+.nav-logo{width:32px;height:32px;object-fit:contain;flex-shrink:0;margin-right:6px}
+.nav-link{flex-shrink:0;font-size:12px;font-weight:600;color:rgba(255,215,0,0.6);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;transition:all 0.2s;white-space:nowrap}
+.nav-link:hover,.nav-link.active{color:#FFD700;border-color:rgba(255,215,0,0.25);background:rgba(255,215,0,0.08)}
 .footer{background:#000;padding:20px;text-align:center;border-top:1px solid #1a1a1a}
 .footer-title{font-size:13px;font-weight:700;color:#FFD700;margin-bottom:4px}
 .footer-sub{font-size:11px;color:rgba(255,215,0,0.3);font-style:italic}
@@ -227,6 +232,15 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
 </head>
 <body>
 
+<!-- NAVBAR -->
+<nav class="navbar">
+  <img class="nav-logo" src="https://i.imgur.com/nxIFvJx.jpg" alt="logo"/>
+  <a class="nav-link" href="#apropos">À propos</a>
+  <a class="nav-link" href="#carte">Notre carte</a>
+  <a class="nav-link" href="#galerie">Galerie</a>
+  <a class="nav-link" href="#localisation">Nous trouver</a>
+</nav>
+
 <div class="madras"></div>
 
 <!-- HERO -->
@@ -249,7 +263,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
 <div class="madras"></div>
 
 <!-- À PROPOS -->
-<div class="section">
+<div class="section" id="apropos">
   <div class="section-title">À propos</div>
   <div class="section-bar"></div>
   <div class="menu-tabs">
@@ -258,12 +272,12 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
   </div>
   <div class="menu-sec on" id="tab-apropos-moi">
     <div class="histoire-card">
-      <p class="section-text">✍️ <em style="color:rgba(255,215,0,0.6)">Cette section est à remplir par le propriétaire du food truck.</em><br><br>Parle de toi ici — qui tu es, d'où tu viens, ta passion pour la cuisine antillaise, ton parcours...</p>
+      <p class="section-text">Je m'appelle Stan, et je viens de Guadeloupe.<br><br>Cette île, elle ne m'a pas seulement donné naissance, elle m'a tout appris.<br>Les odeurs qui s'échappent des cuisines, les saveurs qui te ramènent instantanément à l'enfance, la chaleur des gens... cette façon unique de partager un repas comme si c'était une fête à chaque fois.<br><br>La Guadeloupe, c'est bien plus qu'un endroit pour moi..<br><br>Depuis toujours, j'ai eu cette envie profonde de faire voyager les gens au travers de la gastronomie antillaise.<br>Pas besoin de prendre l'avion, il suffit d'une bouchée, fermer les yeux et se retrouver là-bas, les pieds dans le sable, le soleil sur la peau !<br><br>A KA STANN & DEDETTE, c'est ce rêve devenu réel pour moi.<br>Je cuisine avec le cœur, dans chaque plat, tout l'amour que j'ai pour mon île et pour ceux qui viennent me rendre visite chaque vendredi.<br><br><span style="color:#FFD700;font-weight:700;font-size:15px">Alors venez comme vous êtes.<br>Repartez le sourire aux lèvres. 🌴</span></p>
     </div>
   </div>
   <div class="menu-sec" id="tab-apropos-projet">
     <div class="histoire-card">
-      <p class="section-text">Chez nous, c'est bien plus qu'un food truck.<br><br>C'est une histoire de passion, de partage et de saveurs venues des Antilles et plus précisément de la Guadeloupe !! Né d'une envie simple de faire découvrir une cuisine généreuse, authentique et conviviale.<br><br>On ne vient pas seulement manger chez A KA STANN & DEDETTE, on vient retrouver — voir découvrir — l'ambiance des îles, la chaleur humaine et le goût du fait maison. Parce que la cuisine antillaise, c'est une affaire de famille, de tradition et de partage.<br><br><span style="color:#FFD700;font-weight:700;font-size:15px">Comme on dit chez nous, NOU KA ATTEN ZOT !</span></p>
+      <p class="section-text">Chez nous, c'est bien plus qu'un food truck...<br>C'est une histoire de passion, de partage et de saveurs venues des Antilles et plus précisément de la Guadeloupe !!<br><br>Né d'une envie simple de faire découvrir une cuisine généreuse, authentique et conviviale.<br>On ne vient pas seulement manger chez A KA STANN & DEDETTE, on vient retrouver, voir découvrir l'ambiance des îles, la chaleur humaine et le goût du fait maison.<br>Parce que la cuisine antillaise, c'est une affaire de famille, de tradition et de partage.<br><br><span style="color:#FFD700;font-weight:700;font-size:15px">Comme on dit chez nous, NOU KA ATTEN ZOT !</span></p>
     </div>
   </div>
 </div>
@@ -271,7 +285,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
 <div class="madras"></div>
 
 <!-- MENU -->
-<div class="section section-alt">
+<div class="section section-alt" id="carte">
   <div class="section-title">Notre carte</div>
   <div class="section-bar"></div>
 
@@ -330,7 +344,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
 <div class="madras"></div>
 
 <!-- GALERIE -->
-<div class="section">
+<div class="section" id="galerie">
   <div class="section-title">Notre galerie</div>
   <div class="section-bar"></div>
   <div id="galerie-container"><div class="mosaic-empty">Les photos arrivent bientôt... 📸</div></div>
@@ -339,7 +353,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%}
 <div class="madras"></div>
 
 <!-- LOCALISATION -->
-<div class="section section-alt">
+<div class="section section-alt" id="localisation">
   <div class="section-title">Où nous trouver</div>
   <div class="section-bar"></div>
   <div class="location-card">
