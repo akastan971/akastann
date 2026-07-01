@@ -99,11 +99,11 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 .reseau-btn{display:flex;align-items:center;gap:8px;background:#1a1200;border:1px solid #2a1a00;border-radius:999px;padding:10px 18px;font-size:13px;color:#fff;text-decoration:none}
 .reseau-btn.ig{border-color:#E1306C}
 .reseau-btn.fb{border-color:#1877F2}
-.navbar{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(14,10,0,0.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,215,0,0.1);display:flex;align-items:center;gap:4px;padding:0 12px;height:48px;overflow-x:auto;scrollbar-width:none;max-width:480px;margin:0 auto}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(14,10,0,0.95);backdrop-filter:blur(8px);border-bottom:2px solid rgba(255,215,0,0.15);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px}
 .navbar::-webkit-scrollbar{display:none}
-.nav-logo{width:32px;height:32px;object-fit:contain;flex-shrink:0;margin-right:6px}
-.nav-link{flex-shrink:0;font-size:12px;font-weight:600;color:rgba(255,215,0,0.6);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;transition:all 0.2s;white-space:nowrap}
-.nav-link:hover,.nav-link.active{color:#FFD700;border-color:rgba(255,215,0,0.25);background:rgba(255,215,0,0.08)}
+.navbar-left{display:flex;align-items:center;gap:10px;flex-shrink:0}.nav-logo{width:36px;height:36px;object-fit:contain;border-radius:50%;border:1px solid rgba(255,215,0,0.3);flex-shrink:0}.nav-brand{font-size:12px;font-weight:800;color:#FFD700;letter-spacing:0.5px;white-space:nowrap}.navbar-links{display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none}.navbar-links::-webkit-scrollbar{display:none}
+.nav-link{flex-shrink:0;font-size:13px;font-weight:700;color:rgba(255,215,0,0.85);text-decoration:none;padding:7px 14px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+.nav-link:hover{color:#FFD700;border-color:rgba(255,215,0,0.35);background:rgba(255,215,0,0.12)}
 .footer{background:#000;padding:20px;text-align:center;border-top:1px solid #1a1a1a}
 .footer-title{font-size:13px;font-weight:700;color:#FFD700;margin-bottom:4px}
 .footer-sub{font-size:11px;color:rgba(255,215,0,0.3);font-style:italic}
@@ -234,11 +234,18 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 
 <!-- NAVBAR -->
 <nav class="navbar">
-  <img class="nav-logo" src="https://i.imgur.com/nxIFvJx.jpg" alt="logo"/>
-  <a class="nav-link" href="#apropos">À propos</a>
-  <a class="nav-link" href="#carte">Notre carte</a>
-  <a class="nav-link" href="#galerie">Galerie</a>
-  <a class="nav-link" href="#localisation">Nous trouver</a>
+  <div class="navbar-left">
+    <img class="nav-logo" src="https://i.imgur.com/nxIFvJx.jpg" alt="logo"/>
+    <span class="nav-brand">A KA STANN</span>
+  </div>
+  <div class="navbar-links">
+    <a class="nav-link" href="#" style="padding:7px 10px;font-size:16px" title="Accueil">🏠</a>
+    <a class="nav-link" href="#apropos">À propos</a>
+    <a class="nav-link" href="#carte">Notre carte</a>
+    <a class="nav-link" href="#galerie">Galerie</a>
+    <a class="nav-link" href="#localisation">Nous trouver</a>
+    <a class="nav-link" href="https://akastan971.github.io/akastann/" target="_blank" style="background:#FFD700;color:#4A2800;border-color:#FFD700;font-weight:800">🛒 Commander</a>
+  </div>
 </nav>
 
 <div class="madras"></div>
