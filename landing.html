@@ -517,22 +517,17 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 <div style="padding:20px;background:#0e0a00;border-top:1px solid #1a1a00;border-bottom:1px solid #1a1a00">
   <div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:16px;text-align:center;max-width:600px;margin:0 auto">
     <div>
-      <div style="font-size:22px;font-weight:800;color:#FFD700" id="counter-vendredis">2</div>
-      <div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px">Vendredis</div>
-    </div>
-    <div style="width:1px;background:rgba(255,215,0,0.1)"></div>
-    <div>
       <div style="font-size:22px;font-weight:800;color:#FFD700" id="counter-commandes">33+</div>
       <div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px">Commandes</div>
     </div>
     <div style="width:1px;background:rgba(255,215,0,0.1)"></div>
     <div>
-      <div style="font-size:22px;font-weight:800;color:#FFD700">⭐ 5/5</div>
+      <div style="font-size:22px;font-weight:800;color:#FFD700" id="counter-google-note">⭐ 5/5</div>
       <div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px"><span id="counter-google">8</span> avis Google</div>
     </div>
     <div style="width:1px;background:rgba(255,215,0,0.1)"></div>
     <div>
-      <div style="font-size:22px;font-weight:800;color:#FFD700">⭐ 4.8</div>
+      <div style="font-size:22px;font-weight:800;color:#FFD700" id="counter-tripadvisor-note">⭐ 4.8</div>
       <div style="font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px"><span id="counter-tripadvisor">6</span> avis TripAdvisor</div>
     </div>
   </div>
@@ -569,7 +564,7 @@ import{getDatabase,ref,push,onValue,remove,set}from"https://www.gstatic.com/fire
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDK5SH0VnLt62L0ac_ZuBIbjAYzFZtnkpA",authDomain:"aka-stann.firebaseapp.com",databaseURL:"https://aka-stann-default-rtdb.europe-west1.firebasedatabase.app",projectId:"aka-stann",storageBucket:"aka-stann.firebasestorage.app",messagingSenderId:"953795981354",appId:"1:953795981354:web:713dd17519d3be1a425353"}));
 
 var PWD="Akastan971.",photos={},aLogged=sessionStorage.getItem("landingAdmin")==="1";
-var currentAvis={google:8,tripadvisor:6,commandesOffset:33,vendredis:2};
+var currentAvis={google:8,tripadvisor:6,commandesOffset:33,googleNote:'5/5',tripadvisorNote:'4.8'};
 
 onValue(ref(db,"landingPhotos"),function(s){
   photos=s.val()||{};
@@ -588,15 +583,25 @@ onValue(ref(db,"fermetureExceptionnelle"),function(s){
 
 // Avis depuis Firebase
 onValue(ref(db,"avis"),function(s){
-  currentAvis=Object.assign({google:8,tripadvisor:6,commandesOffset:33,vendredis:2},s.val()||{});
+  currentAvis=Object.assign({google:8,tripadvisor:6,commandesOffset:33,vendredis:2,googleNote:'5/5',tripadvisorNote:'4.8'},s.val()||{});
   var g=document.getElementById('counter-google');
   var t=document.getElementById('counter-tripadvisor');
   var v=document.getElementById('counter-vendredis');
   var c=document.getElementById('counter-commandes');
-  if(g) g.textContent=currentAvis.google+' avis';
-  if(t) t.textContent=currentAvis.tripadvisor+' avis';
+  if(g) g.textContent=currentAvis.google;
+  if(t) t.textContent=currentAvis.tripadvisor;
   if(v) v.textContent=currentAvis.vendredis;
-  if(c) c.textContent=currentAvis.commandesOffset+'+';
+  if(c) c.textContent=(currentAvis.commandesOffset||33)+'+';
+  // Additionner les commandes Firebase par-dessus l'offset
+  onValue(ref(db,"orders"),function(s2){
+    var nbFirebase=Object.keys(s2.val()||{}).length;
+    var total=(currentAvis.commandesOffset||33)+nbFirebase;
+    if(c) c.textContent=total+'+';
+  });
+  var gn=document.getElementById('counter-google-note');
+  var tn=document.getElementById('counter-tripadvisor-note');
+  if(gn) gn.textContent='⭐ '+(currentAvis.googleNote||'5/5');
+  if(tn) tn.textContent='⭐ '+(currentAvis.tripadvisorNote||'4.8');
 });
 
 function renderGalerie(){
@@ -632,12 +637,16 @@ function renderAdminLogged(){
     +'<div style="background:#1a1a00;border:1px solid #3a3a00;border-radius:12px;padding:16px;margin-bottom:20px">'
     +'<div style="font-size:14px;font-weight:700;color:#FFD700;margin-bottom:12px">⭐ Mettre à jour les chiffres</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
-    +'<input id="inp-google-avis" class="add-inp" placeholder="Avis Google" style="text-align:center" value="'+currentAvis.google+'"/>'
-    +'<input id="inp-tripadvisor-avis" class="add-inp" placeholder="Avis TripAdvisor" style="text-align:center" value="'+currentAvis.tripadvisor+'"/>'
+    +'<div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">⭐ Note Google</div><input id="inp-google-note" class="add-inp" style="text-align:center" value="'+currentAvis.googleNote+'"/></div>'
+    +'<div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">⭐ Note TripAdvisor</div><input id="inp-tripadvisor-note" class="add-inp" style="text-align:center" value="'+currentAvis.tripadvisorNote+'"/></div>'
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
-    +'<input id="inp-commandes-offset" class="add-inp" placeholder="Total commandes" style="text-align:center" value="'+currentAvis.commandesOffset+'"/>'
-    +'<input id="inp-vendredis" class="add-inp" placeholder="Vendredis ouverts" style="text-align:center" value="'+currentAvis.vendredis+'"/>'
+    +'<div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">⭐ Avis Google</div><input id="inp-google-avis" class="add-inp" style="text-align:center" value="'+currentAvis.google+'"/></div>'
+    +'<div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">🟢 Avis TripAdvisor</div><input id="inp-tripadvisor-avis" class="add-inp" style="text-align:center" value="'+currentAvis.tripadvisor+'"/></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
+    +'<div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">🛒 Total commandes</div><input id="inp-commandes-offset" class="add-inp" style="text-align:center" value="'+currentAvis.commandesOffset+'"/></div>'
+    +'</div>'
     +'</div>'
     +'<button class="add-btn" onclick="majAvis()">Mettre à jour</button>'
     +'</div>'
@@ -669,11 +678,15 @@ window.majAvis=function(){
   var google=document.getElementById('inp-google-avis').value.trim();
   var tripadvisor=document.getElementById('inp-tripadvisor-avis').value.trim();
   var offset=document.getElementById('inp-commandes-offset').value.trim();
-  var vendredis=document.getElementById('inp-vendredis').value.trim();
+  var vendredis=null;
+  var googleNote=document.getElementById('inp-google-note').value.trim();
+  var tripadvisorNote=document.getElementById('inp-tripadvisor-note').value.trim();
   if(google) set(ref(db,'avis/google'),parseInt(google));
   if(tripadvisor) set(ref(db,'avis/tripadvisor'),parseInt(tripadvisor));
   if(offset) set(ref(db,'avis/commandesOffset'),parseInt(offset));
   if(vendredis) set(ref(db,'avis/vendredis'),parseInt(vendredis));
+  if(googleNote) set(ref(db,'avis/googleNote'),googleNote);
+  if(tripadvisorNote) set(ref(db,'avis/tripadvisorNote'),tripadvisorNote);
   alert('Mis à jour !');
 };
 window.closeAdmin=function(){document.getElementById("adminPanel").classList.remove("on");};
