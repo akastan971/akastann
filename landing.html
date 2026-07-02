@@ -68,8 +68,9 @@
 body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;padding-top:48px}
 .madras{height:10px;background:repeating-linear-gradient(90deg,#E8B800 0,#E8B800 14px,#1a6e1a 14px,#1a6e1a 28px,#C0392B 28px,#C0392B 42px,#1565C0 42px,#1565C0 56px,#E8B800 56px,#E8B800 70px,#1a6e1a 70px,#1a6e1a 84px,#C0392B 84px,#C0392B 98px,#1565C0 98px,#1565C0 112px)}
 .hero{background:linear-gradient(180deg,#1a1200 0%,#0e0a00 100%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M30 56 C18 42 12 32 20 20 C23 30 30 27 27 14 C33 24 42 30 39 20 C48 32 42 42 30 56Z' fill='%23D4880A' opacity='0.05'/%3E%3C/svg%3E");background-size:cover,60px 60px;padding:40px 20px 32px;text-align:center}
-.hero-content-wrap{display:contents}
-.hero-logo{width:220px;height:220px;object-fit:contain;display:block;margin:0 auto 20px;filter:drop-shadow(0 0 20px rgba(255,180,0,0.4))}
+.hero-content-wrap{display:block}
+.hero-logo-desktop{display:none}
+.hero-logo-mobile{width:220px;height:220px;object-fit:contain;display:block;margin:0 auto 20px;filter:drop-shadow(0 0 20px rgba(255,180,0,0.4))}
 .hero-title{font-size:24px;font-weight:800;color:#FFD700;letter-spacing:1px;margin-bottom:6px}
 .hero-slogan{font-size:14px;color:rgba(255,230,120,0.8);font-style:italic;margin-bottom:24px}
 .hero-hours{display:inline-flex;align-items:center;gap:10px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:12px;padding:12px 20px;margin-bottom:28px}
@@ -229,23 +230,24 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
     text-align:left;
     background:linear-gradient(135deg,#1a1200 0%,#0e0a00 100%);
   }
-  .hero-logo{
-    order:2;
-    width:100%;
-    height:100%;
-    min-height:100vh;
-    object-fit:cover;
-    display:block;
-    margin:0;
-    filter:none;
-    border-left:4px solid rgba(255,215,0,0.15);
-  }
   .hero-content-wrap{
     display:flex;
     flex-direction:column;
     justify-content:center;
     padding:80px 8%;
     order:1;
+  }
+  .hero-logo-mobile{display:none}
+  .hero-logo-desktop{
+    display:block;
+    order:2;
+    width:100%;
+    height:100%;
+    min-height:100vh;
+    object-fit:cover;
+    margin:0;
+    filter:none;
+    border-left:4px solid rgba(255,215,0,0.15);
   }
   .hero-title{font-size:48px;margin-bottom:12px}
   .hero-slogan{font-size:18px;margin-bottom:32px}
@@ -335,7 +337,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 <!-- HERO -->
 <div class="hero">
   <div class="hero-content-wrap">
-    <img class="hero-logo" src="https://i.imgur.com/nxIFvJx.jpg" alt="A KA STANN & DEDETTE" style="animation:logoEntree 0.9s cubic-bezier(.22,.9,.36,1) both"/>
+    <img class="hero-logo hero-logo-mobile" src="https://i.imgur.com/nxIFvJx.jpg" alt="A KA STANN & DEDETTE" style="animation:logoEntree 0.9s cubic-bezier(.22,.9,.36,1) both"/>
     <div class="hero-title">A KA STANN & DEDETTE</div>
     <div class="hero-slogan">Savourez l'instant, goûtez l'authenticité</div>
     <div class="hero-info-row">
@@ -347,6 +349,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
     </div>
     <div class="hero-address" style="display:inline-block;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:999px;padding:8px 20px;font-size:13px;color:rgba(255,215,0,0.75);font-weight:600;letter-spacing:0.5px">📍 9 Rue des Écoles, 77230 Rouvres</div>
   </div>
+  <img class="hero-logo hero-logo-desktop" src="https://i.imgur.com/nxIFvJx.jpg" alt="A KA STANN & DEDETTE"/>
 </div>
 
 <div class="madras"></div>
@@ -598,6 +601,7 @@ import{getDatabase,ref,push,onValue,remove,set}from"https://www.gstatic.com/fire
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDK5SH0VnLt62L0ac_ZuBIbjAYzFZtnkpA",authDomain:"aka-stann.firebaseapp.com",databaseURL:"https://aka-stann-default-rtdb.europe-west1.firebasedatabase.app",projectId:"aka-stann",storageBucket:"aka-stann.firebasestorage.app",messagingSenderId:"953795981354",appId:"1:953795981354:web:713dd17519d3be1a425353"}));
 
 var PWD="Akastan971.",photos={},aLogged=sessionStorage.getItem("landingAdmin")==="1";
+var currentAvis={google:8,tripadvisor:6,commandesOffset:33,vendredis:2};
 
 onValue(ref(db,"landingPhotos"),function(s){
   photos=s.val()||{};
@@ -616,24 +620,15 @@ onValue(ref(db,"fermetureExceptionnelle"),function(s){
 
 // Avis depuis Firebase
 onValue(ref(db,"avis"),function(s){
-  var data=s.val()||{google:8,tripadvisor:6,commandesOffset:33,vendredis:2};
+  currentAvis=Object.assign({google:8,tripadvisor:6,commandesOffset:33,vendredis:2},s.val()||{});
   var g=document.getElementById('counter-google');
   var t=document.getElementById('counter-tripadvisor');
   var v=document.getElementById('counter-vendredis');
   var c=document.getElementById('counter-commandes');
-  if(g) g.textContent=(data.google||8)+' avis';
-  if(t) t.textContent=(data.tripadvisor||6)+' avis';
-  if(v) v.textContent=(data.vendredis||2);
-  var offset=data.commandesOffset||33;
-  var nbFirebase=0;
-  try{
-    onValue(ref(db,"orders"),function(s2){
-      nbFirebase=Object.keys(s2.val()||{}).length;
-      if(c) c.textContent=(offset+nbFirebase)+'+';
-    });
-  }catch(e){
-    if(c) c.textContent=offset+'+';
-  }
+  if(g) g.textContent=currentAvis.google+' avis';
+  if(t) t.textContent=currentAvis.tripadvisor+' avis';
+  if(v) v.textContent=currentAvis.vendredis;
+  if(c) c.textContent=currentAvis.commandesOffset+'+';
 });
 
 function renderGalerie(){
@@ -669,12 +664,12 @@ function renderAdminLogged(){
     +'<div style="background:#1a1a00;border:1px solid #3a3a00;border-radius:12px;padding:16px;margin-bottom:20px">'
     +'<div style="font-size:14px;font-weight:700;color:#FFD700;margin-bottom:12px">⭐ Mettre à jour les chiffres</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
-    +'<input id="inp-google-avis" class="add-inp" placeholder="Avis Google (ex: 8)" style="text-align:center"/>'
-    +'<input id="inp-tripadvisor-avis" class="add-inp" placeholder="Avis TripAdvisor (ex: 6)" style="text-align:center"/>'
+    +'<input id="inp-google-avis" class="add-inp" placeholder="Avis Google" style="text-align:center" value="'+currentAvis.google+'"/>'
+    +'<input id="inp-tripadvisor-avis" class="add-inp" placeholder="Avis TripAdvisor" style="text-align:center" value="'+currentAvis.tripadvisor+'"/>'
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
-    +'<input id="inp-commandes-offset" class="add-inp" placeholder="Total commandes (ex: 33)" style="text-align:center"/>'
-    +'<input id="inp-vendredis" class="add-inp" placeholder="Vendredis ouverts (ex: 2)" style="text-align:center"/>'
+    +'<input id="inp-commandes-offset" class="add-inp" placeholder="Total commandes" style="text-align:center" value="'+currentAvis.commandesOffset+'"/>'
+    +'<input id="inp-vendredis" class="add-inp" placeholder="Vendredis ouverts" style="text-align:center" value="'+currentAvis.vendredis+'"/>'
     +'</div>'
     +'<button class="add-btn" onclick="majAvis()">Mettre à jour</button>'
     +'</div>'
@@ -878,3 +873,4 @@ function switchMainTab(tab){
 </script>
 </body>
 </html>
+
