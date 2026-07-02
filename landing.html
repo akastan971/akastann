@@ -628,6 +628,9 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
   <div style="margin-top:8px">
     <a href="https://komerz.fr" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.15);border-radius:999px;padding:5px 12px;font-size:10px;color:rgba(255,215,0,0.4);text-decoration:none;font-weight:600">⚡ Propulsé par KomerZ</a>
   </div>
+  <div style="margin-top:10px">
+    <a href="mentions-legales.html" style="font-size:10px;color:rgba(255,255,255,0.2);text-decoration:none">Mentions légales & Politique de confidentialité</a>
+  </div>
   <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,0.15);cursor:pointer" onclick="openAdmin()">⚙️</div>
 </div>
 
@@ -910,10 +913,6 @@ window.installPwa=function(){
   }
 };
 // FORMULAIRE ÉVÉNEMENT
-window.openEvent=function(){document.getElementById('popupEvent').classList.add('on');document.body.style.overflow='hidden';};
-window.closeEvent=function(){document.getElementById('popupEvent').classList.remove('on');document.body.style.overflow='';};
-window.closeEventOutside=function(e){if(e.target===document.getElementById('popupEvent'))window.closeEvent();};
-
 function getEventData(){
   return {
     prenom: document.getElementById('ev-prenom').value.trim(),
