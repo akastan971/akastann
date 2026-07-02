@@ -987,6 +987,8 @@ window.envoyerTout=function(){
     +(d.budget?'💰 *Budget :* '+d.budget+'\n':'')
     +'\n📝 *Projet :*\n'+d.description;
   window.open('https://wa.me/33620554462?text='+encodeURIComponent(msg),'_blank');
+};
+
 function toggleMenu(){
   document.getElementById('navDrawer').classList.toggle('open');
   document.getElementById('navOverlay').classList.toggle('open');
@@ -995,6 +997,9 @@ function closeMenu(){
   document.getElementById('navDrawer').classList.remove('open');
   document.getElementById('navOverlay').classList.remove('open');
 }
+function openEvent(){document.getElementById('popupEvent').classList.add('on');document.body.style.overflow='hidden';}
+function closeEvent(){document.getElementById('popupEvent').classList.remove('on');document.body.style.overflow='';}
+function closeEventOutside(e){if(e.target===document.getElementById('popupEvent'))closeEvent();}
 function switchTab(el,id){
   document.querySelectorAll('.mtab').forEach(function(t){t.classList.remove('on');});
   document.querySelectorAll('.menu-sec').forEach(function(s){s.classList.remove('on');});
