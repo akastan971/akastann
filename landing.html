@@ -128,6 +128,22 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 .footer{background:#000;padding:20px;text-align:center;border-top:1px solid #1a1a1a}
 .footer-title{font-size:13px;font-weight:700;color:#FFD700;margin-bottom:4px}
 .footer-sub{font-size:11px;color:rgba(255,215,0,0.3);font-style:italic}
+.popup-event{display:none;position:fixed;inset:0;z-index:900;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.popup-event.on{display:flex}
+.popup-event-box{position:relative;background:#1a1200;border:2px solid #D4880A;border-radius:20px;padding:24px 20px;max-width:420px;width:100%;z-index:1;max-height:90vh;overflow-y:auto}
+.popup-event-title{font-size:18px;font-weight:800;color:#FFD700;margin-bottom:4px}
+.popup-event-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:20px}
+.form-group{margin-bottom:12px}
+.form-label{font-size:11px;font-weight:700;color:rgba(255,215,0,0.6);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;display:block}
+.form-inp{width:100%;background:#0e0a00;border:1px solid #2a1a00;border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;outline:none;font-family:system-ui,sans-serif}
+.form-inp:focus{border-color:#D4880A}
+.form-select{width:100%;background:#0e0a00;border:1px solid #2a1a00;border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;outline:none;appearance:none}
+.form-textarea{width:100%;background:#0e0a00;border:1px solid #2a1a00;border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;outline:none;resize:vertical;min-height:80px;font-family:system-ui,sans-serif}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-event-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.08);border:none;color:#fff;border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-send-wa{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#25D366;color:#fff;border:none;border-radius:999px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px}
+.btn-send-mail{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#D4880A;color:#fff;border:none;border-radius:999px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px}
+.btn-event-open{display:flex;align-items:center;gap:8px;background:transparent;border:2px solid #D4880A;border-radius:999px;padding:12px 24px;font-size:14px;font-weight:700;color:#D4880A;cursor:pointer;margin:16px auto 0;text-decoration:none}
 .faq-list{display:flex;flex-direction:column;gap:8px}
 /* POP-UP FERMETURE */
 .popup-fermeture{display:none;position:fixed;inset:0;z-index:900;align-items:center;justify-content:center;padding:20px}
@@ -247,6 +263,8 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
   .madras{height:8px}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>emailjs.init('NYLwd96NU347KgJT3');</script>
 </head>
 <body>
 
@@ -267,6 +285,79 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
   <div class="pwa-text"><strong>A KA STANN & DEDETTE</strong>Installez notre app sur votre téléphone !</div>
   <button class="pwa-install" id="pwaInstallBtn">Installer</button>
   <button class="pwa-dismiss" onclick="dismissPwa()">✕</button>
+</div>
+
+<!-- POP-UP ÉVÉNEMENT -->
+<div class="popup-event" id="popupEvent" onclick="closeEventOutside(event)">
+  <div class="popup-overlay"></div>
+  <div class="popup-event-box">
+    <button class="btn-event-close" onclick="closeEvent()">✕</button>
+    <div class="popup-event-title">🎉 Demande d'événement</div>
+    <div class="popup-event-sub">Mariages, anniversaires, événements d'entreprise... On s'adapte à vos besoins !</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Prénom *</label>
+        <input class="form-inp" id="ev-prenom" placeholder="Prénom"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nom *</label>
+        <input class="form-inp" id="ev-nom" placeholder="Nom"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Entreprise <span style="color:rgba(255,255,255,0.3)">(optionnel)</span></label>
+      <input class="form-inp" id="ev-entreprise" placeholder="Nom de l'entreprise"/>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Téléphone *</label>
+        <input class="form-inp" id="ev-tel" placeholder="06 XX XX XX XX" type="tel"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input class="form-inp" id="ev-mail" placeholder="email@exemple.fr" type="email"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Type d'événement *</label>
+      <select class="form-select" id="ev-type">
+        <option value="">-- Choisir --</option>
+        <option value="Anniversaire">🎂 Anniversaire</option>
+        <option value="Mariage">💍 Mariage</option>
+        <option value="Événement entreprise">🏢 Événement entreprise</option>
+        <option value="Autre">✨ Autre</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nombre de personnes *</label>
+        <input class="form-inp" id="ev-personnes" placeholder="Ex: 50" type="number"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Budget approximatif</label>
+        <input class="form-inp" id="ev-budget" placeholder="Ex: 500€"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Description du projet *</label>
+      <textarea class="form-textarea" id="ev-description" placeholder="Décrivez votre événement, la date souhaitée, le lieu..."></textarea>
+    </div>
+
+    <button class="btn-send-wa" onclick="envoyerWA()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      Envoyer via WhatsApp
+    </button>
+    <button class="btn-send-mail" onclick="envoyerMail()">
+      📧 Envoyer par Email
+    </button>
+    <div id="ev-status" style="font-size:12px;text-align:center;margin-top:10px;color:rgba(255,215,0,0.6)"></div>
+  </div>
 </div>
 
 <!-- NAVBAR -->
@@ -498,6 +589,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
   <div class="cta-title">Prêt à commander ?</div>
   <div class="cta-sub">Commandez depuis votre téléphone, on prépare pour vous</div>
   <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Passer une commande</a>
+  <button class="btn-event-open" onclick="openEvent()">🎉 Nous contacter pour un événement</button>
   <div class="reseaux">
     <a href="https://www.instagram.com/a.ka.stann.et.dedette" target="_blank" class="reseau-btn ig">📸 Instagram</a>
     <a href="https://www.facebook.com/p/A-Ka-Stann-Dedette-61574862584178/" target="_blank" class="reseau-btn fb">👍 Facebook</a>
@@ -821,6 +913,72 @@ window.installPwa=function(){
     }
   }
 };
+// FORMULAIRE ÉVÉNEMENT
+window.openEvent=function(){document.getElementById('popupEvent').classList.add('on');document.body.style.overflow='hidden';};
+window.closeEvent=function(){document.getElementById('popupEvent').classList.remove('on');document.body.style.overflow='';};
+window.closeEventOutside=function(e){if(e.target===document.getElementById('popupEvent'))window.closeEvent();};
+
+function getEventData(){
+  return {
+    prenom: document.getElementById('ev-prenom').value.trim(),
+    nom: document.getElementById('ev-nom').value.trim(),
+    entreprise: document.getElementById('ev-entreprise').value.trim(),
+    tel: document.getElementById('ev-tel').value.trim(),
+    mail: document.getElementById('ev-mail').value.trim(),
+    type: document.getElementById('ev-type').value,
+    personnes: document.getElementById('ev-personnes').value.trim(),
+    budget: document.getElementById('ev-budget').value.trim(),
+    description: document.getElementById('ev-description').value.trim()
+  };
+}
+
+function validerForm(d){
+  if(!d.prenom||!d.nom||!d.tel||!d.mail||!d.type||!d.personnes||!d.description){
+    document.getElementById('ev-status').textContent='⚠️ Merci de remplir tous les champs obligatoires.';
+    document.getElementById('ev-status').style.color='#ff6b6b';
+    return false;
+  }
+  return true;
+}
+
+window.envoyerWA=function(){
+  var d=getEventData();
+  if(!validerForm(d))return;
+  var msg='🎉 *Demande d\'événement - A KA STANN*\n\n'
+    +'👤 *Nom :* '+d.prenom+' '+d.nom+'\n'
+    +(d.entreprise?'🏢 *Entreprise :* '+d.entreprise+'\n':'')
+    +'📞 *Téléphone :* '+d.tel+'\n'
+    +'📧 *Email :* '+d.mail+'\n'
+    +'🎊 *Type :* '+d.type+'\n'
+    +'👥 *Personnes :* '+d.personnes+'\n'
+    +(d.budget?'💰 *Budget :* '+d.budget+'\n':'')
+    +'\n📝 *Projet :*\n'+d.description;
+  window.open('https://wa.me/33620554462?text='+encodeURIComponent(msg),'_blank');
+};
+
+window.envoyerMail=function(){
+  var d=getEventData();
+  if(!validerForm(d))return;
+  var status=document.getElementById('ev-status');
+  status.style.color='rgba(255,215,0,0.6)';
+  status.textContent='⏳ Envoi en cours...';
+  emailjs.send('service_akastan','template_k8mw13r',{
+    name: d.prenom+' '+d.nom,
+    tel: d.tel,
+    email: d.mail,
+    type: d.type,
+    personnes: d.personnes,
+    budget: d.budget||'Non précisé',
+    message: d.description+(d.entreprise?'\n\nEntreprise : '+d.entreprise:'')
+  }).then(function(){
+    status.style.color='#a8f0a8';
+    status.textContent='✅ Email envoyé ! Stan vous contactera rapidement.';
+  }).catch(function(){
+    status.style.color='#ff6b6b';
+    status.textContent='❌ Erreur envoi email. Essayez via WhatsApp.';
+  });
+};
+
 function toggleMenu(){
   document.getElementById('navDrawer').classList.toggle('open');
   document.getElementById('navOverlay').classList.toggle('open');
@@ -854,3 +1012,4 @@ function switchMainTab(tab){
 </script>
 </body>
 </html>
+
