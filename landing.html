@@ -652,7 +652,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getDatabase,ref,push,onValue,remove,set,increment}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import{getDatabase,ref,push,onValue,remove,set,get}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDK5SH0VnLt62L0ac_ZuBIbjAYzFZtnkpA",authDomain:"aka-stann.firebaseapp.com",databaseURL:"https://aka-stann-default-rtdb.europe-west1.firebasedatabase.app",projectId:"aka-stann",storageBucket:"aka-stann.firebasestorage.app",messagingSenderId:"953795981354",appId:"1:953795981354:web:713dd17519d3be1a425353"}));
 
 var PWD="Akastan971.",photos={},aLogged=sessionStorage.getItem("landingAdmin")==="1";
@@ -664,7 +664,10 @@ var currentAvis={google:8,tripadvisor:6,commandesOffset:33,googleNote:'5/5',trip
   var lastVisit=localStorage.getItem('aka_last_visit');
   if(lastVisit!==today){
     localStorage.setItem('aka_last_visit',today);
-    set(ref(db,'visites/total'),increment(1));
+    get(ref(db,'visites/total')).then(function(s){
+      var current=s.val()||0;
+      set(ref(db,'visites/total'),current+1);
+    });
   }
   onValue(ref(db,'visites/total'),function(s){
     var total=s.val()||0;
