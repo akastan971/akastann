@@ -644,8 +644,11 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 <!-- ADMIN PANEL -->
 <div class="admin-panel" id="adminPanel">
   <div class="admin-hdr">
-    <span class="admin-title">⚙️ Admin — Galerie</span>
-    <button class="admin-close" onclick="closeAdmin()">Fermer</button>
+    <span class="admin-title">⚙️ Admin — A KA STANN</span>
+    <div style="display:flex;gap:8px">
+      <button class="admin-close" onclick="signOut(auth)">Déconnexion</button>
+      <button class="admin-close" onclick="closeAdmin()">Fermer</button>
+    </div>
   </div>
   <div class="admin-body" id="adminBody"></div>
 </div>
@@ -653,9 +656,16 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getDatabase,ref,push,onValue,remove,set,get}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import{getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDK5SH0VnLt62L0ac_ZuBIbjAYzFZtnkpA",authDomain:"aka-stann.firebaseapp.com",databaseURL:"https://aka-stann-default-rtdb.europe-west1.firebasedatabase.app",projectId:"aka-stann",storageBucket:"aka-stann.firebasestorage.app",messagingSenderId:"953795981354",appId:"1:953795981354:web:713dd17519d3be1a425353"}));
 
-var PWD="Akastan971.",photos={},aLogged=sessionStorage.getItem("landingAdmin")==="1";
+var auth=getAuth();
+var photos={},aLogged=false;
+
+onAuthStateChanged(auth,function(user){
+  aLogged=!!user;
+  if(document.getElementById("adminPanel").classList.contains("on")&&aLogged)renderAdminLogged();
+});
 var currentAvis={google:8,tripadvisor:6,commandesOffset:33,googleNote:'5/5',tripadvisorNote:'4.8'};
 
 // Compteur de visites — 1 visite max par jour par personne
@@ -776,10 +786,13 @@ window.openAdmin=function(){
   var body=document.getElementById("adminBody");
   if(aLogged){renderAdminLogged();}
   else{
-    body.innerHTML='<div class="admin-login"><div style="font-size:40px;margin-bottom:12px">🔐</div><div class="admin-login-title">Accès Admin</div><input id="pwdInp" class="admin-inp" type="password" placeholder="Mot de passe" /><div id="adminErr"></div><button class="admin-btn" id="btnLogin" style="margin-top:12px">Connexion</button></div>';
+    body.innerHTML='<div class="admin-login"><div style="font-size:40px;margin-bottom:12px">🔐</div><div class="admin-login-title">Accès Admin</div><input id="emailInp" class="admin-inp" type="email" placeholder="Email" style="margin-bottom:8px"/><input id="pwdInp" class="admin-inp" type="password" placeholder="Mot de passe" /><div id="adminErr"></div><button class="admin-btn" id="btnLogin" style="margin-top:12px">Connexion</button></div>';
     document.getElementById("btnLogin").onclick=function(){
-      if(document.getElementById("pwdInp").value===PWD){aLogged=true;sessionStorage.setItem("landingAdmin","1");renderAdminLogged();}
-      else{document.getElementById("adminErr").innerHTML='<div class="admin-err">Mot de passe incorrect</div>';}
+      var email=document.getElementById("emailInp").value.trim();
+      var pwd=document.getElementById("pwdInp").value;
+      signInWithEmailAndPassword(auth,email,pwd)
+        .then(function(){aLogged=true;renderAdminLogged();})
+        .catch(function(){document.getElementById("adminErr").innerHTML='<div class="admin-err">Email ou mot de passe incorrect</div>';});
     };
     document.getElementById("pwdInp").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("btnLogin").click();});
   }
