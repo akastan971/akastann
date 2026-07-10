@@ -843,17 +843,24 @@ window.uploadPhoto=function(input){
     .then(function(r){return r.json();})
     .then(function(data){
       if(data.success){
-        push(ref(db,"landingPhotos"),{label:label,url:data.data.url});
-        document.getElementById("upload-progress").textContent="✅ Photo ajoutée !";
-        document.getElementById("inp-label").value="";
-        setTimeout(function(){renderAdminLogged();},1500);
+        var url=data.data.url;
+        push(ref(db,"landingPhotos"),{label:label,url:url})
+          .then(function(){
+            document.getElementById("upload-progress").textContent="✅ Photo ajoutée !";
+            document.getElementById("inp-label").value="";
+            setTimeout(function(){renderAdminLogged();},1500);
+          })
+          .catch(function(err){
+            document.getElementById("upload-progress").textContent="❌ Erreur Firebase : "+err.message+". Reconnecte-toi à l'admin.";
+            document.getElementById("upload-btn").style.opacity="1";
+          });
       } else {
-        document.getElementById("upload-progress").textContent="❌ Erreur upload, réessaie.";
+        document.getElementById("upload-progress").textContent="❌ Erreur imgbb : "+(data.error&&data.error.message||"réessaie");
         document.getElementById("upload-btn").style.opacity="1";
       }
     })
-    .catch(function(){
-      document.getElementById("upload-progress").textContent="❌ Erreur réseau, réessaie.";
+    .catch(function(err){
+      document.getElementById("upload-progress").textContent="❌ Erreur réseau : "+err.message;
       document.getElementById("upload-btn").style.opacity="1";
     });
   };
