@@ -239,7 +239,10 @@ onValue(ref(db,"orders"),function(s){
     },60000);
   }
 });
-onValue(ref(db,"globalStock"),function(s){gStock=s.val()||{};if(curV===2&&aLog)rA();});
+onValue(ref(db,"globalStock"),function(s){
+  gStock=s.val()||{};
+  if(curV===2&&aLog&&aSection==="stock")rA();
+});
 onValue(ref(db,"stockData"),function(s){fbStock=s.val()||{};if(curV===2&&aLog&&aSection==="dep")rA();});
 
 var audioCtx=null;
@@ -508,7 +511,20 @@ window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret",readyAt:Date.no
 window.gPaid=function(k,v){update(ref(db,"orders/"+k),{paid:v});};
 window.gPassage=function(k,v){update(ref(db,"orders/"+k),{passage:v});};
 window.gSND=function(){soundOn=!soundOn;if(soundOn)playDing();rA();};
-window.gASec=function(s){aSection=s;rA();};
+window.gASec=function(s){
+  aSection=s;
+  if(s==="stock"){
+    // Recharger depuis Firebase avant d'afficher
+    import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js").then(function(m){
+      m.get(ref(db,"globalStock")).then(function(snap){
+        gStock=snap.val()||{};
+        rA();
+      });
+    });
+  } else {
+    rA();
+  }
+};
 window.gALO=function(){signOut(auth).then(function(){aLog=false;aSection="cuisine";aDt=null;rA();});};
 window.gAD=function(d){aDt=d;rA();};
 window.gStockSet=function(id,val){var v=val===""?"":parseFloat(val);gStock[id]=v;var p={};p[id]=v;update(ref(db,"globalStock"),p).then(function(){rA();});};
