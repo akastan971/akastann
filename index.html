@@ -213,8 +213,15 @@ var aSection="cuisine",aDt=null;
 var soundOn=true,firstLoad=true,lastIds={},alertInt=null;
 
 onAuthStateChanged(auth,function(user){
-  if(user&&!user.isAnonymous){aLog=true;if(curV===2)rA();}
-  else{aLog=false;}
+  if(user&&!user.isAnonymous){
+    aLog=true;
+    // Lancer les écoutes admin après connexion confirmée
+    onValue(ref(db,"globalStock"),function(s){gStock=s.val()||{};if(curV===2&&aLog&&aSection==="stock")rA();});
+    onValue(ref(db,"stockData"),function(s){fbStock=s.val()||{};if(curV===2&&aLog&&aSection==="dep")rA();});
+    if(curV===2)rA();
+  } else {
+    aLog=false;
+  }
 });
 
 onValue(ref(db,"orders"),function(s){
@@ -239,11 +246,6 @@ onValue(ref(db,"orders"),function(s){
     },60000);
   }
 });
-onValue(ref(db,"globalStock"),function(s){
-  gStock=s.val()||{};
-  if(curV===2&&aLog&&aSection==="stock")rA();
-});
-onValue(ref(db,"stockData"),function(s){fbStock=s.val()||{};if(curV===2&&aLog&&aSection==="dep")rA();});
 
 var audioCtx=null;
 function initAudio(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}}
@@ -513,14 +515,7 @@ window.gPassage=function(k,v){update(ref(db,"orders/"+k),{passage:v});};
 window.gSND=function(){soundOn=!soundOn;if(soundOn)playDing();rA();};
 window.gASec=function(s){
   aSection=s;
-  if(s==="stock"){
-    get(ref(db,"globalStock")).then(function(snap){
-      gStock=snap.val()||{};
-      rA();
-    }).catch(function(){rA();});
-  } else {
-    rA();
-  }
+  rA();
 };
 window.gALO=function(){signOut(auth).then(function(){aLog=false;aSection="cuisine";aDt=null;rA();});};
 window.gAD=function(d){aDt=d;rA();};
