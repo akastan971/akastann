@@ -177,7 +177,7 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 </div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getDatabase,ref,push,onValue,update,remove}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import{getDatabase,ref,push,onValue,update,remove,get}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import{getAuth,signInAnonymously,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 const app=initializeApp({apiKey:"AIzaSyDK5SH0VnLt62L0ac_ZuBIbjAYzFZtnkpA",authDomain:"aka-stann.firebaseapp.com",databaseURL:"https://aka-stann-default-rtdb.europe-west1.firebasedatabase.app",projectId:"aka-stann",storageBucket:"aka-stann.firebasestorage.app",messagingSenderId:"953795981354",appId:"1:953795981354:web:713dd17519d3be1a425353"});
 const db=getDatabase(app);
@@ -514,13 +514,10 @@ window.gSND=function(){soundOn=!soundOn;if(soundOn)playDing();rA();};
 window.gASec=function(s){
   aSection=s;
   if(s==="stock"){
-    // Recharger depuis Firebase avant d'afficher
-    import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js").then(function(m){
-      m.get(ref(db,"globalStock")).then(function(snap){
-        gStock=snap.val()||{};
-        rA();
-      });
-    });
+    get(ref(db,"globalStock")).then(function(snap){
+      gStock=snap.val()||{};
+      rA();
+    }).catch(function(){rA();});
   } else {
     rA();
   }
