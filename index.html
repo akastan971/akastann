@@ -74,10 +74,8 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .qtyrow{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:14px;background:#2a1a00;border:1px solid #3a2a00;border-radius:12px;padding:10px}
 .qtybig{background:#D4880A;color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:22px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .qtynum{font-size:22px;font-weight:800;color:#FFD700;min-width:30px;text-align:center}
-/* SUIVI */
 .ping{display:inline-block;width:8px;height:8px;background:#25d166;border-radius:50%;margin-right:6px;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-/* ADMIN */
 .adminmaintabs{display:flex;background:#000;border-bottom:1px solid #1a1a1a}
 .adminmaintab{flex:1;text-align:center;padding:12px 4px;font-size:11px;font-weight:700;cursor:pointer;color:rgba(255,255,255,0.4);border-bottom:3px solid transparent}
 .adminmaintab.on{color:#FFD700;border-bottom:3px solid #FFD700;background:#1a1200}
@@ -86,8 +84,8 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .lico{font-size:40px;margin-bottom:12px}
 .ltitle{font-size:18px;font-weight:700;color:#FFD700;margin-bottom:4px}
 .lsub{font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:24px}
-.linp{width:100%;background:#0a0a0a;border:1px solid #333;border-radius:10px;padding:12px 16px;color:#fff;font-size:15px;outline:none;text-align:center;letter-spacing:2px;margin-bottom:12px}
-.linp::placeholder{letter-spacing:0;color:rgba(255,255,255,0.2)}
+.linp{width:100%;background:#0a0a0a;border:1px solid #333;border-radius:10px;padding:12px 16px;color:#fff;font-size:15px;outline:none;text-align:center;margin-bottom:12px}
+.linp::placeholder{color:rgba(255,255,255,0.2)}
 .lbtn{background:#FFD700;color:#4A2800;border:none;border-radius:999px;padding:12px 0;font-size:15px;font-weight:800;cursor:pointer;width:100%}
 .lerr{font-size:12px;color:#ff5555;margin-top:8px}
 .ahdr{background:#111;padding:12px 16px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between}
@@ -136,7 +134,6 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .netval.red{color:#ff5555}
 .netval.gold{color:#FFD700}
 .netlbl{font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px;text-transform:uppercase}
-/* CUISINE */
 .cpage{background:#0f0f0f;min-height:100vh}
 .chdr{background:#111;padding:14px 16px;border-bottom:3px solid #D4880A;display:flex;align-items:center;justify-content:space-between}
 .chtitle{font-size:15px;font-weight:700;color:#FFD700}
@@ -181,9 +178,12 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getDatabase,ref,push,onValue,update,remove}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-const db=getDatabase(initializeApp({apiKey:"AIzaSyDK5SH0VnLt62L0ac_ZuBIbjAYzFZtnkpA",authDomain:"aka-stann.firebaseapp.com",databaseURL:"https://aka-stann-default-rtdb.europe-west1.firebasedatabase.app",projectId:"aka-stann",storageBucket:"aka-stann.firebasestorage.app",messagingSenderId:"953795981354",appId:"1:953795981354:web:713dd17519d3be1a425353"}));
+import{getAuth,signInAnonymously,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const app=initializeApp({apiKey:"AIzaSyDK5SH0VnLt62L0ac_ZuBIbjAYzFZtnkpA",authDomain:"aka-stann.firebaseapp.com",databaseURL:"https://aka-stann-default-rtdb.europe-west1.firebasedatabase.app",projectId:"aka-stann",storageBucket:"aka-stann.firebasestorage.app",messagingSenderId:"953795981354",appId:"1:953795981354:web:713dd17519d3be1a425353"});
+const db=getDatabase(app);
+const auth=getAuth(app);
 
-var PH="33620554462",AK="3325270",PWD="Akastan971.";
+var PH="33620554462",AK="3325270";
 var MS=[{id:"vf",name:"Vieux Fort",desc:"3 pilons OU 1 cuisse",price:9},{id:"sa",name:"Sainte-Anne",desc:"6 pilons OU 2 cuisses",price:11},{id:"pl",name:"Port Louis",desc:"9 pilons OU 3 cuisses",price:13}];
 var MM=[{id:"mvf",name:"Mixte Vieux Fort",desc:"3 pilons OU 1 cuisse",price:10},{id:"msa",name:"Mixte Sainte-Anne",desc:"6 pilons OU 2 cuisses",price:12},{id:"mpl",name:"Mixte Port Louis",desc:"9 pilons OU 3 cuisses",price:14}];
 var BO=[{id:"coca",name:"Coca-Cola",price:1.5},{id:"cocaz",name:"Coca-Cola Zero",price:1.5},{id:"crist",name:"Cristaline",price:1.5},{id:"loc",name:"Boisson locale",price:2}];
@@ -203,17 +203,20 @@ var STOCKDEF=[
   {id:"loc",name:"Boisson locale",unit:"unités"}
 ];
 
-// STATE
 var pan=[],sec="simple",cfging=null;
 var cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};
 var sq={},fbO={},gStock={},fbStock={},curV=0,sending=false;
 var tdone=null,mode="surplace";
 var saErr=false;
-var aLog=sessionStorage.getItem("aLog")==="1";
+var aLog=false;
 var aSection="cuisine",aDt=null;
 var soundOn=true,firstLoad=true,lastIds={},alertInt=null;
 
-// FIREBASE
+onAuthStateChanged(auth,function(user){
+  if(user&&!user.isAnonymous){aLog=true;if(curV===2)rA();}
+  else{aLog=false;}
+});
+
 onValue(ref(db,"orders"),function(s){
   var nO=s.val()||{};
   if(!firstLoad&&aLog&&curV===2&&aSection==="cuisine"){
@@ -239,7 +242,6 @@ onValue(ref(db,"orders"),function(s){
 onValue(ref(db,"globalStock"),function(s){gStock=s.val()||{};if(curV===2&&aLog&&aSection==="stock")rA();});
 onValue(ref(db,"stockData"),function(s){fbStock=s.val()||{};if(curV===2&&aLog&&aSection==="dep")rA();});
 
-// SON
 var audioCtx=null;
 function initAudio(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}}
 function playDing(){
@@ -258,7 +260,6 @@ function playDing(){
   }catch(e){}
 }
 
-// UTILS
 function fp(n){var v=parseFloat(n);if(isNaN(v))return"0";return v%1===0?String(v):v.toFixed(2).replace(/\.?0+$/,"");}
 function ts2d(ts){var d=new Date(ts);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function dfr(s){if(!s)return"";var p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0];}
@@ -267,7 +268,6 @@ function pCnt(){var n=0;pan.forEach(function(it){if(it.tp==="m")n++;else if(it.t
 function bN(id){var b=BO.find(function(x){return x.id===id;});return b?b.name:id;}
 function H(){return'<div class="hdr"><img src="https://i.imgur.com/nxIFvJx.jpg" style="height:60px;object-fit:contain;display:block;margin:0 auto 6px;filter:drop-shadow(0 0 8px rgba(255,180,0,0.4))" alt="" /><div class="htitle">A KA STANN &amp; DEDETTE</div><div class="hsub">Savourez l\u2019instant, go\u00FBtez l\u2019authenticit\u00E9</div></div><div class="madras"></div>';}
 
-// WHATSAPP
 async function sendWA(o){
   var L=["Nouvelle commande A KA STANN !","","Ticket #"+o.ticket,"SUR PLACE",""];
   o.items.forEach(function(it,i){
@@ -278,7 +278,6 @@ async function sendWA(o){
   try{await fetch("https://api.callmebot.com/whatsapp.php?phone="+PH+"&text="+encodeURIComponent(L.join("\n"))+"&apikey="+AK,{mode:"no-cors"});}catch(e){}
 }
 
-// ── COMMANDE
 function rCom(){
   var el=document.getElementById("V0");
   if(tdone){el.innerHTML=H()+'<div class="body" style="text-align:center"><img src="https://i.ibb.co/wmcvCTY/Logo-STAN-Perso.png" style="width:220px;object-fit:contain;margin:20px auto 8px;display:block;filter:drop-shadow(0 0 12px rgba(255,180,0,0.3))" alt="" /><div style="font-size:13px;color:rgba(255,255,255,0.5);margin:8px 0 4px">Votre num\u00E9ro de ticket</div><div class="tbox"><div class="tnum">#'+tdone+'</div><div class="tsub">Nous vous appellerons quand votre commande est pr\u00EAte</div></div><div class="wabox"><span style="font-size:20px">💬</span><span>Notification envoy\u00E9e au vendeur</span></div><div style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:20px">Paiement \u00E0 la livraison</div><button class="btnP" onclick="gRST()">Nouvelle commande</button></div>';return;}
@@ -329,7 +328,6 @@ function rCom(){
   el.innerHTML=H()+'<div class="stabs">'+th+'</div><div class="body">'+body+'</div>'+bar;
 }
 
-// ── SUIVI
 function rSuivi(){
   var el=document.getElementById("V1");
   var tod=ts2d(Date.now());
@@ -355,15 +353,16 @@ function rSuivi(){
   el.innerHTML=html;
 }
 
-// ── ADMIN
 function rA(){
   var el=document.getElementById("V2");
   if(!aLog){
-    el.innerHTML='<div class="apage"><div class="lbox"><div class="lico">🔐</div><div class="ltitle">Accès Admin</div><div class="lsub">A KA STANN &amp; DEDETTE</div><input id="pwdInp" class="linp" type="password" placeholder="Mot de passe" />'+(el._err?'<div class="lerr">Mot de passe incorrect</div>':"")+'<button class="lbtn" id="btnLogin">Connexion</button></div></div>';
+    el.innerHTML='<div class="apage"><div class="lbox"><div class="lico">🔐</div><div class="ltitle">Accès Admin</div><div class="lsub">A KA STANN &amp; DEDETTE</div><input id="emailInp" class="linp" type="email" placeholder="Email" style="margin-bottom:8px"/><input id="pwdInp" class="linp" type="password" placeholder="Mot de passe" />'+(el._err?'<div class="lerr">Email ou mot de passe incorrect</div>':"")+'<button class="lbtn" id="btnLogin" style="margin-top:12px">Connexion</button></div></div>';
     document.getElementById("btnLogin").onclick=function(){
-      var v=document.getElementById("pwdInp").value;
-      if(v===PWD){aLog=true;el._err=false;sessionStorage.setItem("aLog","1");aSection="cuisine";rA();}
-      else{el._err=true;rA();}
+      var email=document.getElementById("emailInp").value.trim();
+      var pwd=document.getElementById("pwdInp").value;
+      signInWithEmailAndPassword(auth,email,pwd)
+        .then(function(){el._err=false;})
+        .catch(function(){el._err=true;rA();});
     };
     document.getElementById("pwdInp").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("btnLogin").click();});
     return;
@@ -471,12 +470,10 @@ function buildDash(){
   return"";
 }
 
-// ACTIONS
 window.gV=function(v){curV=v;[0,1,2].forEach(function(i){document.getElementById("V"+i).className=v===i?"":"hidden";document.getElementById("T"+i).className="ttab"+(v===i?" on":"");});if(v===2)initAudio();if(v===0)rCom();if(v===1)rSuivi();if(v===2)rA();};
 window.gS=function(s){sec=s;cfging=null;rCom();};
 window.gSTcfg=function(id,t){cfging={id:id,t:t};cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();};
 window.gCC=function(){cfging=null;saErr=false;rCom();};
-window.gC=function(k,v){cfg[k]=v;rCom();};
 window.gN=function(v){cfg.nt=v;};
 window.gQ=function(d){cfg.qty=Math.max(1,Math.min(20,cfg.qty+d));while(cfg.sauces.length<cfg.qty){cfg.sauces.push(null);cfg.boissons.push("coca");cfg.viandes.push("Pilons");cfg.accomps.push("Frites");}while(cfg.sauces.length>cfg.qty){cfg.sauces.pop();cfg.boissons.pop();cfg.viandes.pop();cfg.accomps.pop();}rCom();};
 window.gSA=function(i,v){cfg.sauces[i]=v;saErr=false;rCom();};
@@ -493,20 +490,26 @@ window.gAM=function(){
   cfging=null;cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();
 };
 window.gAS=function(){var items=[];ALLSU.forEach(function(s){var q=sq[s.id]||0;if(q>0)items.push({id:s.id,name:s.name,qty:q,up:parseFloat(s.price)});});if(!items.length)return;var tot=items.reduce(function(a,s){return a+s.qty*s.up;},0);pan.push({tp:"s",items:items,price:tot});sq={};rCom();};
+
 window.gFIN=async function(){
   if(!pan.length||sending)return;sending=true;rCom();
   var ticket=Math.floor(Math.random()*900)+100;
   var order={ticket:ticket,items:pan,total:fp(pTot()),mode:"surplace",status:"en_attente",time:new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),ts:Date.now()};
-  await push(ref(db,"orders"),order);await sendWA(order);
+  try{
+    await signInAnonymously(auth);
+    await push(ref(db,"orders"),order);
+    await sendWA(order);
+  }catch(e){console.error("Erreur commande:",e);}
   sending=false;tdone=ticket;pan=[];sq={};rCom();
 };
+
 window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;sending=false;sec="simple";cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();};
 window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret",readyAt:Date.now()});};
 window.gPaid=function(k,v){update(ref(db,"orders/"+k),{paid:v});};
 window.gPassage=function(k,v){update(ref(db,"orders/"+k),{passage:v});};
 window.gSND=function(){soundOn=!soundOn;if(soundOn)playDing();rA();};
 window.gASec=function(s){aSection=s;rA();};
-window.gALO=function(){aLog=false;sessionStorage.removeItem("aLog");aSection="cuisine";aDt=null;rA();};
+window.gALO=function(){signOut(auth).then(function(){aLog=false;aSection="cuisine";aDt=null;rA();});};
 window.gAD=function(d){aDt=d;rA();};
 window.gStockSet=function(id,val){var v=val===""?"":parseFloat(val);gStock[id]=v;var p={};p[id]=v;update(ref(db,"globalStock"),p).then(function(){rA();});};
 window.gDepSet=function(val){var p={};p[aDt+"_dep"]=val;fbStock[aDt+"_dep"]=val;update(ref(db,"stockData"),p);};
