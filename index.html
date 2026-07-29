@@ -162,6 +162,14 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .paylabel{font-size:12px;font-weight:700;color:rgba(255,255,255,0.5)}
 .paylabel.paid{color:#25d166}
 .hidden{display:none}
+.cpage.alert-blink{animation:kitchenBlink 1s ease-in-out infinite}
+@keyframes kitchenBlink{0%,100%{box-shadow:inset 0 0 0 4px #D4880A}50%{box-shadow:inset 0 0 0 4px #FFD700}}
+.upsell-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeInUp 0.2s ease-out}
+@keyframes fadeInUp{from{opacity:0}to{opacity:1}}
+.upsell-modal{background:#1a1200;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:22px 16px 26px;max-height:88vh;overflow-y:auto;border-top:3px solid #FFD700;box-shadow:0 -6px 30px rgba(0,0,0,0.5)}
+.upsell-title{font-size:17px;font-weight:800;color:#FFD700;text-align:center;margin-bottom:4px}
+.upsell-sub{font-size:12px;color:rgba(255,255,255,0.45);text-align:center;margin-bottom:16px}
+.upsell-totalrow{text-align:right;margin:12px 0 4px;font-size:13px;color:rgba(255,255,255,0.5)}
 </style>
 </head>
 <body>
@@ -211,6 +219,7 @@ var saErr=false;
 var aLog=false;
 var aSection="cuisine",aDt=null;
 var soundOn=true,firstLoad=true,lastIds={},alertInt=null;
+var upsellOpen=false,uq={};
 
 onAuthStateChanged(auth,function(user){
   if(user&&!user.isAnonymous){
@@ -283,11 +292,21 @@ async function sendWA(o){
   try{await fetch("https://api.callmebot.com/whatsapp.php?phone="+PH+"&text="+encodeURIComponent(L.join("\n"))+"&apikey="+AK,{mode:"no-cors"});}catch(e){}
 }
 
+function buildUpsell(){
+  var cards=ALLSU.map(function(s){
+    var q=uq[s.id]||0;
+    return '<div class="scard'+(q>0?" on":"")+'"><div class="sname">'+s.name+'</div><div class="sprice">'+fp(s.price)+'€</div><div class="sqty"><button class="qbtn" onclick="gUD(\''+s.id+'\')">−</button><span class="qval">'+q+'</span><button class="qbtn" onclick="gUI(\''+s.id+'\')">+</button></div></div>';
+  }).join("");
+  var tot=ALLSU.reduce(function(a,s){return a+(uq[s.id]||0)*s.price;},0);
+  var totRow=tot>0?'<div class="upsell-totalrow">Total ajout : <span style="color:#FFD700;font-weight:800;font-size:16px">'+fp(tot)+'€</span></div>':"";
+  return '<div class="upsell-overlay"><div class="upsell-modal"><div class="upsell-title">🍟 Une petite envie en plus ?</div><div class="upsell-sub">Accras, frites ou boissons pour accompagner votre commande</div><div class="sgrid">'+cards+'</div>'+totRow+'<button class="btnY" onclick="gUAdd()">+ Ajouter au panier</button><button class="btnX" onclick="gUSkip()">Non merci</button></div></div>';
+}
+
 function rCom(){
   var el=document.getElementById("V0");
   if(tdone){el.innerHTML=H()+'<div class="body" style="text-align:center"><img src="https://i.ibb.co/wmcvCTY/Logo-STAN-Perso.png" style="width:220px;object-fit:contain;margin:20px auto 8px;display:block;filter:drop-shadow(0 0 12px rgba(255,180,0,0.3))" alt="" /><div style="font-size:13px;color:rgba(255,255,255,0.5);margin:8px 0 4px">Votre num\u00E9ro de ticket</div><div class="tbox"><div class="tnum">#'+tdone+'</div><div class="tsub">Nous vous appellerons quand votre commande est pr\u00EAte</div></div><div class="wabox"><span style="font-size:20px">💬</span><span>Notification envoy\u00E9e au vendeur</span></div><div style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:20px">Paiement \u00E0 la livraison</div><button class="btnP" onclick="gRST()">Nouvelle commande</button></div>';return;}
   var cnt=pCnt();
-  var tls={simple:"Menus simples",mixte:"Menus mixtes",supps:"Suppléments",recap:"Récap"+(cnt>0?" ("+cnt+")":" ")};
+  var tls={simple:"Menus simples",mixte:"Menus mixtes",supps:"Accompagnements",recap:"Récap"+(cnt>0?" ("+cnt+")":" ")};
   var th="";["simple","mixte","supps","recap"].forEach(function(t){th+='<div class="stab'+(sec===t?" on":"")+'" onclick="gS(\''+t+'\')">'+tls[t]+'</div>';});
   var body="";
   if(sec==="simple"||sec==="mixte"){
@@ -330,7 +349,7 @@ function rCom(){
   }
   var bar="";
   if(pan.length>0&&sec!=="recap")bar='<div class="pbar" onclick="gS(\'recap\')"><span class="pl">🛒 '+pCnt()+' article'+(pCnt()>1?"s":"")+'</span><span class="pr">'+fp(pTot())+'€ →</span></div>';
-  el.innerHTML=H()+'<div class="stabs">'+th+'</div><div class="body">'+body+'</div>'+bar;
+  el.innerHTML=H()+'<div class="stabs">'+th+'</div><div class="body">'+body+'</div>'+bar+(upsellOpen?buildUpsell():"");
 }
 
 function rSuivi(){
@@ -408,7 +427,7 @@ function buildCuisine(){
     var cls="ocard"+(isDone?" done":" alert");
     return'<div class="'+cls+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="onum'+(isDone?" done":"")+'">#'+o.ticket+'</span><span class="otime">'+o.time+'</span></div>'+pbadge+ih+'<div class="ototl">TOTAL: '+o.total+'€</div>'+payHtml+(isDone?'<div style="margin-top:8px"><span class="donebdg">✓ Prête</span></div>':'<button class="btnPret" onclick="gMR(\''+o.fbKey+'\')">✓ Commande prête</button>')+'</div>';
   }
-  var html='<div class="cpage"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:6px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔":"🔕")+'</button></div></div><div class="body">';
+  var html='<div class="cpage'+(pend.length>0?" alert-blink":"")+'"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:6px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔":"🔕")+'</button></div></div><div class="body">';
   if(!all.length)html+='<div class="empty">Aucune commande</div>';
   else{
     if(pend.length){html+='<div class="subtitle">En attente</div>';pend.forEach(function(o){html+=bCard(o,false);});}
@@ -492,9 +511,20 @@ window.gAM=function(){
   var miss=cfg.sauces.slice(0,cfg.qty).some(function(s){return!s;});if(miss){saErr=true;rCom();return;}
   var mx=cfging.t==="mixte",menus=mx?MM:MS,m=menus.find(function(x){return x.id===cfging.id;});
   for(var i=0;i<cfg.qty;i++){var ac=mx?"Frites + Riz Madras":cfg.accomps[i];var pr=parseFloat(m.price)+(!mx&&ac==="Riz Madras (+2€)"?2:0);pan.push({tp:"m",name:m.name,mt:mx?"Mixte":"Simple",vi:cfg.viandes[i],ac:ac,bo:cfg.boissons[i],sa:cfg.sauces[i],nt:cfg.nt,price:pr});}
-  cfging=null;cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();
+  cfging=null;cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;
+  uq={};upsellOpen=true;
+  rCom();
 };
 window.gAS=function(){var items=[];ALLSU.forEach(function(s){var q=sq[s.id]||0;if(q>0)items.push({id:s.id,name:s.name,qty:q,up:parseFloat(s.price)});});if(!items.length)return;var tot=items.reduce(function(a,s){return a+s.qty*s.up;},0);pan.push({tp:"s",items:items,price:tot});sq={};rCom();};
+
+window.gUI=function(id){uq[id]=(uq[id]||0)+1;rCom();};
+window.gUD=function(id){if((uq[id]||0)>0)uq[id]--;rCom();};
+window.gUAdd=function(){
+  var items=[];ALLSU.forEach(function(s){var q=uq[s.id]||0;if(q>0)items.push({id:s.id,name:s.name,qty:q,up:parseFloat(s.price)});});
+  if(items.length){var tot=items.reduce(function(a,s){return a+s.qty*s.up;},0);pan.push({tp:"s",items:items,price:tot});}
+  uq={};upsellOpen=false;rCom();
+};
+window.gUSkip=function(){uq={};upsellOpen=false;rCom();};
 
 window.gFIN=async function(){
   if(!pan.length||sending)return;sending=true;rCom();
@@ -508,7 +538,7 @@ window.gFIN=async function(){
   sending=false;tdone=ticket;pan=[];sq={};rCom();
 };
 
-window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;sending=false;sec="simple";cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();};
+window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;sending=false;sec="simple";cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;upsellOpen=false;uq={};rCom();};
 window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret",readyAt:Date.now()});};
 window.gPaid=function(k,v){update(ref(db,"orders/"+k),{paid:v});};
 window.gPassage=function(k,v){update(ref(db,"orders/"+k),{passage:v});};
