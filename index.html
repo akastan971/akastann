@@ -162,8 +162,16 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .paylabel{font-size:12px;font-weight:700;color:rgba(255,255,255,0.5)}
 .paylabel.paid{color:#25d166}
 .hidden{display:none}
-.cpage.alert-blink{animation:kitchenBlink 1s ease-in-out infinite}
-@keyframes kitchenBlink{0%,100%{box-shadow:inset 0 0 0 4px #D4880A}50%{box-shadow:inset 0 0 0 4px #FFD700}}
+.cpage.alert-blink{animation:kitchenBlink 1s ease-in-out infinite;outline-offset:-4px}
+@keyframes kitchenBlink{0%,100%{outline:4px solid #D4880A}50%{outline:4px solid #FFD700}}
+.ocard.alert-urgent{animation:flashUrgent 0.8s infinite;border-left-color:#ff5555!important}
+@keyframes flashUrgent{0%,100%{border-left-color:#ff5555;box-shadow:0 0 0 rgba(255,80,80,0)}50%{border-left-color:#ffaa00;box-shadow:0 0 14px rgba(255,80,80,0.55)}}
+.ocard.calm-timed{border-left-color:#6495ED}
+.timeGroup{display:flex;align-items:center;gap:8px;margin:16px 0 8px;padding:8px 12px;background:rgba(100,149,237,0.12);border:1px solid #6495ED;border-radius:10px}
+.timeGroup.urgent{background:rgba(255,80,80,0.15);border-color:#ff5555}
+.timeGroupT{font-size:15px;font-weight:800;color:#6495ED}
+.timeGroup.urgent .timeGroupT{color:#ff5555}
+.timeGroupB{font-size:11px;font-weight:700;color:#ff5555;background:rgba(255,80,80,0.2);padding:2px 8px;border-radius:6px}
 .upsell-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeInUp 0.2s ease-out}
 @keyframes fadeInUp{from{opacity:0}to{opacity:1}}
 .upsell-modal{background:#1a1200;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:22px 16px 26px;max-height:88vh;overflow-y:auto;border-top:3px solid #FFD700;box-shadow:0 -6px 30px rgba(0,0,0,0.5)}
@@ -410,11 +418,20 @@ function rA(){
   el.innerHTML=tabs+content;
 }
 
+function parsePassageMin(p){
+  if(!p||p==="Non précisé")return null;
+  var m=p.match(/(\d+)h(\d+)/);
+  if(!m)return null;
+  return parseInt(m[1],10)*60+parseInt(m[2],10);
+}
 function buildCuisine(){
   var all=Object.entries(fbO).map(function(e){return Object.assign({fbKey:e[0]},e[1]);}).sort(function(a,b){return b.ts-a.ts;});
   var pend=all.filter(function(o){return o.status==="en_attente";});
   var done=all.filter(function(o){return o.status==="pret";});
-  function bCard(o,isDone){
+  var pendNow=pend.filter(function(o){return parsePassageMin(o.passage)===null;}).sort(function(a,b){return a.ts-b.ts;});
+  var pendTimed=pend.filter(function(o){return parsePassageMin(o.passage)!==null;}).sort(function(a,b){return parsePassageMin(a.passage)-parsePassageMin(b.passage);});
+  var nowMin=(new Date()).getHours()*60+(new Date()).getMinutes();
+  function bCard(o,isDone,flashType){
     var ih="";
     (o.items||[]).forEach(function(it,idx){
       if(it.tp==="m"){var sb='<span class="sbadge '+(it.sa==="piq"?"spiq":"snpiq")+'">'+(it.sa==="piq"?"🌶️":"😊")+'</span>';ih+='<div class="oline"><b>'+(idx+1)+'.</b> '+it.name+' ('+it.mt+') — <b style="color:#FFD700">'+viQty(it)+'</b> · '+it.ac+' · '+bN(it.bo)+sb+'  <b>'+it.price+'€</b>'+(it.nt?'<br><span style="color:#FFD700;font-size:12px">📝 '+it.nt+'</span>':'')+'</div>';}
@@ -430,13 +447,32 @@ function buildCuisine(){
       +'<span style="font-size:12px;color:rgba(255,255,255,0.5);flex-shrink:0">🕐</span>'
       +'<select onchange="gPassage(\''+o.fbKey+'\',this.value)" style="flex:1;background:#0a0a0a;border:1px solid #333;border-radius:8px;color:#FFD700;font-size:13px;font-weight:700;padding:4px 8px;outline:none">'+pOpts+'</select>'
       +'</div></div>';
-    var cls="ocard"+(isDone?" done":" alert");
+    var flashCls=isDone?" done":(flashType==="urgent"?" alert-urgent":(flashType==="calm"?" calm-timed":" alert"));
+    var cls="ocard"+flashCls;
     return'<div class="'+cls+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="onum'+(isDone?" done":"")+'">#'+o.ticket+'</span><span class="otime">'+o.time+'</span></div>'+pbadge+ih+'<div class="ototl">TOTAL: '+o.total+'€</div>'+payHtml+(isDone?'<div style="margin-top:8px"><span class="donebdg">✓ Prête</span></div>':'<button class="btnPret" onclick="gMR(\''+o.fbKey+'\')">✓ Commande prête</button>')+'</div>';
   }
   var html='<div class="cpage'+(pend.length>0?" alert-blink":"")+'"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:6px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔":"🔕")+'</button></div></div><div class="body">';
   if(!all.length)html+='<div class="empty">Aucune commande</div>';
   else{
-    if(pend.length){html+='<div class="subtitle">En attente</div>';pend.forEach(function(o){html+=bCard(o,false);});}
+    if(pendNow.length){
+      html+='<div class="subtitle">🔥 À préparer maintenant ('+pendNow.length+')</div>';
+      pendNow.forEach(function(o){html+=bCard(o,false,"alert");});
+    }
+    if(pendTimed.length){
+      html+='<div class="subtitle">🕐 Commandes programmées ('+pendTimed.length+')</div>';
+      var lastT=null;
+      pendTimed.forEach(function(o){
+        if(o.passage!==lastT){
+          lastT=o.passage;
+          var mins=parsePassageMin(o.passage);
+          var urg=mins!==null&&(mins-nowMin)<=30;
+          html+='<div class="timeGroup'+(urg?" urgent":"")+'"><span class="timeGroupT">🕐 '+lastT+'</span>'+(urg?'<span class="timeGroupB">⏰ BIENTÔT</span>':'')+'</div>';
+        }
+        var m2=parsePassageMin(o.passage);
+        var urgent=m2!==null&&(m2-nowMin)<=30;
+        html+=bCard(o,false,urgent?"urgent":"calm");
+      });
+    }
     if(done.length){html+='<div class="subtitle">Prêtes</div>';done.forEach(function(o){html+=bCard(o,true);});}
   }
   return html+'</div></div>';
