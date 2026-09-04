@@ -45,16 +45,6 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .sname{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px}
 .sprice{font-size:13px;color:#FFD700;font-weight:700}
 .sqty{display:flex;align-items:center;gap:8px;margin-top:8px}
-.qbtn{background:#D4880A;color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.qval{font-size:15px;font-weight:700;color:#FFD700;min-width:20px;text-align:center}
-.pbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#D4880A;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;z-index:50}
-.pl{font-size:13px;font-weight:700;color:#fff}
-.pr{font-size:15px;font-weight:800;color:#fff}
-.ritem{background:#2a1a00;border:1px solid #3a2a00;border-radius:12px;padding:14px 16px;margin-bottom:10px}
-.rname{font-size:14px;font-weight:700;color:#FFD700;margin-bottom:4px}
-.rtype{font-size:11px;color:rgba(255,255,255,0.4);font-weight:400;margin-left:6px}
-.rdet{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6}
-.rprice{font-size:16px;font-weight:800;color:#FFD700}
 .rdel{background:none;border:none;color:rgba(255,255,255,0.3);font-size:20px;cursor:pointer;padding:0;line-height:1}
 .trow{display:flex;justify-content:space-between;align-items:center;padding:16px 0 8px;border-top:1px solid #3a2a00;margin-top:6px}
 .tlbl{font-size:15px;font-weight:700;color:rgba(255,255,255,0.7)}
@@ -202,7 +192,6 @@ import{getAuth,signInAnonymously,signInWithEmailAndPassword,signOut,onAuthStateC
 const app=initializeApp({apiKey:"AIzaSyDK5SH0VnLt62L0ac_ZuBIbjAYzFZtnkpA",authDomain:"aka-stann.firebaseapp.com",databaseURL:"https://aka-stann-default-rtdb.europe-west1.firebasedatabase.app",projectId:"aka-stann",storageBucket:"aka-stann.firebasestorage.app",messagingSenderId:"953795981354",appId:"1:953795981354:web:713dd17519d3be1a425353"});
 const db=getDatabase(app);
 const auth=getAuth(app);
-
 var PH="33620554462",AK="3325270";
 var MS=[{id:"vf",name:"Vieux Fort",desc:"3 pilons OU 1 cuisse",price:9},{id:"sa",name:"Sainte-Anne",desc:"6 pilons OU 2 cuisses",price:11},{id:"pl",name:"Port Louis",desc:"9 pilons OU 3 cuisses",price:13}];
 var MM=[{id:"mvf",name:"Mixte Vieux Fort",desc:"3 pilons OU 1 cuisse",price:10},{id:"msa",name:"Mixte Sainte-Anne",desc:"6 pilons OU 2 cuisses",price:12},{id:"mpl",name:"Mixte Port Louis",desc:"9 pilons OU 3 cuisses",price:14}];
@@ -222,7 +211,6 @@ var STOCKDEF=[
   {id:"crist",name:"Cristaline",unit:"unités"},
   {id:"loc",name:"Boisson locale",unit:"unités"}
 ];
-
 var pan=[],sec="simple",cfging=null;
 var cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};
 var sq={},fbO={},gStock={},fbStock={},curV=0,sending=false;
@@ -234,7 +222,6 @@ var aLog=false;
 var aSection="cuisine",aDt=null;
 var soundOn=true,firstLoad=true,lastIds={},alertInt=null;
 var upsellOpen=false,uq={};
-
 onAuthStateChanged(auth,function(user){
   if(user&&!user.isAnonymous){
     aLog=true;
@@ -246,7 +233,6 @@ onAuthStateChanged(auth,function(user){
     aLog=false;
   }
 });
-
 onValue(ref(db,"orders"),function(s){
   var nO=s.val()||{};
   if(!firstLoad&&aLog&&curV===2&&aSection==="cuisine"){
@@ -269,7 +255,6 @@ onValue(ref(db,"orders"),function(s){
     },60000);
   }
 });
-
 var audioCtx=null;
 function initAudio(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}}
 function playDing(){
@@ -287,7 +272,6 @@ function playDing(){
     o2.start(audioCtx.currentTime+0.15);o2.stop(audioCtx.currentTime+0.6);
   }catch(e){}
 }
-
 function fp(n){var v=parseFloat(n);if(isNaN(v))return"0";return v%1===0?String(v):v.toFixed(2).replace(/\.?0+$/,"");}
 function ts2d(ts){var d=new Date(ts);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function dfr(s){if(!s)return"";var p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0];}
@@ -307,7 +291,6 @@ function viQty(it){
   return it.vi==="Pilons"?("Pilons x"+nbP):("Cuisse(s) x"+nbC);
 }
 function H(){return'<div class="hdr"><img src="https://i.imgur.com/nxIFvJx.jpg" style="height:60px;object-fit:contain;display:block;margin:0 auto 6px;filter:drop-shadow(0 0 8px rgba(255,180,0,0.4))" alt="" /><div class="htitle">A KA STANN &amp; DEDETTE</div><div class="hsub">Savourez l\u2019instant, go\u00FBtez l\u2019authenticit\u00E9</div></div><div class="madras"></div>';}
-
 async function sendWA(o){
   var L=["Nouvelle commande A KA STANN !","","Ticket #"+o.ticket,"SUR PLACE","Client: "+(o.prenom||"")+" — "+(o.telephone||""),(o.passage&&o.passage!=="Non précisé"?"Créneau: "+o.passage:"Créneau: Dès que possible"),""];
   o.items.forEach(function(it,i){
@@ -317,7 +300,6 @@ async function sendWA(o){
   L.push("TOTAL: "+o.total+"EUR");
   try{await fetch("https://api.callmebot.com/whatsapp.php?phone="+PH+"&text="+encodeURIComponent(L.join("\n"))+"&apikey="+AK,{mode:"no-cors"});}catch(e){}
 }
-
 function buildUpsell(){
   var cards=ALLSU.map(function(s){
     var q=uq[s.id]||0;
@@ -327,7 +309,6 @@ function buildUpsell(){
   var totRow=tot>0?'<div class="upsell-totalrow">Total ajout : <span style="color:#FFD700;font-weight:800;font-size:16px">'+fp(tot)+'€</span></div>':"";
   return '<div class="upsell-overlay"><div class="upsell-modal"><div class="upsell-title">🍟 Une petite envie en plus ?</div><div class="upsell-sub">Accras, frites ou boissons pour accompagner votre commande</div><div class="sgrid">'+cards+'</div>'+totRow+'<button class="btnY" onclick="gUAdd()">+ Ajouter au panier</button><button class="btnX" onclick="gUSkip()">Non merci</button></div></div>';
 }
-
 function rCom(){
   var el=document.getElementById("V0");
   if(tdone){el.innerHTML=H()+'<div class="body" style="text-align:center"><img src="https://i.ibb.co/wmcvCTY/Logo-STAN-Perso.png" style="width:220px;object-fit:contain;margin:20px auto 8px;display:block;filter:drop-shadow(0 0 12px rgba(255,180,0,0.3))" alt="" /><div style="font-size:13px;color:rgba(255,255,255,0.5);margin:8px 0 4px">Votre num\u00E9ro de ticket</div><div class="tbox"><div class="tnum">#'+tdone+'</div><div class="tsub">Nous vous appellerons quand votre commande est pr\u00EAte</div></div><div class="wabox"><span style="font-size:20px">💬</span><span>Notification envoy\u00E9e au vendeur</span></div><div style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:20px">Paiement \u00E0 la livraison</div><button class="btnP" onclick="gRST()">Nouvelle commande</button></div>';return;}
@@ -371,10 +352,9 @@ function rCom(){
         return"";
       }).join("");
       var nowMin=(new Date()).getHours()*60+(new Date()).getMinutes();
-      var showCren=nowMin>=18*60+30;
-      var avail=showCren?CLI_SLOTS.filter(function(s){return parsePassageMin(s)>=nowMin;}):[];
+      var avail=CLI_SLOTS.filter(function(s){return parsePassageMin(s)>=nowMin;});
       var crenHtml="";
-      if(showCren&&avail.length){
+      if(avail.length){
         var taken=takenSlotsToday();
         crenHtml='<div class="cpanel"><div class="ctitle">🕐 Créneau de passage <span style="color:#ff5555">*obligatoire</span></div><div class="orow">'+avail.map(function(s){
           var isTaken=taken[s];
@@ -398,7 +378,6 @@ function rCom(){
   if(pan.length>0&&sec!=="recap")bar='<div class="pbar" onclick="gS(\'recap\')"><span class="pl">🛒 '+pCnt()+' article'+(pCnt()>1?"s":"")+'</span><span class="pr">'+fp(pTot())+'€ →</span></div>';
   el.innerHTML=H()+'<div class="stabs">'+th+'</div><div class="body">'+body+'</div>'+bar+(upsellOpen?buildUpsell():"");
 }
-
 function rSuivi(){
   var el=document.getElementById("V1");
   var tod=ts2d(Date.now());
@@ -423,7 +402,6 @@ function rSuivi(){
   html+='</div></div>';
   el.innerHTML=html;
 }
-
 function rA(){
   var el=document.getElementById("V2");
   if(!aLog){
@@ -450,7 +428,6 @@ function rA(){
   else content=buildDash();
   el.innerHTML=tabs+content;
 }
-
 function parsePassageMin(p){
   if(!p||p==="Non précisé")return null;
   var m=p.match(/(\d+)h(\d+)/);
@@ -511,7 +488,6 @@ function buildCuisine(){
   }
   return html+'</div></div>';
 }
-
 function buildDash(){
   var all=Object.values(fbO);
   var dm={};all.forEach(function(o){if(!o.ts)return;var d=ts2d(o.ts);if(!dm[d])dm[d]=[];dm[d].push(o);});
@@ -569,7 +545,6 @@ function buildDash(){
   }
   return"";
 }
-
 window.gV=function(v){curV=v;[0,1,2].forEach(function(i){document.getElementById("V"+i).className=v===i?"":"hidden";document.getElementById("T"+i).className="ttab"+(v===i?" on":"");});if(v===2)initAudio();if(v===0)rCom();if(v===1)rSuivi();if(v===2)rA();};
 window.gS=function(s){sec=s;cfging=null;rCom();};
 window.gSTcfg=function(id,t){cfging={id:id,t:t};cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();};
@@ -592,7 +567,6 @@ window.gAM=function(){
   rCom();
 };
 window.gAS=function(){var items=[];ALLSU.forEach(function(s){var q=sq[s.id]||0;if(q>0)items.push({id:s.id,name:s.name,qty:q,up:parseFloat(s.price)});});if(!items.length)return;var tot=items.reduce(function(a,s){return a+s.qty*s.up;},0);pan.push({tp:"s",items:items,price:tot});sq={};rCom();};
-
 window.gUI=function(id){uq[id]=(uq[id]||0)+1;rCom();};
 window.gUD=function(id){if((uq[id]||0)>0)uq[id]--;rCom();};
 window.gUAdd=function(){
@@ -601,18 +575,15 @@ window.gUAdd=function(){
   uq={};upsellOpen=false;rCom();
 };
 window.gUSkip=function(){uq={};upsellOpen=false;rCom();};
-
 window.gCN=function(v){cName=v;};
 window.gCPh=function(v){cPhone=v;};
 window.gCCren=function(v){cCreneau=v;crenErr=false;rCom();};
-
 window.gFIN=async function(){
   if(!pan.length||sending)return;
   if(!cName.trim()||!cPhone.trim()){ctcErr=true;rCom();return;}
   var nowMinFin=(new Date()).getHours()*60+(new Date()).getMinutes();
-  var showCrenFin=nowMinFin>=18*60+30;
-  var availFin=showCrenFin?CLI_SLOTS.filter(function(s){return parsePassageMin(s)>=nowMinFin;}):[];
-  if(showCrenFin&&availFin.length&&!cCreneau){crenErr=true;rCom();return;}
+  var availFin=CLI_SLOTS.filter(function(s){return parsePassageMin(s)>=nowMinFin;});
+  if(availFin.length&&!cCreneau){crenErr=true;rCom();return;}
   if(cCreneau&&takenSlotsToday()[cCreneau]){rCom();return;}
   ctcErr=false;crenErr=false;sending=true;rCom();
   var ticket=Math.floor(Math.random()*900)+100;
@@ -624,7 +595,6 @@ window.gFIN=async function(){
   }catch(e){console.error("Erreur commande:",e);}
   sending=false;tdone=ticket;pan=[];sq={};cName="";cPhone="";cCreneau="";ctcErr=false;crenErr=false;rCom();
 };
-
 window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;sending=false;sec="simple";cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;upsellOpen=false;uq={};cName="";cPhone="";cCreneau="";ctcErr=false;crenErr=false;rCom();};
 window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret",readyAt:Date.now()});};
 window.gPaid=function(k,v){update(ref(db,"orders/"+k),{paid:v});};
@@ -641,7 +611,6 @@ window.gDepSet=function(val){var p={};p[aDt+"_dep"]=val;fbStock[aDt+"_dep"]=val;
 window.gCLRDay=function(d){if(!confirm("Supprimer les commandes du "+dfr(d)+" ?"))return;Object.entries(fbO).filter(function(e){return e[1].ts&&ts2d(e[1].ts)===d;}).forEach(function(e){remove(ref(db,"orders/"+e[0]));});};
 window.gCLRStock=function(){if(!confirm("Remettre tous les stocks à zéro ?"))return;remove(ref(db,"globalStock"));gStock={};rA();};
 window.gCLRDep=function(d){if(!confirm("Supprimer les dépenses du "+dfr(d)+" ?"))return;var p={};p[d+"_dep"]=null;update(ref(db,"stockData"),p);};
-
 setInterval(function(){if(curV===1)rSuivi();},15000);
 rCom();rSuivi();rA();
 </script>
