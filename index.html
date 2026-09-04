@@ -172,6 +172,10 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .timeGroupT{font-size:15px;font-weight:800;color:#6495ED}
 .timeGroup.urgent .timeGroupT{color:#ff5555}
 .timeGroupB{font-size:11px;font-weight:700;color:#ff5555;background:rgba(255,80,80,0.2);padding:2px 8px;border-radius:6px}
+.cinp{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10px;padding:10px 12px;color:#fff;font-size:14px;outline:none;margin-bottom:10px}
+.cinp::placeholder{color:rgba(255,255,255,0.25)}
+.cinp.err{border-color:#ff5555}
+.obtn.taken{opacity:0.35;cursor:not-allowed;text-decoration:line-through;color:rgba(255,255,255,0.4)}
 .upsell-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeInUp 0.2s ease-out}
 @keyframes fadeInUp{from{opacity:0}to{opacity:1}}
 .upsell-modal{background:#1a1200;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:22px 16px 26px;max-height:88vh;overflow-y:auto;border-top:3px solid #FFD700;box-shadow:0 -6px 30px rgba(0,0,0,0.5)}
@@ -224,6 +228,8 @@ var cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:
 var sq={},fbO={},gStock={},fbStock={},curV=0,sending=false;
 var tdone=null,mode="surplace";
 var saErr=false;
+var cName="",cPhone="",cCreneau="",ctcErr=false,crenErr=false;
+var CLI_SLOTS=["18h30","18h45","19h00","19h15","19h30","19h45","20h00","20h15","20h30","20h45","21h00"];
 var aLog=false;
 var aSection="cuisine",aDt=null;
 var soundOn=true,firstLoad=true,lastIds={},alertInt=null;
@@ -288,6 +294,12 @@ function dfr(s){if(!s)return"";var p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0];
 function pTot(){var t=0;pan.forEach(function(it){if(it.tp==="m")t+=parseFloat(it.price)||0;else if(it.tp==="s")it.items.forEach(function(s){t+=(parseFloat(s.up)||0)*s.qty;});});return t;}
 function pCnt(){var n=0;pan.forEach(function(it){if(it.tp==="m")n++;else if(it.tp==="s")it.items.forEach(function(s){n+=s.qty;});});return n;}
 function bN(id){var b=BO.find(function(x){return x.id===id;});return b?b.name:id;}
+function takenSlotsToday(){
+  var tod=ts2d(Date.now());
+  var t={};
+  Object.values(fbO).forEach(function(o){if(o.ts&&ts2d(o.ts)===tod&&o.passage&&o.passage!=="Non précisé")t[o.passage]=true;});
+  return t;
+}
 function viQty(it){
   var n=it.name||"";
   var nbP=n.indexOf("Vieux")>-1?3:(n.indexOf("Sainte")>-1?6:9);
@@ -297,7 +309,7 @@ function viQty(it){
 function H(){return'<div class="hdr"><img src="https://i.imgur.com/nxIFvJx.jpg" style="height:60px;object-fit:contain;display:block;margin:0 auto 6px;filter:drop-shadow(0 0 8px rgba(255,180,0,0.4))" alt="" /><div class="htitle">A KA STANN &amp; DEDETTE</div><div class="hsub">Savourez l\u2019instant, go\u00FBtez l\u2019authenticit\u00E9</div></div><div class="madras"></div>';}
 
 async function sendWA(o){
-  var L=["Nouvelle commande A KA STANN !","","Ticket #"+o.ticket,"SUR PLACE",""];
+  var L=["Nouvelle commande A KA STANN !","","Ticket #"+o.ticket,"SUR PLACE","Client: "+(o.prenom||"")+" — "+(o.telephone||""),(o.passage&&o.passage!=="Non précisé"?"Créneau: "+o.passage:"Créneau: Dès que possible"),""];
   o.items.forEach(function(it,i){
     if(it.tp==="m"){L.push("Menu "+(i+1)+": "+it.name+" ("+it.mt+")");L.push("  "+it.vi+" | "+it.ac+" | "+bN(it.bo));L.push("  Sauce: "+(it.sa==="piq"?"PIQUANTE":"NON PIQUANTE"));if(it.nt)L.push("  Note: "+it.nt);L.push("  "+it.price+"EUR");L.push("");}
     else if(it.tp==="s"){L.push("Supplements:");it.items.forEach(function(s){L.push("  "+s.qty+"x "+s.name);});L.push("  "+fp(it.price)+"EUR");L.push("");}
@@ -358,7 +370,28 @@ function rCom(){
         if(it.tp==="s"){var ll=it.items.map(function(s){return s.qty+"x "+s.name;}).join(" · ");return'<div class="ritem"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="rname">SUPPLÉMENTS</div><div class="rdet">'+ll+'</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+del+'<span class="rprice">'+fp(it.price)+'€</span></div></div></div>';}
         return"";
       }).join("");
-      body=ih+'<div class="trow"><span class="tlbl">TOTAL</span><span class="tprice">'+fp(pTot())+'€</span></div><button class="btnF" onclick="gFIN()"'+(sending?" disabled":"")+'>'+(sending?"Envoi...":"✓ Finaliser la commande")+'</button><button class="btnM" onclick="gS(\'simple\')">+ Ajouter un menu</button>';
+      var nowMin=(new Date()).getHours()*60+(new Date()).getMinutes();
+      var showCren=nowMin>=18*60+30;
+      var avail=showCren?CLI_SLOTS.filter(function(s){return parsePassageMin(s)>=nowMin;}):[];
+      var crenHtml="";
+      if(showCren&&avail.length){
+        var taken=takenSlotsToday();
+        crenHtml='<div class="cpanel"><div class="ctitle">🕐 Créneau de passage <span style="color:#ff5555">*obligatoire</span></div><div class="orow">'+avail.map(function(s){
+          var isTaken=taken[s];
+          if(isTaken)return'<div class="obtn taken" title="Créneau déjà réservé">'+s+' ✕</div>';
+          var sel=cCreneau===s;
+          return'<div class="obtn'+(sel?" on":(crenErr?" err":""))+'" onclick="gCCren(\''+s+'\')">'+s+'</div>';
+        }).join("")+'</div>'+(crenErr&&!cCreneau?'<div class="errt">Merci de choisir un créneau</div>':"")+(cCreneau&&taken[cCreneau]?'<div class="errt">Ce créneau vient d\'être réservé, choisis-en un autre</div>':"")+'</div>';
+      }
+      var ctcHtml='<div class="cpanel"><div class="ctitle">📞 Vos coordonnées</div>'
+        +'<span class="lbl'+(ctcErr&&!cName.trim()?" err":"")+'">Prénom <span style="color:#ff5555">*obligatoire</span></span>'
+        +'<input type="text" class="cinp'+(ctcErr&&!cName.trim()?" err":"")+'" placeholder="Votre prénom" value="'+cName+'" oninput="gCN(this.value)" />'
+        +(ctcErr&&!cName.trim()?'<div class="errt">Merci d\'indiquer votre prénom</div>':"")
+        +'<span class="lbl'+(ctcErr&&!cPhone.trim()?" err":"")+'">Téléphone <span style="color:#ff5555">*obligatoire</span></span>'
+        +'<input type="tel" inputmode="tel" class="cinp'+(ctcErr&&!cPhone.trim()?" err":"")+'" placeholder="06 12 34 56 78" value="'+cPhone+'" oninput="gCPh(this.value)" />'
+        +(ctcErr&&!cPhone.trim()?'<div class="errt">Merci d\'indiquer votre numéro</div>':"")
+        +'</div>';
+      body=ih+crenHtml+ctcHtml+'<div class="trow"><span class="tlbl">TOTAL</span><span class="tprice">'+fp(pTot())+'€</span></div><button class="btnF" onclick="gFIN()"'+(sending?" disabled":"")+'>'+(sending?"Envoi...":"✓ Finaliser la commande")+'</button><button class="btnM" onclick="gS(\'simple\')">+ Ajouter un menu</button>';
     }
   }
   var bar="";
@@ -438,6 +471,7 @@ function buildCuisine(){
       else if(it.tp==="s"){var sl=(it.items||[]).map(function(s){return s.qty+"x "+s.name;}).join(", ");ih+='<div class="oline">➕ '+sl+' — <b>'+fp(it.price)+'€</b></div>';}
     });
     var pbadge=o.passage&&o.passage!=="Non précisé"?'<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(100,149,237,0.15);border:1px solid rgba(100,149,237,0.4);border-radius:6px;padding:3px 10px;font-size:12px;color:#6495ED;font-weight:700;margin-bottom:6px">🕐 '+o.passage+'</div>':"";
+    var clientBadge=o.prenom?'<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);border-radius:6px;padding:3px 10px;font-size:12px;color:#FFD700;font-weight:700;margin-bottom:6px;margin-left:6px">👤 '+o.prenom+(o.telephone?" · "+o.telephone:"")+'</div>':"";
     var pOpts=PASSAGE.map(function(h){return'<option value="'+h+'"'+(o.passage===h?" selected":"")+'>'+h+'</option>';}).join("");
     var payHtml='<div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">'
       +'<div class="payrow'+(o.paid?" paid":"")+'" onclick="gPaid(\''+o.fbKey+'\','+(!o.paid)+')">'
@@ -449,7 +483,7 @@ function buildCuisine(){
       +'</div></div>';
     var flashCls=isDone?" done":(flashType==="urgent"?" alert-urgent":(flashType==="calm"?" calm-timed":" alert"));
     var cls="ocard"+flashCls;
-    return'<div class="'+cls+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="onum'+(isDone?" done":"")+'">#'+o.ticket+'</span><span class="otime">'+o.time+'</span></div>'+pbadge+ih+'<div class="ototl">TOTAL: '+o.total+'€</div>'+payHtml+(isDone?'<div style="margin-top:8px"><span class="donebdg">✓ Prête</span></div>':'<button class="btnPret" onclick="gMR(\''+o.fbKey+'\')">✓ Commande prête</button>')+'</div>';
+    return'<div class="'+cls+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="onum'+(isDone?" done":"")+'">#'+o.ticket+'</span><span class="otime">'+o.time+'</span></div>'+pbadge+clientBadge+ih+'<div class="ototl">TOTAL: '+o.total+'€</div>'+payHtml+(isDone?'<div style="margin-top:8px"><span class="donebdg">✓ Prête</span></div>':'<button class="btnPret" onclick="gMR(\''+o.fbKey+'\')">✓ Commande prête</button>')+'</div>';
   }
   var html='<div class="cpage'+(pend.length>0?" alert-blink":"")+'"><div class="chdr"><div style="display:flex;align-items:center;gap:8px"><span class="ping"></span><span class="chtitle">Écran Cuisine</span></div><div style="display:flex;align-items:center;gap:6px">'+(pend.length?'<div class="badge">'+pend.length+' en attente</div>':"")+'<button class="soundbtn" onclick="gSND()">'+(soundOn?"🔔":"🔕")+'</button></div></div><div class="body">';
   if(!all.length)html+='<div class="empty">Aucune commande</div>';
@@ -568,19 +602,30 @@ window.gUAdd=function(){
 };
 window.gUSkip=function(){uq={};upsellOpen=false;rCom();};
 
+window.gCN=function(v){cName=v;};
+window.gCPh=function(v){cPhone=v;};
+window.gCCren=function(v){cCreneau=v;crenErr=false;rCom();};
+
 window.gFIN=async function(){
-  if(!pan.length||sending)return;sending=true;rCom();
+  if(!pan.length||sending)return;
+  if(!cName.trim()||!cPhone.trim()){ctcErr=true;rCom();return;}
+  var nowMinFin=(new Date()).getHours()*60+(new Date()).getMinutes();
+  var showCrenFin=nowMinFin>=18*60+30;
+  var availFin=showCrenFin?CLI_SLOTS.filter(function(s){return parsePassageMin(s)>=nowMinFin;}):[];
+  if(showCrenFin&&availFin.length&&!cCreneau){crenErr=true;rCom();return;}
+  if(cCreneau&&takenSlotsToday()[cCreneau]){rCom();return;}
+  ctcErr=false;crenErr=false;sending=true;rCom();
   var ticket=Math.floor(Math.random()*900)+100;
-  var order={ticket:ticket,items:pan,total:fp(pTot()),mode:"surplace",status:"en_attente",time:new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),ts:Date.now()};
+  var order={ticket:ticket,items:pan,total:fp(pTot()),mode:"surplace",status:"en_attente",time:new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),ts:Date.now(),prenom:cName.trim(),telephone:cPhone.trim(),passage:cCreneau||"Non précisé"};
   try{
     await signInAnonymously(auth);
     await push(ref(db,"orders"),order);
     await sendWA(order);
   }catch(e){console.error("Erreur commande:",e);}
-  sending=false;tdone=ticket;pan=[];sq={};rCom();
+  sending=false;tdone=ticket;pan=[];sq={};cName="";cPhone="";cCreneau="";ctcErr=false;crenErr=false;rCom();
 };
 
-window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;sending=false;sec="simple";cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;upsellOpen=false;uq={};rCom();};
+window.gRST=function(){pan=[];sq={};cfging=null;tdone=null;sending=false;sec="simple";cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;upsellOpen=false;uq={};cName="";cPhone="";cCreneau="";ctcErr=false;crenErr=false;rCom();};
 window.gMR=function(k){update(ref(db,"orders/"+k),{status:"pret",readyAt:Date.now()});};
 window.gPaid=function(k,v){update(ref(db,"orders/"+k),{paid:v});};
 window.gPassage=function(k,v){update(ref(db,"orders/"+k),{passage:v});};
