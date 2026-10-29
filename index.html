@@ -8,7 +8,18 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:#1a1200;color:#fff;-webkit-tap-highlight-color:transparent}
 #root{max-width:480px;margin:0 auto;min-height:100vh}
-.ttabs{display:flex;background:#000;border-bottom:1px solid #1a1a1a;position:sticky;top:0;z-index:100}
+.thead{position:sticky;top:0;z-index:100}
+.ttabs{display:flex;background:#000;border-bottom:1px solid #1a1a1a}
+#stockBar{display:flex;align-items:center;gap:6px;background:#0d0d0d;border-bottom:1px solid #1a1a1a;padding:4px 8px}
+#stockBar.hidden{display:none}
+.sbtog{flex:0 0 auto;font-size:11px;font-weight:800;color:#FFD700;background:#1a1a1a;border-radius:999px;padding:3px 9px;cursor:pointer;white-space:nowrap}
+.sbtog.low{color:#ffa500}
+.sbtog.out{color:#ff5555}
+.schips{display:flex;gap:5px;overflow-x:auto;flex:1;scrollbar-width:none}
+.schips::-webkit-scrollbar{display:none}
+.schip{flex:0 0 auto;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:#1a1a1a;color:rgba(255,255,255,0.75);white-space:nowrap}
+.schip.low{background:rgba(255,165,0,0.18);color:#ffa500}
+.schip.out{background:rgba(255,80,80,0.2);color:#ff5555}
 .ttab{flex:1;text-align:center;padding:11px 0;font-size:12px;font-weight:600;cursor:pointer;color:rgba(255,255,255,0.35);border-bottom:2px solid transparent}
 .ttab.on{color:#FFD700;border-bottom:2px solid #FFD700}
 .hdr{background:#0e0a00;padding:14px 20px;text-align:center;border-bottom:3px solid #D4880A}
@@ -198,10 +209,13 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 </head>
 <body>
 <div id="root">
-  <div class="ttabs">
-    <div class="ttab on" id="T0" onclick="gV(0)">🛒 Commander</div>
-    <div class="ttab" id="T1" onclick="gV(1)">📋 Suivi</div>
-    <div class="ttab" id="T2" onclick="gV(2)">⚙️ Admin</div>
+  <div class="thead">
+    <div class="ttabs">
+      <div class="ttab on" id="T0" onclick="gV(0)">🛒 Commander</div>
+      <div class="ttab" id="T1" onclick="gV(1)">📋 Suivi</div>
+      <div class="ttab" id="T2" onclick="gV(2)">⚙️ Admin</div>
+    </div>
+    <div id="stockBar" class="hidden"></div>
   </div>
   <div id="V0"></div>
   <div id="V1" class="hidden"></div>
@@ -251,7 +265,7 @@ var upsellOpen=false,uq={};
 var stockListening=false;
 function listenStock(){
   if(stockListening)return;stockListening=true;
-  onValue(ref(db,"globalStock"),function(sn){gStock=sn.val()||{};softRefreshCom();if(curV===2&&aLog&&aSection==="stock")rA();},function(e){stockListening=false;console.warn("Lecture du stock refusée (règles Firebase) :",e&&e.message);});
+  onValue(ref(db,"globalStock"),function(sn){gStock=sn.val()||{};renderStockBar();softRefreshCom();if(curV===2&&aLog&&aSection==="stock")rA();},function(e){stockListening=false;console.warn("Lecture du stock refusée (règles Firebase) :",e&&e.message);});
 }
 listenStock();
 onAuthStateChanged(auth,function(user){
@@ -259,11 +273,13 @@ onAuthStateChanged(auth,function(user){
   if(user&&!user.isAnonymous){
     aLog=true;
     // Lancer les écoutes admin après connexion confirmée
-    onValue(ref(db,"globalStock"),function(s){gStock=s.val()||{};if(curV===2&&aLog&&aSection==="stock")rA();});
+    onValue(ref(db,"globalStock"),function(s){gStock=s.val()||{};renderStockBar();if(curV===2&&aLog&&aSection==="stock")rA();});
     onValue(ref(db,"stockData"),function(s){fbStock=s.val()||{};if(curV===2&&aLog&&aSection==="dep")rA();});
     if(curV===2)rA();
+    renderStockBar();
   } else {
     aLog=false;
+    renderStockBar();
   }
 });
 
@@ -275,6 +291,7 @@ onValue(ref(db,"orders"),function(s){
   firstLoad=false;lastIds={};
   Object.keys(nO).forEach(function(k){lastIds[k]=true;});
   fbO=nO;
+  renderStockBar();
   if(curV===0)softRefreshCom();
   if(curV===1)rSuivi();
   if(curV===2&&aLog)rA();
@@ -412,6 +429,31 @@ function suppVec(id){var v={};if(id==="frit")v.frites=0.2;else if(id==="accr")v.
 function suppCan(id){return stockOK(suppVec(id),usedBase());}
 function suppPlus(id,fn){return suppCan(id)?'<button class="qbtn" onclick="'+fn+'(\''+id+'\')">+</button>':'<button class="qbtn" disabled>+</button>';}
 function suppTag(id,q){return suppCan(id)?"":'<div class="errt" style="margin:2px 0">'+(q>0?"Stock max atteint":"Rupture de stock")+'</div>';}
+
+// ===== Bandeau de stock permanent (admin, onglet Commander) =====
+var stockBarOpen=true;
+try{stockBarOpen=localStorage.getItem("stockBarOpen")!=="0";}catch(e){}
+var SHORTN={pilons:"Pilons",cuisses:"Cuisses",accras:"Accras",frites:"Frites",riz:"Riz",coca:"Coca",cocaz:"Coca 0",crist:"Cristal.",loc:"Loc."};
+function fmtStk(n){return fp(n).replace(".",",");}
+function renderStockBar(){
+  var el=document.getElementById("stockBar");if(!el)return;
+  if(!aLog||curV!==0){el.className="hidden";return;}
+  var conso=ordersConso(fbO),chips=[],nLow=0,nOut=0;
+  STOCKDEF.forEach(function(d){
+    var lim=stockLimit(d.id);if(lim===null)return;
+    var rem=Math.max(0,lim-(conso[d.id]||0));
+    var cls=rem<=0?" out":(rem<=lim*0.15?" low":"");
+    if(cls===" out")nOut++;else if(cls===" low")nLow++;
+    chips.push('<span class="schip'+cls+'">'+SHORTN[d.id]+' '+fmtStk(rem)+(d.unit==="kg"?" kg":"")+'</span>');
+  });
+  var tcls=nOut?" out":(nLow?" low":"");
+  var alerts=nOut+nLow;
+  el.className="";
+  el.innerHTML='<span class="sbtog'+tcls+'" onclick="gSB()">📦'+(alerts?" ⚠️"+alerts:"")+(stockBarOpen?" ▾":" ▸")+'</span>'
+    +(stockBarOpen?'<div class="schips">'+(chips.length?chips.join(""):'<span class="schip">Aucun stock saisi (onglet Admin › Stock)</span>')+'</div>':'');
+}
+window.gSB=function(){stockBarOpen=!stockBarOpen;try{localStorage.setItem("stockBarOpen",stockBarOpen?"1":"0");}catch(e){}renderStockBar();};
+
 function softRefreshCom(){
   if(curV!==0||tdone)return;
   var ae=document.activeElement;
@@ -717,7 +759,7 @@ function buildDash(){
   return"";
 }
 
-window.gV=function(v){curV=v;[0,1,2].forEach(function(i){document.getElementById("V"+i).className=v===i?"":"hidden";document.getElementById("T"+i).className="ttab"+(v===i?" on":"");});if(v===2)initAudio();if(v===0)rCom();if(v===1)rSuivi();if(v===2)rA();};
+window.gV=function(v){curV=v;[0,1,2].forEach(function(i){document.getElementById("V"+i).className=v===i?"":"hidden";document.getElementById("T"+i).className="ttab"+(v===i?" on":"");});if(v===2)initAudio();if(v===0)rCom();if(v===1)rSuivi();if(v===2)rA();renderStockBar();};
 window.gS=function(s){sec=s;cfging=null;rCom();};
 window.gSTcfg=function(id,t){var mm=(t==="mixte"?MM:MS).find(function(x){return x.id===id;});if(mm&&!menuAvail(mm,t==="mixte"))return;cfging={id:id,t:t};cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;cfgMsg="";fixCfg(0);rCom();};
 window.gCC=function(){cfging=null;saErr=false;rCom();};
@@ -804,7 +846,7 @@ window.gASec=function(s){
   aSection=s;
   rA();
 };
-window.gALO=function(){signOut(auth).then(function(){aLog=false;aSection="cuisine";aDt=null;rA();});};
+window.gALO=function(){signOut(auth).then(function(){aLog=false;aSection="cuisine";aDt=null;rA();renderStockBar();});};
 window.gAD=function(d){aDt=d;rA();};
 window.gStockSet=function(id,val){var v=val===""?"":parseFloat(val);gStock[id]=v;var p={};p[id]=v;update(ref(db,"globalStock"),p).then(function(){rA();});};
 window.gDepSet=function(val){var p={};p[aDt+"_dep"]=val;fbStock[aDt+"_dep"]=val;update(ref(db,"stockData"),p);};
