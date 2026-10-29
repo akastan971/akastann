@@ -182,12 +182,18 @@ textarea{width:100%;background:#2a1a00;border:1px solid #3a2a00;border-radius:10
 .packcheck.checked{background:#25d166;border-color:#25d166}
 .packlabel{font-size:12px;font-weight:600;color:rgba(255,255,255,0.6)}
 .packlabel.checked{color:#25d166;text-decoration:line-through}
+.packgrp{margin-bottom:10px;padding:8px;border:1px solid #2a2a2a;border-radius:10px;background:#101010}
+.packgrp.done{border-color:#25d166;background:rgba(37,211,102,0.05)}
+.packghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:13px;font-weight:800;color:#FFD700}
+.packghead.done{color:#25d166}
 .upsell-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeInUp 0.2s ease-out}
 @keyframes fadeInUp{from{opacity:0}to{opacity:1}}
 .upsell-modal{background:#1a1200;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:22px 16px 26px;max-height:88vh;overflow-y:auto;border-top:3px solid #FFD700;box-shadow:0 -6px 30px rgba(0,0,0,0.5)}
 .upsell-title{font-size:17px;font-weight:800;color:#FFD700;text-align:center;margin-bottom:4px}
 .upsell-sub{font-size:12px;color:rgba(255,255,255,0.45);text-align:center;margin-bottom:16px}
 .upsell-totalrow{text-align:right;margin:12px 0 4px;font-size:13px;color:rgba(255,255,255,0.5)}
+.mcard.rupt{opacity:.45;cursor:not-allowed}
+.qbtn:disabled{opacity:.25;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -233,7 +239,7 @@ var pan=[],sec="simple",cfging=null;
 var cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};
 var sq={},fbO={},gStock={},fbStock={},curV=0,sending=false;
 var tdone=null,mode="surplace";
-var saErr=false;
+var saErr=false,cfgMsg="";
 var cName="",cPhone="",cCreneau="",ctcErr=false,crenErr=false,crenFull=false;
 var SLOT_MAX=3;
 var CLI_SLOTS=[];for(var _m=18*60;_m<=21*60;_m+=15){CLI_SLOTS.push(Math.floor(_m/60)+"h"+String(_m%60).padStart(2,"0"));}
@@ -242,7 +248,14 @@ var aSection="cuisine",aDt=null;
 var soundOn=true,firstLoad=true,lastIds={},alertInt=null;
 var upsellOpen=false,uq={};
 
+var stockListening=false;
+function listenStock(){
+  if(stockListening)return;stockListening=true;
+  onValue(ref(db,"globalStock"),function(sn){gStock=sn.val()||{};softRefreshCom();if(curV===2&&aLog&&aSection==="stock")rA();},function(e){stockListening=false;console.warn("Lecture du stock refusée (règles Firebase) :",e&&e.message);});
+}
+listenStock();
 onAuthStateChanged(auth,function(user){
+  listenStock();
   if(user&&!user.isAnonymous){
     aLog=true;
     // Lancer les écoutes admin après connexion confirmée
@@ -262,6 +275,7 @@ onValue(ref(db,"orders"),function(s){
   firstLoad=false;lastIds={};
   Object.keys(nO).forEach(function(k){lastIds[k]=true;});
   fbO=nO;
+  if(curV===0)softRefreshCom();
   if(curV===1)rSuivi();
   if(curV===2&&aLog)rA();
   var n=Object.values(fbO).filter(function(o){return o.status==="en_attente";}).length;
@@ -315,6 +329,96 @@ function viQty(it){
   var nbC=n.indexOf("Vieux")>-1?1:(n.indexOf("Sainte")>-1?2:3);
   return it.vi==="Pilons"?("Pilons x"+nbP):("Cuisse(s) x"+nbC);
 }
+
+// ===== STOCK : calcul partagé (cuisine, stats, prise de commande) =====
+var MIX_VEC={frites:0.12,riz:0.12};
+function emptyConso(){return{pilons:0,cuisses:0,accras:0,frites:0,riz:0,coca:0,cocaz:0,crist:0,loc:0};}
+function addC(a,b){var r=emptyConso();Object.keys(r).forEach(function(k){r[k]=(a[k]||0)+(b[k]||0);});return r;}
+function menuPcs(name){var v=(name||"").indexOf("Vieux")>-1,s=(name||"").indexOf("Sainte")>-1;return{p:v?3:(s?6:9),c:v?1:(s?2:3)};}
+function addItemConso(c,it){
+  if(!it)return;
+  if(it.tp==="m"){
+    var q=menuPcs(it.name);
+    if(it.vi==="Pilons")c.pilons+=q.p;else c.cuisses+=q.c;
+    if(it.mt==="Mixte"){c.frites+=0.12;c.riz+=0.12;}
+    else{if(it.ac&&it.ac.indexOf("Frites")>-1)c.frites+=0.25;if(it.ac&&it.ac.indexOf("Riz")>-1)c.riz+=0.25;}
+    if(it.bo&&c[it.bo]!==undefined)c[it.bo]+=1;
+  }else if(it.tp==="s"){
+    (it.items||[]).forEach(function(s){if(s.id==="frit")c.frites+=s.qty*0.2;else if(s.id==="accr")c.accras+=s.qty*5;else if(c[s.id]!==undefined)c[s.id]+=s.qty;});
+  }
+}
+function ordersConso(src){
+  var tod=ts2d(Date.now()),c=emptyConso();
+  Object.values(src||{}).forEach(function(o){if(!o||!o.ts||ts2d(o.ts)!==tod)return;(o.items||[]).forEach(function(it){addItemConso(c,it);});});
+  return c;
+}
+function cartConso(){var c=emptyConso();pan.forEach(function(it){addItemConso(c,it);});return c;}
+function suppConso(obj){var c=emptyConso();Object.keys(obj||{}).forEach(function(id){var q=obj[id]||0;if(q<=0)return;if(id==="frit")c.frites+=q*0.2;else if(id==="accr")c.accras+=q*5;else if(c[id]!==undefined)c[id]+=q;});return c;}
+function stockLimit(id,stk){var sv=(stk||gStock)[id];if(sv===undefined||sv===null||sv==="")return null;var n=parseFloat(sv);return isNaN(n)?null:n;}
+function stockOK(vec,used,stk){
+  var ok=true;
+  Object.keys(vec).forEach(function(k){if(!(vec[k]>0))return;var lim=stockLimit(k,stk);if(lim===null)return;if(vec[k]>lim-(used[k]||0)+1e-9)ok=false;});
+  return ok;
+}
+function stockIssues(ordC,cartC,stk){
+  var out=[];
+  STOCKDEF.forEach(function(d){
+    var lim=stockLimit(d.id,stk);if(lim===null)return;
+    var need=cartC[d.id]||0;
+    if(need>0&&(ordC[d.id]||0)+need>lim+1e-9)out.push({id:d.id,name:d.name,unit:d.unit,left:Math.max(0,lim-(ordC[d.id]||0)),need:need});
+  });
+  return out;
+}
+// consommation déjà engagée : commandes du jour + panier + sélections en cours (suppléments / upsell)
+function usedBase(){return addC(addC(ordersConso(fbO),cartConso()),addC(suppConso(sq),suppConso(uq)));}
+function cfgMenu(){if(!cfging)return null;var mx=cfging.t==="mixte";return{mx:mx,m:(mx?MM:MS).find(function(x){return x.id===cfging.id;})};}
+function cfgItemFor(qi){var c=cfgMenu();return{tp:"m",name:c.m.name,mt:c.mx?"Mixte":"Simple",vi:cfg.viandes[qi],ac:c.mx?"Frites + Riz Madras":cfg.accomps[qi],bo:cfg.boissons[qi]};}
+function cfgConso(exceptIdx){var c=emptyConso();if(!cfging)return c;for(var i=0;i<cfg.qty;i++){if(i===exceptIdx)continue;addItemConso(c,cfgItemFor(i));}return c;}
+function optVec(kind,val,m){
+  var v={};
+  if(kind==="vi"){var q=menuPcs(m.name);if(val==="Pilons")v.pilons=q.p;else v.cuisses=q.c;}
+  else if(kind==="ac"){if(val.indexOf("Riz")>-1)v.riz=0.25;else v.frites=0.25;}
+  else if(kind==="bo"){v[val]=1;}
+  return v;
+}
+function optOk(kind,val,qi){var c=cfgMenu();return stockOK(optVec(kind,val,c.m),addC(usedBase(),cfgConso(qi)));}
+function optList(kind){return kind==="vi"?VI:(kind==="ac"?AC:BO.map(function(b){return b.id;}));}
+function cfgArr(kind){return kind==="vi"?cfg.viandes:(kind==="ac"?cfg.accomps:cfg.boissons);}
+function fixCfg(qi){
+  var c=cfgMenu();if(!c)return;
+  ["vi","ac","bo"].forEach(function(kind){
+    if(kind==="ac"&&c.mx)return;
+    var arr=cfgArr(kind);
+    if(!optOk(kind,arr[qi],qi)){var f=optList(kind).find(function(v){return optOk(kind,v,qi);});if(f)arr[qi]=f;}
+  });
+}
+function cfgFeasible(){
+  var c=cfgMenu();if(!c)return true;
+  for(var qi=0;qi<cfg.qty;qi++){
+    if(!optOk("vi",cfg.viandes[qi],qi)||!optOk("bo",cfg.boissons[qi],qi))return false;
+    if(c.mx){if(!stockOK(MIX_VEC,addC(usedBase(),cfgConso(qi))))return false;}
+    else if(!optOk("ac",cfg.accomps[qi],qi))return false;
+  }
+  return true;
+}
+function menuAvail(m,mx){
+  var u=usedBase();
+  var v=VI.some(function(x){return stockOK(optVec("vi",x,m),u);});
+  var a=mx?stockOK(MIX_VEC,u):AC.some(function(x){return stockOK(optVec("ac",x,m),u);});
+  var b=BO.some(function(x){return stockOK(optVec("bo",x.id,m),u);});
+  return v&&a&&b;
+}
+function suppVec(id){var v={};if(id==="frit")v.frites=0.2;else if(id==="accr")v.accras=5;else v[id]=1;return v;}
+function suppCan(id){return stockOK(suppVec(id),usedBase());}
+function suppPlus(id,fn){return suppCan(id)?'<button class="qbtn" onclick="'+fn+'(\''+id+'\')">+</button>':'<button class="qbtn" disabled>+</button>';}
+function suppTag(id,q){return suppCan(id)?"":'<div class="errt" style="margin:2px 0">'+(q>0?"Stock max atteint":"Rupture de stock")+'</div>';}
+function softRefreshCom(){
+  if(curV!==0||tdone)return;
+  var ae=document.activeElement;
+  if(ae&&/^(INPUT|TEXTAREA)$/.test(ae.tagName||""))return;
+  rCom();
+}
+
 function H(){return'<div class="hdr"><img src="https://i.imgur.com/nxIFvJx.jpg" style="height:60px;object-fit:contain;display:block;margin:0 auto 6px;filter:drop-shadow(0 0 8px rgba(255,180,0,0.4))" alt="" /><div class="htitle">A KA STANN &amp; DEDETTE</div><div class="hsub">Savourez l\u2019instant, go\u00FBtez l\u2019authenticit\u00E9</div></div><div class="madras"></div>';}
 
 async function sendWA(o){
@@ -330,7 +434,7 @@ async function sendWA(o){
 function buildUpsell(){
   var cards=ALLSU.map(function(s){
     var q=uq[s.id]||0;
-    return '<div class="scard'+(q>0?" on":"")+'"><div class="sname">'+s.name+'</div><div class="sprice">'+fp(s.price)+'€</div><div class="sqty"><button class="qbtn" onclick="gUD(\''+s.id+'\')">−</button><span class="qval">'+q+'</span><button class="qbtn" onclick="gUI(\''+s.id+'\')">+</button></div></div>';
+    return '<div class="scard'+(q>0?" on":"")+'"><div class="sname">'+s.name+'</div><div class="sprice">'+fp(s.price)+'€</div>'+suppTag(s.id,q)+'<div class="sqty"><button class="qbtn" onclick="gUD(\''+s.id+'\')">−</button><span class="qval">'+q+'</span>'+suppPlus(s.id,"gUI")+'</div></div>';
   }).join("");
   var tot=ALLSU.reduce(function(a,s){return a+(uq[s.id]||0)*s.price;},0);
   var totRow=tot>0?'<div class="upsell-totalrow">Total ajout : <span style="color:#FFD700;font-weight:800;font-size:16px">'+fp(tot)+'€</span></div>':"";
@@ -352,21 +456,21 @@ function rCom(){
       for(var qi=0;qi<cfg.qty;qi++){
         var cSa=cfg.sauces[qi]||null,cBo=cfg.boissons[qi]||"coca",cVi=cfg.viandes[qi]||"Pilons",cAc=cfg.accomps[qi]||"Frites";
         var pThis=pu+(!mx&&cAc==="Riz Madras (+2€)"?2:0);ptot+=pThis;
-        var vbq=VI.map(function(v){return'<div class="obtn'+(cVi===v?" on":"")+'" onclick="gVI('+qi+',\''+v+'\')">'+v+'</div>';}).join("");
-        var acH=mx?'<div class="mxinfo" style="margin:8px 0">Frites ET Riz Madras inclus</div>':'<span class="lbl">Accompagnement</span><div class="orow">'+AC.map(function(a){return'<div class="obtn'+(cAc===a?" on":"")+'" onclick="gACq('+qi+',\''+a+'\')">'+a+'</div>';}).join("")+'</div>';
-        var bbq=BO.map(function(b){return'<div class="obtn'+(cBo===b.id?" on":"")+'" onclick="gBO('+qi+',\''+b.id+'\')" style="min-width:80px">'+b.name+'</div>';}).join("");
+        var vbq=VI.map(function(v){if(!optOk("vi",v,qi))return'<div class="obtn taken" title="Rupture de stock">'+v+' · Rupture</div>';return'<div class="obtn'+(cVi===v?" on":"")+'" onclick="gVI('+qi+',\''+v+'\')">'+v+'</div>';}).join("");
+        var acH=mx?'<div class="mxinfo" style="margin:8px 0">Frites ET Riz Madras inclus</div>':'<span class="lbl">Accompagnement</span><div class="orow">'+AC.map(function(a){if(!optOk("ac",a,qi))return'<div class="obtn taken" title="Rupture de stock">'+a+' · Rupture</div>';return'<div class="obtn'+(cAc===a?" on":"")+'" onclick="gACq('+qi+',\''+a+'\')">'+a+'</div>';}).join("")+'</div>';
+        var bbq=BO.map(function(b){if(!optOk("bo",b.id,qi))return'<div class="obtn taken" title="Rupture de stock" style="min-width:80px">'+b.name+' · Rupture</div>';return'<div class="obtn'+(cBo===b.id?" on":"")+'" onclick="gBO('+qi+',\''+b.id+'\')" style="min-width:80px">'+b.name+'</div>';}).join("");
         var eThis=saErr&&!cSa;
         sblocks+='<div style="margin-bottom:14px;padding:10px;background:#1a1100;border-radius:10px;border:1px solid #3a2a00"><div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">Menu '+(qi+1)+' — '+fp(pThis)+'€</div><span class="lbl">Viande</span><div class="orow">'+vbq+'</div>'+acH+'<span class="lbl">Boisson</span><div class="orow">'+bbq+'</div><span class="lbl'+(eThis?" err":"")+'">Sauce <span style="color:#ff5555">*obligatoire</span></span><div class="orow"><div class="obtn'+(cSa==="piq"?" on":(eThis?" err":""))+'" onclick="gSA('+qi+',\'piq\')">🌶️ Piquante</div><div class="obtn'+(cSa==="npiq"?" on":(eThis?" err":""))+'" onclick="gSA('+qi+',\'npiq\')">😊 Non piquante</div></div>'+(eThis?'<div class="errt">Choisir une sauce</div>':"")+'</div>';
       }
       var qRow='<div class="qtyrow"><button class="qtybig" onclick="gQ(-1)">−</button><span class="qtynum">x'+cfg.qty+'</span><button class="qtybig" onclick="gQ(1)">+</button></div>';
-      ch='<div class="cpanel"><div class="ctitle">'+m.name+' — '+pu+'€/unité</div><span class="lbl">Quantité</span>'+qRow+sblocks+'<span class="lbl">Note / Allergie</span><textarea rows="2" placeholder="Ex: bien cuit..." oninput="gN(this.value)">'+cfg.nt+'</textarea><div style="text-align:right;margin-top:8px;font-size:13px;color:rgba(255,255,255,0.5)">Total: <span style="color:#FFD700;font-weight:800;font-size:16px">'+fp(ptot)+'€</span></div><button class="btnY" onclick="gAM()">+ Ajouter au panier'+(cfg.qty>1?" ("+cfg.qty+"x)":"")+'</button><button class="btnX" onclick="gCC()">Annuler</button></div>';
+      ch='<div class="cpanel"><div class="ctitle">'+m.name+' — '+pu+'€/unité</div><span class="lbl">Quantité</span>'+qRow+(cfgMsg?'<div class="errt">'+cfgMsg+'</div>':"")+sblocks+'<span class="lbl">Note / Allergie</span><textarea rows="2" placeholder="Ex: bien cuit..." oninput="gN(this.value)">'+cfg.nt+'</textarea><div style="text-align:right;margin-top:8px;font-size:13px;color:rgba(255,255,255,0.5)">Total: <span style="color:#FFD700;font-weight:800;font-size:16px">'+fp(ptot)+'€</span></div><button class="btnY" onclick="gAM()">+ Ajouter au panier'+(cfg.qty>1?" ("+cfg.qty+"x)":"")+'</button><button class="btnX" onclick="gCC()">Annuler</button></div>';
     }
-    var cards=menus.map(function(m){return'<div class="mcard" onclick="gSTcfg(\''+m.id+'\',\''+sec+'\')"><span class="mcard-price">'+m.price+'€</span><div class="mcard-name">'+m.name+'</div><div class="mcard-desc">'+m.desc+' · Boisson incluse</div></div>';}).join("");
+    var cards=menus.map(function(m){if(!menuAvail(m,mx))return'<div class="mcard rupt"><span class="mcard-price">'+m.price+'€</span><div class="mcard-name">'+m.name+'</div><div class="mcard-desc">'+m.desc+' · <b style="color:#ff5555">Rupture de stock</b></div></div>';return'<div class="mcard" onclick="gSTcfg(\''+m.id+'\',\''+sec+'\')"><span class="mcard-price">'+m.price+'€</span><div class="mcard-name">'+m.name+'</div><div class="mcard-desc">'+m.desc+' · Boisson incluse</div></div>';}).join("");
     body=ch+'<div class="stitle">'+(mx?"Frites ET Riz Madras inclus":"Frites OU Riz Madras")+'</div>'+cards;
   }
   if(sec==="supps"){
-    var bc=BO.map(function(b){var q=sq[b.id]||0;return'<div class="scard'+(q>0?" on":"")+'">'+'<div class="sname">'+b.name+'</div><div class="sprice">'+fp(b.price)+'€</div><div class="sqty"><button class="qbtn" onclick="gSD(\''+b.id+'\')">−</button><span class="qval">'+q+'</span><button class="qbtn" onclick="gSI(\''+b.id+'\')">+</button></div></div>';}).join("");
-    var sc=SU.map(function(s){var q=sq[s.id]||0;return'<div class="scard'+(q>0?" on":"")+'">'+'<div class="sname">'+s.name+'</div><div class="sprice">'+fp(s.price)+'€</div><div class="sqty"><button class="qbtn" onclick="gSD(\''+s.id+'\')">−</button><span class="qval">'+q+'</span><button class="qbtn" onclick="gSI(\''+s.id+'\')">+</button></div></div>';}).join("");
+    var bc=BO.map(function(b){var q=sq[b.id]||0;return'<div class="scard'+(q>0?" on":"")+'">'+'<div class="sname">'+b.name+'</div><div class="sprice">'+fp(b.price)+'€</div>'+suppTag(b.id,q)+'<div class="sqty"><button class="qbtn" onclick="gSD(\''+b.id+'\')">−</button><span class="qval">'+q+'</span>'+suppPlus(b.id,"gSI")+'</div></div>';}).join("");
+    var sc=SU.map(function(s){var q=sq[s.id]||0;return'<div class="scard'+(q>0?" on":"")+'">'+'<div class="sname">'+s.name+'</div><div class="sprice">'+fp(s.price)+'€</div>'+suppTag(s.id,q)+'<div class="sqty"><button class="qbtn" onclick="gSD(\''+s.id+'\')">−</button><span class="qval">'+q+'</span>'+suppPlus(s.id,"gSI")+'</div></div>';}).join("");
     var hq=Object.values(sq).some(function(q){return q>0;});
     body='<div class="ssec"><div class="ssub">Boissons</div><div class="sgrid">'+bc+'</div></div><div class="ssec"><div class="ssub">Accompagnements</div><div class="sgrid">'+sc+'</div></div>'+(hq?'<button class="btnY" onclick="gAS()">+ Ajouter au panier':"");
   }
@@ -404,7 +508,9 @@ function rCom(){
           +(ctcErr&&!cPhone.trim()?'<div class="errt">Merci d\'indiquer votre numéro</div>':"")
           +'</div>';
       }
-      body=ih+crenHtml+ctcHtml+'<div class="trow"><span class="tlbl">TOTAL</span><span class="tprice">'+fp(pTot())+'€</span></div><button class="btnF" onclick="gFIN()"'+(sending?" disabled":"")+'>'+(sending?"Envoi...":"✓ Finaliser la commande")+'</button><button class="btnM" onclick="gS(\'simple\')">+ Ajouter un menu</button>';
+      var stIss=stockIssues(ordersConso(fbO),cartConso(),gStock);
+      var stHtml=stIss.length?'<div class="cpanel" style="border-color:#ff5555"><div class="ctitle" style="color:#ff5555">⚠️ Rupture de stock</div>'+stIss.map(function(x){return'<div class="errt" style="margin:2px 0">'+x.name+' : il n\'en reste que '+fp(x.left)+' '+x.unit+', le panier en demande '+fp(x.need)+'</div>';}).join("")+'<div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:6px">Retire un article (✕) ou modifie le panier pour continuer.</div></div>':"";
+      body=ih+stHtml+crenHtml+ctcHtml+'<div class="trow"><span class="tlbl">TOTAL</span><span class="tprice">'+fp(pTot())+'€</span></div><button class="btnF" onclick="gFIN()"'+(sending||stIss.length?" disabled":"")+'>'+(sending?"Envoi...":"✓ Finaliser la commande")+'</button><button class="btnM" onclick="gS(\'simple\')">+ Ajouter un menu</button>';
     }
   }
   var bar="";
@@ -481,12 +587,12 @@ function buildCuisine(){
     var lines=[];
     (o.items||[]).forEach(function(it,idx){
       if(it.tp==="m"){
-        lines.push({id:idx+"_vi",label:viQty(it)});
-        if(it.mt==="Mixte"){lines.push({id:idx+"_ac1",label:"Frites"});lines.push({id:idx+"_ac2",label:"Riz Madras"});}
-        else{lines.push({id:idx+"_ac",label:it.ac&&it.ac.indexOf("Riz")>-1?"Riz Madras":"Frites"});}
-        lines.push({id:idx+"_bo",label:bN(it.bo)});
+        lines.push({gi:idx,id:idx+"_vi",label:viQty(it)});
+        if(it.mt==="Mixte"){lines.push({gi:idx,id:idx+"_ac1",label:"Frites"});lines.push({gi:idx,id:idx+"_ac2",label:"Riz Madras"});}
+        else{lines.push({gi:idx,id:idx+"_ac",label:it.ac&&it.ac.indexOf("Riz")>-1?"Riz Madras":"Frites"});}
+        lines.push({gi:idx,id:idx+"_bo",label:bN(it.bo)});
       }else if(it.tp==="s"){
-        (it.items||[]).forEach(function(s,si){lines.push({id:idx+"_s"+si,label:s.qty+"x "+s.name});});
+        (it.items||[]).forEach(function(s,si){lines.push({gi:idx,id:idx+"_s"+si,label:s.qty+"x "+s.name});});
       }
     });
     return lines;
@@ -502,9 +608,19 @@ function buildCuisine(){
     var lines=getChecklistLines(o);
     var pc=o.packCheck||{};
     var allChecked=lines.length>0&&lines.every(function(l){return pc[l.id];});
-    var checklistHtml=lines.length?'<div style="margin-top:10px;padding:10px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:10px"><div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">🛍️ Vérif du sac</div>'+lines.map(function(l){
-      var ck=!!pc[l.id];
-      return'<div class="packrow'+(ck?" checked":"")+'" onclick="gPack(\''+o.fbKey+'\',\''+l.id+'\')"><div class="packcheck'+(ck?" checked":"")+'">'+(ck?"✓":"")+'</div><div class="packlabel'+(ck?" checked":"")+'">'+l.label+'</div></div>';
+    var groups=[];
+    lines.forEach(function(l){var g=groups[groups.length-1];if(!g||g.gi!==l.gi){g={gi:l.gi,lines:[]};groups.push(g);}g.lines.push(l);});
+    var doneG=groups.filter(function(g){return g.lines.every(function(l){return pc[l.id];});}).length;
+    var checklistHtml=lines.length?'<div style="margin-top:10px;padding:10px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:10px"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px"><span>🛍️ Vérif du sac</span><span>'+doneG+'/'+groups.length+(groups.length>1?' vérifiés':'')+'</span></div>'+groups.map(function(g){
+      var it=(o.items||[])[g.gi]||{};
+      var gDone=g.lines.every(function(l){return pc[l.id];});
+      var nb=g.lines.filter(function(l){return pc[l.id];}).length;
+      var title=it.tp==="m"?(g.gi+1)+'. '+it.name+' <span style="color:rgba(255,255,255,0.5);font-weight:600">('+it.mt+')</span> '+(it.sa==="piq"?"🌶️":"😊"):'➕ Suppléments';
+      var note=it.tp==="m"&&it.nt?'<div style="color:#FFD700;font-size:11px;margin:0 0 6px 2px">📝 '+it.nt+'</div>':"";
+      return'<div class="packgrp'+(gDone?" done":"")+'"><div class="packghead'+(gDone?" done":"")+'"><span>'+title+'</span><span style="font-size:11px">'+(gDone?"✓ ":"")+nb+'/'+g.lines.length+'</span></div>'+note+g.lines.map(function(l){
+        var ck=!!pc[l.id];
+        return'<div class="packrow'+(ck?" checked":"")+'" onclick="gPack(\''+o.fbKey+'\',\''+l.id+'\')"><div class="packcheck'+(ck?" checked":"")+'">'+(ck?"✓":"")+'</div><div class="packlabel'+(ck?" checked":"")+'">'+l.label+'</div></div>';
+      }).join("")+'</div>';
     }).join("")+'</div>':"";
     var pOpts=PASSAGE.map(function(h){return'<option value="'+h+'"'+(o.passage===h?" selected":"")+'>'+h+'</option>';}).join("");
     var payHtml='<div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">'
@@ -573,11 +689,7 @@ function buildDash(){
   }
   if(aSection==="stock"){
     var todayOrders=dm[tod]||[];
-    var conso={pilons:0,cuisses:0,accras:0,frites:0,riz:0,coca:0,cocaz:0,crist:0,loc:0};
-    todayOrders.forEach(function(o){(o.items||[]).forEach(function(it){
-      if(it.tp==="m"){var qte=(it.name.indexOf("Vieux")>-1?3:it.name.indexOf("Sainte")>-1?6:9);if(it.vi==="Pilons")conso.pilons+=qte;else conso.cuisses+=(it.name.indexOf("Vieux")>-1?1:it.name.indexOf("Sainte")>-1?2:3);if(it.mt==="Mixte"){conso.frites+=0.12;conso.riz+=0.12;}else{if(it.ac&&it.ac.indexOf("Frites")>-1)conso.frites+=0.25;if(it.ac&&it.ac.indexOf("Riz")>-1)conso.riz+=0.25;}if(it.bo&&conso[it.bo]!==undefined)conso[it.bo]+=1;}
-      else if(it.tp==="s"){(it.items||[]).forEach(function(s){if(s.id==="frit")conso.frites+=s.qty*0.2;else if(s.id==="accr")conso.accras+=s.qty*5;else if(conso[s.id]!==undefined)conso[s.id]+=s.qty;});}
-    });});
+    var conso=ordersConso(fbO);
     var low=0;
     var rows=STOCKDEF.map(function(s){
       var sv=gStock[s.id],has=sv!==undefined&&sv!=="";
@@ -607,19 +719,27 @@ function buildDash(){
 
 window.gV=function(v){curV=v;[0,1,2].forEach(function(i){document.getElementById("V"+i).className=v===i?"":"hidden";document.getElementById("T"+i).className="ttab"+(v===i?" on":"");});if(v===2)initAudio();if(v===0)rCom();if(v===1)rSuivi();if(v===2)rA();};
 window.gS=function(s){sec=s;cfging=null;rCom();};
-window.gSTcfg=function(id,t){cfging={id:id,t:t};cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;rCom();};
+window.gSTcfg=function(id,t){var mm=(t==="mixte"?MM:MS).find(function(x){return x.id===id;});if(mm&&!menuAvail(mm,t==="mixte"))return;cfging={id:id,t:t};cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;cfgMsg="";fixCfg(0);rCom();};
 window.gCC=function(){cfging=null;saErr=false;rCom();};
 window.gN=function(v){cfg.nt=v;};
-window.gQ=function(d){cfg.qty=Math.max(1,Math.min(20,cfg.qty+d));while(cfg.sauces.length<cfg.qty){cfg.sauces.push(null);cfg.boissons.push("coca");cfg.viandes.push("Pilons");cfg.accomps.push("Frites");}while(cfg.sauces.length>cfg.qty){cfg.sauces.pop();cfg.boissons.pop();cfg.viandes.pop();cfg.accomps.pop();}rCom();};
+window.gQ=function(d){
+  cfgMsg="";var oq=cfg.qty;
+  cfg.qty=Math.max(1,Math.min(20,cfg.qty+d));
+  while(cfg.sauces.length<cfg.qty){cfg.sauces.push(null);cfg.boissons.push("coca");cfg.viandes.push("Pilons");cfg.accomps.push("Frites");fixCfg(cfg.sauces.length-1);}
+  while(cfg.sauces.length>cfg.qty){cfg.sauces.pop();cfg.boissons.pop();cfg.viandes.pop();cfg.accomps.pop();}
+  if(cfg.qty>oq&&!cfgFeasible()){while(cfg.sauces.length>oq){cfg.sauces.pop();cfg.boissons.pop();cfg.viandes.pop();cfg.accomps.pop();}cfg.qty=oq;cfgMsg="Plus assez de stock pour ajouter un menu de plus";}
+  rCom();
+};
 window.gSA=function(i,v){cfg.sauces[i]=v;saErr=false;rCom();};
-window.gBO=function(i,v){cfg.boissons[i]=v;rCom();};
-window.gVI=function(i,v){cfg.viandes[i]=v;rCom();};
-window.gACq=function(i,v){cfg.accomps[i]=v;rCom();};
-window.gSI=function(id){sq[id]=(sq[id]||0)+1;rCom();};
+window.gBO=function(i,v){if(!optOk("bo",v,i))return;cfg.boissons[i]=v;cfgMsg="";rCom();};
+window.gVI=function(i,v){if(!optOk("vi",v,i))return;cfg.viandes[i]=v;cfgMsg="";rCom();};
+window.gACq=function(i,v){if(!optOk("ac",v,i))return;cfg.accomps[i]=v;cfgMsg="";rCom();};
+window.gSI=function(id){if(!suppCan(id))return;sq[id]=(sq[id]||0)+1;rCom();};
 window.gSD=function(id){if((sq[id]||0)>0)sq[id]--;rCom();};
 window.gRM=function(i){pan.splice(i,1);rCom();};
 window.gAM=function(){
   var miss=cfg.sauces.slice(0,cfg.qty).some(function(s){return!s;});if(miss){saErr=true;rCom();return;}
+  if(!cfgFeasible()){cfgMsg="Un produit de ce menu est en rupture de stock, change ton choix";rCom();return;}
   var mx=cfging.t==="mixte",menus=mx?MM:MS,m=menus.find(function(x){return x.id===cfging.id;});
   for(var i=0;i<cfg.qty;i++){var ac=mx?"Frites + Riz Madras":cfg.accomps[i];var pr=parseFloat(m.price)+(!mx&&ac==="Riz Madras (+2€)"?2:0);pan.push({tp:"m",name:m.name,mt:mx?"Mixte":"Simple",vi:cfg.viandes[i],ac:ac,bo:cfg.boissons[i],sa:cfg.sauces[i],nt:cfg.nt,price:pr});}
   cfging=null;cfg={nt:"",qty:1,sauces:[null],boissons:["coca"],viandes:["Pilons"],accomps:["Frites"]};saErr=false;
@@ -629,7 +749,7 @@ window.gAM=function(){
 };
 window.gAS=function(){var items=[];ALLSU.forEach(function(s){var q=sq[s.id]||0;if(q>0)items.push({id:s.id,name:s.name,qty:q,up:parseFloat(s.price)});});if(!items.length)return;var tot=items.reduce(function(a,s){return a+s.qty*s.up;},0);pan.push({tp:"s",items:items,price:tot});sq={};rCom();};
 
-window.gUI=function(id){uq[id]=(uq[id]||0)+1;rCom();};
+window.gUI=function(id){if(!suppCan(id))return;uq[id]=(uq[id]||0)+1;rCom();};
 window.gUD=function(id){if((uq[id]||0)>0)uq[id]--;rCom();};
 window.gUAdd=function(){
   var items=[];ALLSU.forEach(function(s){var q=uq[s.id]||0;if(q>0)items.push({id:s.id,name:s.name,qty:q,up:parseFloat(s.price)});});
@@ -653,18 +773,16 @@ window.gFIN=async function(){
     if(!cCreneau){crenErr=true;rCom();return;}
     if((slotCounts(fbO)[cCreneau]||0)>=SLOT_MAX){cCreneau="";crenFull=true;rCom();return;}
   }
+  if(stockIssues(ordersConso(fbO),cartConso(),gStock).length){rCom();return;}
   ctcErr=false;crenErr=false;crenFull=false;sending=true;rCom();
   try{
     if(!auth.currentUser)await signInAnonymously(auth);
-    if(!admin){
-      // contrôle final sur les données fraîches : le créneau a pu se remplir entre-temps
-      try{
-        var snap=await get(ref(db,"orders"));
-        var fresh=snap.val()||{};
-        fbO=fresh;
-        if((slotCounts(fresh)[cCreneau]||0)>=SLOT_MAX){sending=false;cCreneau="";crenFull=true;rCom();return;}
-      }catch(e){console.error("Contrôle créneau:",e);}
-    }
+    // contrôle final sur les données fraîches : créneau et stock ont pu bouger entre-temps
+    var freshO=fbO;
+    try{var snap=await get(ref(db,"orders"));freshO=snap.val()||{};fbO=freshO;}catch(e){console.error("Contrôle commandes:",e);}
+    try{var sSnap=await get(ref(db,"globalStock"));gStock=sSnap.val()||{};}catch(e){console.error("Contrôle stock:",e);}
+    if(!admin&&(slotCounts(freshO)[cCreneau]||0)>=SLOT_MAX){sending=false;cCreneau="";crenFull=true;rCom();return;}
+    if(stockIssues(ordersConso(freshO),cartConso(),gStock).length){sending=false;rCom();return;}
     var ticket=Math.floor(Math.random()*900)+100;
     var order={ticket:ticket,items:pan,total:fp(pTot()),mode:admin?"admin":"online",source:admin?"admin":"online",status:"en_attente",time:new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),ts:Date.now(),prenom:admin?"":cName.trim(),telephone:admin?"":cPhone.trim(),passage:admin?"Non précisé":cCreneau};
     await push(ref(db,"orders"),order);
