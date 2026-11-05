@@ -233,8 +233,11 @@ var PH="33620554462",AK="3325270";
 var MS=[{id:"vf",name:"Vieux Fort",desc:"3 pilons OU 1 cuisse",price:9},{id:"sa",name:"Sainte-Anne",desc:"6 pilons OU 2 cuisses",price:11},{id:"pl",name:"Port Louis",desc:"9 pilons OU 3 cuisses",price:13}];
 var MM=[{id:"mvf",name:"Mixte Vieux Fort",desc:"3 pilons OU 1 cuisse",price:10},{id:"msa",name:"Mixte Sainte-Anne",desc:"6 pilons OU 2 cuisses",price:12},{id:"mpl",name:"Mixte Port Louis",desc:"9 pilons OU 3 cuisses",price:14}];
 var BO=[{id:"coca",name:"Coca-Cola",price:1.5},{id:"cocaz",name:"Coca-Cola Zero",price:1.5},{id:"crist",name:"Cristaline",price:1.5},{id:"loc",name:"Boisson locale",price:2}];
-var SU=[{id:"frit",name:"Barquette de frites",price:3},{id:"patd",name:"Frites de patates douces",price:4},{id:"bpsu",name:"Banane plantain sucrée",price:3},{id:"bpsa",name:"Banane plantain salée",price:3},{id:"accr",name:"Accras de morue (x5)",price:2}];
-var ALLSU=BO.concat(SU);
+var SU=[{id:"frit",name:"Barquette de frites",price:3},{id:"patd",name:"Frites de patates douces",price:4},{id:"accr",name:"Accras de morue (x5)",price:2}];
+// Banane plantain : une seule carte avec sous-choix Sucré / Salé (deux articles distincts en interne)
+var BP=[{id:"bpsu",name:"Banane plantain sucrée",price:3},{id:"bpsa",name:"Banane plantain salée",price:3}];
+var bpSel="bpsu";
+var ALLSU=BO.concat(SU,BP);
 // Articles réservés à l'admin (jamais proposés aux clients ni dans l'upsell)
 var ASU=[{id:"pil1",name:"Pilon à l'unité",price:1.5},{id:"cui1",name:"Cuisse à l'unité",price:2}];
 var EVERYSU=ALLSU.concat(ASU);
@@ -478,11 +481,20 @@ async function sendWA(o){
   try{await fetch("https://api.callmebot.com/whatsapp.php?phone="+PH+"&text="+encodeURIComponent(L.join("\n"))+"&apikey="+AK,{mode:"no-cors"});}catch(e){}
 }
 
+
+function bpCard(qm,fnM,fnP){
+  var qs=qm.bpsu||0,qa=qm.bpsa||0,tot=qs+qa,q=qm[bpSel]||0;
+  var pick=BP.map(function(b){var on=bpSel===b.id;return'<span onclick="gBP(\''+b.id+'\')" style="cursor:pointer;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid '+(on?"#D4880A":"#3a2a00")+';background:'+(on?"#D4880A":"transparent")+';color:'+(on?"#fff":"rgba(255,255,255,0.7)")+'">'+(b.id==="bpsu"?"Sucré":"Salé")+'</span>';}).join("");
+  var recap=tot>0?'<div style="font-size:11px;color:#FFD700;margin-top:4px">'+(qs?qs+" sucré"+(qs>1?"s":""):"")+(qs&&qa?" · ":"")+(qa?qa+" salé"+(qa>1?"s":""):"")+'</div>':"";
+  return'<div class="scard'+(tot>0?" on":"")+'"><div class="sname">Banane plantain</div><div class="sprice">'+fp(BP[0].price)+'€</div><div style="display:flex;gap:6px;justify-content:center;margin:4px 0 6px">'+pick+'</div>'+suppTag(bpSel,q)+'<div class="sqty"><button class="qbtn" onclick="'+fnM+'(\''+bpSel+'\')">−</button><span class="qval">'+q+'</span>'+suppPlus(bpSel,fnP)+'</div>'+recap+'</div>';
+}
+window.gBP=function(id){bpSel=id;rCom();};
+
 function buildUpsell(){
-  var cards=ALLSU.map(function(s){
+  var cards=BO.concat(SU).map(function(s){
     var q=uq[s.id]||0;
     return '<div class="scard'+(q>0?" on":"")+'"><div class="sname">'+s.name+'</div><div class="sprice">'+fp(s.price)+'€</div>'+suppTag(s.id,q)+'<div class="sqty"><button class="qbtn" onclick="gUD(\''+s.id+'\')">−</button><span class="qval">'+q+'</span>'+suppPlus(s.id,"gUI")+'</div></div>';
-  }).join("");
+  }).join("")+bpCard(uq,"gUD","gUI");
   var tot=ALLSU.reduce(function(a,s){return a+(uq[s.id]||0)*s.price;},0);
   var totRow=tot>0?'<div class="upsell-totalrow">Total ajout : <span style="color:#FFD700;font-weight:800;font-size:16px">'+fp(tot)+'€</span></div>':"";
   return '<div class="upsell-overlay"><div class="upsell-modal"><div class="upsell-title">🍟 Une petite envie en plus ?</div><div class="upsell-sub">Accras, frites ou boissons pour accompagner votre commande</div><div class="sgrid">'+cards+'</div>'+totRow+'<button class="btnY" onclick="gUAdd()">+ Ajouter au panier</button><button class="btnX" onclick="gUSkip()">Non merci</button></div></div>';
@@ -517,7 +529,7 @@ function rCom(){
   }
   if(sec==="supps"){
     var bc=BO.map(function(b){var q=sq[b.id]||0;return'<div class="scard'+(q>0?" on":"")+'">'+'<div class="sname">'+b.name+'</div><div class="sprice">'+fp(b.price)+'€</div>'+suppTag(b.id,q)+'<div class="sqty"><button class="qbtn" onclick="gSD(\''+b.id+'\')">−</button><span class="qval">'+q+'</span>'+suppPlus(b.id,"gSI")+'</div></div>';}).join("");
-    var sc=SU.map(function(s){var q=sq[s.id]||0;return'<div class="scard'+(q>0?" on":"")+'">'+'<div class="sname">'+s.name+'</div><div class="sprice">'+fp(s.price)+'€</div>'+suppTag(s.id,q)+'<div class="sqty"><button class="qbtn" onclick="gSD(\''+s.id+'\')">−</button><span class="qval">'+q+'</span>'+suppPlus(s.id,"gSI")+'</div></div>';}).join("");
+    var sc=SU.map(function(s){var q=sq[s.id]||0;return'<div class="scard'+(q>0?" on":"")+'">'+'<div class="sname">'+s.name+'</div><div class="sprice">'+fp(s.price)+'€</div>'+suppTag(s.id,q)+'<div class="sqty"><button class="qbtn" onclick="gSD(\''+s.id+'\')">−</button><span class="qval">'+q+'</span>'+suppPlus(s.id,"gSI")+'</div></div>';}).join("")+bpCard(sq,"gSD","gSI");
     var uc=ASU.map(function(s){var q=sq[s.id]||0;return'<div class="scard'+(q>0?" on":"")+'">'+'<div class="sname">'+s.name+'</div><div class="sprice">'+fp(s.price)+'€</div>'+suppTag(s.id,q)+'<div class="sqty"><button class="qbtn" onclick="gSD(\''+s.id+'\')">−</button><span class="qval">'+q+'</span>'+suppPlus(s.id,"gSI")+'</div></div>';}).join("");
     var hq=Object.values(sq).some(function(q){return q>0;});
     body='<div class="ssec"><div class="ssub">Boissons</div><div class="sgrid">'+bc+'</div></div><div class="ssec"><div class="ssub">Accompagnements</div><div class="sgrid">'+sc+'</div></div>'+(aLog?'<div class="ssec"><div class="ssub">Viande à l\'unité (admin)</div><div class="sgrid">'+uc+'</div></div>':"")+(hq?'<button class="btnY" onclick="gAS()">+ Ajouter au panier':"");
