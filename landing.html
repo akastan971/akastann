@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <!-- SEO principal -->
-<title>A KA STANN & DEDETTE - Food Truck de Grillades Antillaises à Rouvres (77230)</title>
-<meta name="description" content="Food truck de cuisine antillaise à Rouvres (77230). Poulet grillé, poulet boucané, accras de morue, accras, BBQ, poulet rôti, grillades et spécialités des Antilles, tous les vendredis soir de 18h à 21h. Commandez en ligne !"/>
-<meta name="keywords" content="food truck antillais, grillades antillaises, poulet grillé, cuisine antillaise, Rouvres, Seine-et-Marne, 77230, Meaux, Dammartin-en-Goële, Juilly, Montgé-en-Goële, Villeparisis, Claye-Souilly, Lagny-le-Sec, Saint-Soupplets, Saint-Pathus, Plessis-Belleville, Île-de-France, food truck 77, commander en ligne"/>
+<title>A KA STANN & DEDETTE - Food Truck de Grillades Antillaises à Rouvres (77) et Ognes (60)</title>
+<meta name="description" content="Food truck de cuisine antillaise : vendredi soir à Rouvres (77230) et samedi soir à Ognes (60440). Poulet grillé, poulet boucané, accras de morue, BBQ, grillades et spécialités des Antilles. Commandez en ligne !"/>
+<meta name="keywords" content="food truck antillais, grillades antillaises, poulet grillé, cuisine antillaise, Rouvres, Seine-et-Marne, 77230, Meaux, Dammartin-en-Goële, Juilly, Montgé-en-Goële, Villeparisis, Claye-Souilly, Lagny-le-Sec, Saint-Soupplets, Saint-Pathus, Plessis-Belleville, Ognes, 60440, Oise, Île-de-France, food truck 77, commander en ligne"/>
 <meta name="author" content="A KA STANN & DEDETTE"/>
 <meta name="robots" content="index, follow"/>
 <link rel="canonical" href="https://akastan971.github.io/akastann/landing.html"/>
@@ -15,7 +15,7 @@
 <!-- Open Graph (partage sur réseaux sociaux) -->
 <meta property="og:type" content="restaurant"/>
 <meta property="og:title" content="A KA STANN & DEDETTE — Food Truck Grillades Antillaises"/>
-<meta property="og:description" content="Poulet grillé et spécialités antillaises à Rouvres (77230), tous les vendredis soir de 18h à 21h. Commandez en ligne !"/>
+<meta property="og:description" content="Poulet grillé et spécialités antillaises : vendredi à Rouvres (77230) et samedi à Ognes (60440). Commandez en ligne !"/>
 <meta property="og:url" content="https://akastan971.github.io/akastann/landing.html"/>
 <meta property="og:locale" content="fr_FR"/>
 <meta property="og:site_name" content="A KA STANN & DEDETTE"/>
@@ -23,7 +23,7 @@
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="A KA STANN & DEDETTE — Food Truck Antillais"/>
-<meta name="twitter:description" content="Grillades antillaises à Rouvres (77230) tous les vendredis soir. Commandez en ligne !"/>
+<meta name="twitter:description" content="Grillades antillaises : vendredi à Rouvres et samedi à Ognes. Commandez en ligne !"/>
 
 <!-- Favicon -->
 <link rel="icon" type="image/jpeg" href="https://i.imgur.com/nxIFvJx.jpg"/>
@@ -43,7 +43,7 @@
   "@context": "https://schema.org",
   "@type": "FoodEstablishment",
   "name": "A KA STANN & DEDETTE",
-  "description": "Food truck de cuisine antillaise à Rouvres, Seine-et-Marne. Grillades et spécialités antillaises tous les vendredis soir.",
+  "description": "Food truck de cuisine antillaise à Rouvres (vendredi) et Ognes (samedi). Grillades et spécialités antillaises tous les vendredis et samedis soir.",
   "url": "https://akastan971.github.io/akastann/landing.html",
   "servesCuisine": "Antillaise",
   "priceRange": "€€",
@@ -54,12 +54,14 @@
     "postalCode": "77230",
     "addressCountry": "FR"
   },
-  "openingHoursSpecification": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": "Friday",
-    "opens": "18:00",
-    "closes": "21:00"
-  },
+  "location": [
+    {"@type": "Place", "name": "Salle des Fêtes de Rouvres", "address": {"@type": "PostalAddress", "streetAddress": "9 Rue des Écoles", "addressLocality": "Rouvres", "postalCode": "77230", "addressCountry": "FR"}},
+    {"@type": "Place", "name": "Salle des fêtes J-C Naty", "address": {"@type": "PostalAddress", "streetAddress": "Rue Claude Tillet", "addressLocality": "Ognes", "postalCode": "60440", "addressCountry": "FR"}}
+  ],
+  "openingHoursSpecification": [
+    {"@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "18:00", "closes": "21:00"},
+    {"@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "18:00", "closes": "21:30"}
+  ],
   "areaServed": ["Rouvres", "Meaux", "Dammartin-en-Goële", "Juilly", "Montgé-en-Goële", "Villeparisis", "Claye-Souilly", "Lagny-le-Sec", "Saint-Soupplets", "Saint-Pathus", "Plessis-Belleville", "Seine-et-Marne"]
 }
 </script>
@@ -262,6 +264,20 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
   .footer{padding:32px 8%}
   .madras{height:8px}
 }
+/* HERO : 2 bulles de lieux */
+.hero-places{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:0 auto 22px;max-width:580px}
+.hero-place{flex:1 1 240px;max-width:280px;display:block;text-decoration:none;color:#fff;background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.3);border-radius:22px;padding:14px 16px;text-align:center}
+.hp-day{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:3px 12px;border-radius:999px;margin-bottom:8px;background:#FFD700;color:#4A2800}
+.hp-day.sam{background:#D4880A;color:#fff}
+.hp-place{font-size:18px;font-weight:800;color:#FFD700;margin-bottom:2px}
+.hp-addr{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5;margin-bottom:8px}
+.hp-hours{font-size:15px;font-weight:800;color:#fff}
+/* OÙ NOUS TROUVER : 2 bulles côte à côte + carte dynamique */
+.loc-tabs{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:700px}
+.loc-tab{display:block;width:100%;background:#0e0a00;border:1px solid #2a1a00;border-radius:18px;padding:12px 8px;text-align:center;cursor:pointer;color:#fff;font-family:inherit}
+.loc-tab.on{border-color:#D4880A;background:rgba(212,136,10,0.14);box-shadow:0 0 0 1px #D4880A}
+.loc-tab .location-name{font-size:15px;margin:2px 0 4px}
+.loc-tab-h{font-size:12px;font-weight:700;color:rgba(255,255,255,0.75)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>emailjs.init('NYLwd96NU347KgJT3');</script>
@@ -274,7 +290,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
   <div class="popup-box">
     <div class="popup-icon">😔</div>
     <div class="popup-title">Fermeture exceptionnelle</div>
-    <div class="popup-msg" id="popupFermetureMsg">Nous ne serons pas présents ce vendredi. On vous retrouve très vite pour de nouvelles grillades ! 🌴</div>
+    <div class="popup-msg" id="popupFermetureMsg">Nous ne serons pas présents ce soir. On vous retrouve très vite pour de nouvelles grillades ! 🌴</div>
     <button class="popup-close" onclick="closePopupFermeture()">J'ai compris</button>
   </div>
 </div>
@@ -378,7 +394,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 <div class="nav-overlay" id="navOverlay" onclick="closeMenu()"></div>
 
 <!-- BANNIERE OUVERT CE SOIR -->
-<div class="banner-ouvert" id="bannerOuvert">🔥 Nous sommes ouverts ce soir ! Venez nous retrouver de 18h à 21h — 9 Rue des Écoles, Rouvres 🌴</div>
+<div class="banner-ouvert" id="bannerOuvert"></div>
 
 <div class="madras"></div>
 
@@ -396,13 +412,22 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
     <div class="hero-title">A KA STANN & DEDETTE</div>
     <div class="hero-slogan">Savourez l'instant, goûtez l'authenticité</div>
     <div class="hero-info-row">
-      <div>
-        <div class="hero-hours-day">Tous les vendredis soir à Rouvres</div>
-        <div class="hero-hours-time">18h00 – 21h00</div>
+      <div class="hero-places">
+        <a class="hero-place" id="hero-rouvres" href="#localisation" onclick="choisirLieu('rouvres')">
+          <span class="hp-day">Vendredi</span>
+          <div class="hp-place">Rouvres (77)</div>
+          <div class="hp-addr">Salle des Fêtes<br>9 Rue des Écoles, 77230</div>
+          <div class="hp-hours">🕕 18h00 – 21h00</div>
+        </a>
+        <a class="hero-place" id="hero-ognes" href="#localisation" onclick="choisirLieu('ognes')">
+          <span class="hp-day sam">Samedi</span>
+          <div class="hp-place">Ognes (60)</div>
+          <div class="hp-addr">Salle des fêtes J-C Naty<br>Rue Claude Tillet, 60440</div>
+          <div class="hp-hours">🕕 18h00 – 21h30</div>
+        </a>
       </div>
       <a href="https://akastan971.github.io/akastann/" target="_blank" class="btn-commander">🛒 Commander</a>
     </div>
-    <div class="hero-address" style="display:inline-block;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);border-radius:999px;padding:8px 20px;font-size:13px;color:rgba(255,215,0,0.75);font-weight:600;letter-spacing:0.5px">📍 9 Rue des Écoles, 77230 Rouvres</div>
   </div>
   <img class="hero-logo hero-logo-desktop" src="https://i.imgur.com/nxIFvJx.jpg" alt="A KA STANN & DEDETTE"/>
 </div>
@@ -419,7 +444,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
   </div>
   <div class="menu-sec on" id="tab-apropos-moi">
     <div class="histoire-card">
-      <p class="section-text">Je m'appelle Stan, et je viens de Guadeloupe.<br><br>Cette île, elle ne m'a pas seulement donné naissance, elle m'a tout appris.<br>Les odeurs qui s'échappent des cuisines, les saveurs qui te ramènent instantanément à l'enfance, la chaleur des gens... cette façon unique de partager un repas comme si c'était une fête à chaque fois.<br><br>La Guadeloupe, c'est bien plus qu'un endroit pour moi..<br><br>Depuis toujours, j'ai eu cette envie profonde de faire voyager les gens au travers de la gastronomie antillaise.<br>Pas besoin de prendre l'avion, il suffit d'une bouchée, fermer les yeux et se retrouver là-bas, les pieds dans le sable, le soleil sur la peau !<br><br>A KA STANN & DEDETTE, c'est ce rêve devenu réel pour moi.<br>Je cuisine avec le cœur, dans chaque plat, tout l'amour que j'ai pour mon île et pour ceux qui viennent me rendre visite chaque vendredi.<br><br><span style="color:#FFD700;font-weight:700;font-size:15px">Alors venez comme vous êtes.<br>Repartez le sourire aux lèvres. 🌴</span></p>
+      <p class="section-text">Je m'appelle Stan, et je viens de Guadeloupe.<br><br>Cette île, elle ne m'a pas seulement donné naissance, elle m'a tout appris.<br>Les odeurs qui s'échappent des cuisines, les saveurs qui te ramènent instantanément à l'enfance, la chaleur des gens... cette façon unique de partager un repas comme si c'était une fête à chaque fois.<br><br>La Guadeloupe, c'est bien plus qu'un endroit pour moi..<br><br>Depuis toujours, j'ai eu cette envie profonde de faire voyager les gens au travers de la gastronomie antillaise.<br>Pas besoin de prendre l'avion, il suffit d'une bouchée, fermer les yeux et se retrouver là-bas, les pieds dans le sable, le soleil sur la peau !<br><br>A KA STANN & DEDETTE, c'est ce rêve devenu réel pour moi.<br>Je cuisine avec le cœur, dans chaque plat, tout l'amour que j'ai pour mon île et pour ceux qui viennent me rendre visite chaque vendredi et chaque samedi.<br><br><span style="color:#FFD700;font-weight:700;font-size:15px">Alors venez comme vous êtes.<br>Repartez le sourire aux lèvres. 🌴</span></p>
     </div>
   </div>
   <div class="menu-sec" id="tab-apropos-projet">
@@ -469,9 +494,12 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
         <div class="bois-card"><div class="bois-name">Cristaline</div><div class="bois-price">1,50€</div></div>
         <div class="bois-card"><div class="bois-name">Boisson locale</div><div class="bois-price">2,00€</div></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      <div style="font-size:12px;font-weight:700;color:rgba(255,215,0,0.6);text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px">Accompagnements</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div class="bois-card"><div class="bois-name">Accras de morue (x5)</div><div class="bois-price">2,00€</div></div>
         <div class="bois-card"><div class="bois-name">Barquette de frites</div><div class="bois-price">3,00€</div></div>
+        <div class="bois-card"><div class="bois-name">Frites de patates douces</div><div class="bois-price">4,00€</div></div>
+        <div class="bois-card"><div class="bois-name">Banane plantain</div><div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:4px">Sucrée ou salée</div><div class="bois-price">3,00€</div></div>
       </div>
     </div>
   </div>
@@ -502,21 +530,35 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 <div class="section section-alt" id="localisation">
   <div class="section-title">Où nous trouver</div>
   <div class="section-bar"></div>
-  <div class="location-card">
+
+  <div class="loc-tabs">
+    <button type="button" class="loc-tab on" id="loc-rouvres" aria-pressed="true" onclick="choisirLieu('rouvres')">
+      <span class="hp-day">Vendredi</span>
+      <div class="location-name">Rouvres (77)</div>
+      <div class="loc-tab-h">18h00 – 21h00</div>
+    </button>
+    <button type="button" class="loc-tab" id="loc-ognes" aria-pressed="false" onclick="choisirLieu('ognes')">
+      <span class="hp-day sam">Samedi</span>
+      <div class="location-name">Ognes (60)</div>
+      <div class="loc-tab-h">18h00 – 21h30</div>
+    </button>
+  </div>
+
+  <div class="location-card" style="margin-top:14px">
     <div class="location-icon">📍</div>
     <div>
-      <div class="location-name">Salle des Fêtes de Rouvres</div>
-      <div class="location-addr">9 Rue des Écoles<br>77230 Rouvres</div>
-      <div style="margin-top:8px;font-size:12px;color:#D4880A;font-weight:600">Tous les vendredis · 18h00 – 21h00</div>
+      <div class="location-name" id="ld-nom">Salle des Fêtes de Rouvres</div>
+      <div class="location-addr" id="ld-adr">9 Rue des Écoles<br>77230 Rouvres</div>
+      <div style="margin-top:8px;font-size:12px;color:#D4880A;font-weight:600" id="ld-heures">Tous les vendredis · 18h00 – 21h00</div>
       <a href="tel:0620554462" class="location-tel">📞 06 20 55 44 62</a>
     </div>
   </div>
   <div style="margin-top:16px;border-radius:12px;overflow:hidden;border:1px solid #2a1a00">
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2622!2d2.7198!3d49.0412!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47ec16b5b5b5b5b5%3A0x0!2s3P68%2BQ2%20Rouvres!5e0!3m2!1sfr!2sfr!4v1" width="100%" height="220" style="border:0;display:block" allowfullscreen="" loading="lazy"></iframe>
+    <iframe id="loc-map" title="Plan d'accès" src="https://www.google.com/maps?q=49.06191792137252,2.7146027402529125&z=16&output=embed" width="100%" height="260" style="border:0;display:block" allowfullscreen="" loading="lazy"></iframe>
   </div>
   <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
-    <a href="https://www.google.com/maps/dir/?api=1&destination=49.06191792137252,2.7146027402529125" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#1a1200;border:1px solid #D4880A;border-radius:999px;padding:12px 16px;font-size:13px;font-weight:700;color:#FFD700;text-decoration:none;min-width:140px">🗺️ Google Maps</a>
-    <a href="waze://?ll=49.06191792137252,2.7146027402529125&navigate=yes" onclick="setTimeout(function(){window.location='https://waze.com/ul?ll=49.06191792137252,2.7146027402529125&navigate=yes'},500)" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#1a1200;border:1px solid #33ccff;border-radius:999px;padding:12px 16px;font-size:13px;font-weight:700;color:#33ccff;text-decoration:none;min-width:140px">🔵 Waze</a>
+    <a id="loc-gmaps" href="https://www.google.com/maps/dir/?api=1&destination=49.06191792137252,2.7146027402529125" target="_blank" rel="noopener" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#1a1200;border:1px solid #D4880A;border-radius:999px;padding:12px 16px;font-size:13px;font-weight:700;color:#FFD700;text-decoration:none;min-width:140px">🗺️ Google Maps</a>
+    <a id="loc-waze" href="https://waze.com/ul?ll=49.06191792137252,2.7146027402529125&navigate=yes" target="_blank" rel="noopener" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#1a1200;border:1px solid #33ccff;border-radius:999px;padding:12px 16px;font-size:13px;font-weight:700;color:#33ccff;text-decoration:none;min-width:140px">🔵 Waze</a>
   </div>
 </div>
 
@@ -538,7 +580,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
         <span>À quelle heure arriver ?</span>
         <span class="faq-arrow">▾</span>
       </button>
-      <div class="faq-a">Nous sommes ouverts tous les vendredis soir de 18h à 21h. Les stocks étant limités et préparés avec soin, nous vous conseillons de venir le plus tôt possible pour être sûr de trouver ce que vous souhaitez. Les premiers arrivés sont les premiers servis !</div>
+      <div class="faq-a">Nous sommes présents le vendredi soir à Rouvres (18h à 21h) et le samedi soir à Ognes (18h à 21h30). Les stocks étant limités et préparés avec soin, nous vous conseillons de venir le plus tôt possible pour être sûr de trouver ce que vous souhaitez. Les premiers arrivés sont les premiers servis !</div>
     </div>
 
     <div class="faq-item">
@@ -554,7 +596,7 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
         <span>Où se garer ?</span>
         <span class="faq-arrow">▾</span>
       </button>
-      <div class="faq-a">Un grand parking est disponible directement devant la Salle des Fêtes de Rouvres. Vous n'aurez aucun souci pour vous garer !</div>
+      <div class="faq-a">À Rouvres, un grand parking est disponible directement devant la Salle des Fêtes. Vous n'aurez aucun souci pour vous garer !</div>
     </div>
 
     <div class="faq-item">
@@ -570,10 +612,10 @@ body{font-family:system-ui,sans-serif;background:#0e0a00;color:#fff;width:100%;p
 
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
-        <span>Vous êtes ouverts tous les vendredis ?</span>
+        <span>Vous êtes présents tous les vendredis et samedis ?</span>
         <span class="faq-arrow">▾</span>
       </button>
-      <div class="faq-a">Oui, nous sommes présents tous les vendredis soir sans exception, sauf fermetures exceptionnelles. Pour rester informé, suivez-nous sur nos réseaux sociaux — on vous prévient toujours à l'avance !</div>
+      <div class="faq-a">Oui, nous sommes présents tous les vendredis soir à Rouvres et tous les samedis soir à Ognes, sans exception, sauf fermetures exceptionnelles. Pour rester informé, suivez-nous sur nos réseaux sociaux — on vous prévient toujours à l'avance !</div>
     </div>
 
   </div>
@@ -695,10 +737,12 @@ onValue(ref(db,"landingPhotos"),function(s){
 onValue(ref(db,"fermetureExceptionnelle"),function(s){
   var data=s.val();
   if(data&&data.active){
-    var msg=data.message||"Nous ne serons pas présents ce vendredi. On vous retrouve très vite pour de nouvelles grillades ! 🌴";
+    var msg=data.message||"Nous ne serons pas présents ce soir. On vous retrouve très vite pour de nouvelles grillades ! 🌴";
     document.getElementById("popupFermetureMsg").textContent=msg;
     document.getElementById("popupFermeture").classList.add("on");
   }
+  window.fermetureActive=!!(data&&data.active);
+  if(window.majBanniere)window.majBanniere();
 });
 
 // Avis depuis Firebase
@@ -748,8 +792,8 @@ function renderAdminLogged(){
   document.getElementById("adminBody").innerHTML=
     '<div style="background:#1a0a00;border:2px solid #C0392B;border-radius:12px;padding:16px;margin-bottom:20px">'
     +'<div style="font-size:14px;font-weight:700;color:#ff6b6b;margin-bottom:12px">⚠️ Fermeture exceptionnelle</div>'
-    +'<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:10px">Active ceci si tu es absent un vendredi — une pop-up s\'affichera sur le site.</div>'
-    +'<textarea id="inp-fermeture-msg" class="add-inp" rows="2" placeholder="Message (optionnel)">Nous ne serons pas présents ce vendredi. On vous retrouve très vite ! 🌴</textarea>'
+    +'<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:10px">Active ceci si tu es absent un vendredi ou un samedi — une pop-up s\'affichera sur le site.</div>'
+    +'<textarea id="inp-fermeture-msg" class="add-inp" rows="2" placeholder="Message (optionnel)">Nous ne serons pas présents ce soir. On vous retrouve très vite ! 🌴</textarea>'
     +'<div style="display:flex;gap:8px;margin-top:8px">'
     +'<button class="add-btn" style="background:#C0392B" onclick="activerFermeture()">🔴 Activer la fermeture</button>'
     +'<button class="add-btn" style="background:#1a6e1a" onclick="desactiverFermeture()">🟢 Désactiver</button>'
@@ -815,7 +859,7 @@ window.majAvis=function(){
 window.closeAdmin=function(){document.getElementById("adminPanel").classList.remove("on");};
 window.activerFermeture=function(){
   var msg=document.getElementById("inp-fermeture-msg").value.trim();
-  set(ref(db,"fermetureExceptionnelle"),{active:true,message:msg||"Nous ne serons pas présents ce vendredi. On vous retrouve très vite ! 🌴"});
+  set(ref(db,"fermetureExceptionnelle"),{active:true,message:msg||"Nous ne serons pas présents ce soir. On vous retrouve très vite ! 🌴"});
   alert("Fermeture activée ! La pop-up s\'affiche maintenant sur le site.");
 };
 window.desactiverFermeture=function(){
@@ -1051,15 +1095,63 @@ function switchMainTab(tab){
   document.getElementById('main-tab-menus').classList.toggle('on',isMenus);
   document.getElementById('main-tab-allergenes').classList.toggle('on',!isMenus);
 }
-// Bannière "Ouvert ce soir" — s'affiche uniquement le vendredi entre 14h et 21h
+// Bannière de présence — vendredi : Rouvres · samedi : Ognes (affichée jusqu'à la fin du service)
+var LIEUX={
+  5:{nom:"Rouvres",salle:"Salle des Fêtes",heures:"18h–21h",fin:21,id:"loc-rouvres",hid:"hero-rouvres",maps:"https://www.google.com/maps/dir/?api=1&destination=49.06191792137252,2.7146027402529125"},
+  6:{nom:"Ognes",salle:"Salle des fêtes J-C Naty",heures:"18h–21h30",fin:21.5,id:"loc-ognes",hid:"hero-ognes",maps:"https://www.google.com/maps/search/?api=1&query=Salle+des+f%C3%AAtes+J-C+Naty+Rue+Claude+Tillet+60440+Ognes"}
+};
+window.majBanniere=function(){
+  var el=document.getElementById('bannerOuvert');if(!el)return;
+  var now=new Date(),h=now.getHours()+now.getMinutes()/60,l=LIEUX[now.getDay()];
+  var ferme=false;try{ferme=sessionStorage.getItem('banniereFermee')===now.toDateString();}catch(e){}
+  if(!l||h>=l.fin||window.fermetureActive||ferme){el.classList.remove('on');return;}
+  el.innerHTML='📍 <strong>Ce soir à '+l.nom+'</strong> · '+l.salle+' · '+l.heures
+    +' <a href="'+l.maps+'" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline;font-weight:800;margin-left:6px">Itinéraire</a>'
+    +'<button onclick="fermerBanniere()" aria-label="Fermer" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;margin-left:10px">✕</button>';
+  el.classList.add('on');
+};
+window.fermerBanniere=function(){
+  try{sessionStorage.setItem('banniereFermee',new Date().toDateString());}catch(e){}
+  document.getElementById('bannerOuvert').classList.remove('on');
+};
+// Met en avant l'adresse du jour dans « Où nous trouver »
 (function(){
-  var now=new Date();
-  var jour=now.getDay();
-  var heure=now.getHours();
-  if(jour===5 && heure>=14 && heure<21){
-    document.getElementById('bannerOuvert').classList.add('on');
-  }
+  var l=LIEUX[new Date().getDay()];if(!l)return;
+  [l.id,l.hid].forEach(function(id){
+    var c=document.getElementById(id);if(!c)return;
+    if(id===l.hid){c.style.borderColor='#D4880A';c.style.boxShadow='0 0 0 1px #D4880A';}
+    var n=c.querySelector('.location-name,.hp-place');
+    if(n)n.insertAdjacentHTML('beforeend',' <span style="display:inline-block;background:#D4880A;color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;vertical-align:middle">Aujourd\'hui</span>');
+  });
 })();
+// Sélecteur de lieu : met à jour carte, adresse, Google Maps et Waze
+var LOC={
+  rouvres:{nom:"Salle des Fêtes de Rouvres",adr:"9 Rue des Écoles<br>77230 Rouvres",heures:"Tous les vendredis · 18h00 – 21h00",
+    map:"https://www.google.com/maps?q=49.06191792137252,2.7146027402529125&z=16&output=embed",
+    gmaps:"https://www.google.com/maps/dir/?api=1&destination=49.06191792137252,2.7146027402529125",
+    waze:"https://waze.com/ul?ll=49.06191792137252,2.7146027402529125&navigate=yes"},
+  ognes:{nom:"Salle des fêtes J-C Naty",adr:"Rue Claude Tillet<br>60440 Ognes",heures:"Tous les samedis · 18h00 – 21h30",
+    map:"https://www.google.com/maps?q=Salle+des+f%C3%AAtes+J-C+Naty+Rue+Claude+Tillet+60440+Ognes&z=16&output=embed",
+    gmaps:"https://www.google.com/maps/search/?api=1&query=Salle+des+f%C3%AAtes+J-C+Naty+Rue+Claude+Tillet+60440+Ognes",
+    waze:"https://waze.com/ul?q=Rue%20Claude%20Tillet%2060440%20Ognes&navigate=yes"}
+};
+window.choisirLieu=function(k){
+  var d=LOC[k];if(!d)return;
+  ['rouvres','ognes'].forEach(function(x){
+    var b=document.getElementById('loc-'+x);if(!b)return;
+    b.classList.toggle('on',x===k);b.setAttribute('aria-pressed',x===k?'true':'false');
+  });
+  document.getElementById('ld-nom').textContent=d.nom;
+  document.getElementById('ld-adr').innerHTML=d.adr;
+  document.getElementById('ld-heures').textContent=d.heures;
+  var f=document.getElementById('loc-map');if(f&&f.getAttribute('src')!==d.map)f.setAttribute('src',d.map);
+  document.getElementById('loc-gmaps').setAttribute('href',d.gmaps);
+  document.getElementById('loc-waze').setAttribute('href',d.waze);
+};
+// Par défaut : le lieu du jour (samedi = Ognes), sinon Rouvres
+if(new Date().getDay()===6)window.choisirLieu('ognes');
+window.majBanniere();
+setInterval(window.majBanniere,60000);
 </script>
 </body>
 </html>
